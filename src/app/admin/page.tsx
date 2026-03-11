@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility } from "@/lib/types";
+import type { Facility, Location } from "@/lib/types";
 import {
   Building2,
   MapPin,
@@ -14,10 +14,14 @@ import {
   Eye,
   Search,
   ShieldCheck,
+  Plus,
+  Trash2,
+  Edit2
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "pending">("all");
@@ -41,12 +45,13 @@ export default function AdminDashboard() {
         return;
       }
 
-      const { data } = await supabase
-        .from("facilities")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const [facRes, locRes] = await Promise.all([
+        supabase.from("facilities").select("*").order("created_at", { ascending: false }),
+        supabase.from("locations").select("*").order("name", { ascending: true })
+      ]);
 
-      setFacilities(data || []);
+      setFacilities(facRes.data || []);
+      setLocations(locRes.data || []);
       setLoading(false);
     }
     load();
@@ -64,6 +69,19 @@ export default function AdminDashboard() {
       );
     }
   }
+
+  const handleDeleteLocation = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this location? Facilities associated with this city may need to be updated manually.")) return;
+
+    const { error } = await supabase.from("locations").delete().eq("id", id);
+
+    if (error) {
+      alert("Failed to delete location. It might be in use.");
+      console.error(error);
+    } else {
+      setLocations(prev => prev.filter(loc => loc.id !== id));
+    }
+  };
 
   const filtered = facilities.filter((f) => {
     const matchesSearch =
@@ -141,9 +159,8 @@ export default function AdminDashboard() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
-                  filter === f ? "bg-white text-[#2D3748] shadow-sm" : "text-[#b0aea5] hover:text-[#2D3748]"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${filter === f ? "bg-white text-[#2D3748] shadow-sm" : "text-[#b0aea5] hover:text-[#2D3748]"
+                  }`}
               >
                 {f}
               </button>
@@ -228,13 +245,88 @@ export default function AdminDashboard() {
                           </Link>
                           <button
                             onClick={() => toggleFacilityStatus(facility.id, facility.is_active)}
-                            className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
-                              facility.is_active
+                            className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${facility.is_active
                                 ? "text-[#d97757] hover:bg-[#d97757]/10"
                                 : "text-[#788c5d] hover:bg-[#788c5d]/10"
-                            }`}
+                              }`}
                           >
                             {facility.is_active ? "Deactivate" : "Approve"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Locations Table */}
+        <div className="glass-card overflow-hidden mt-8">
+          <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+              <MapPin className="w-5 h-5 text-[#2DD1AC]" />
+              All Locations Directory
+            </h2>
+            <Link
+              href="/dashboard/admin/locations/new"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors shadow-sm hover:shadow-md"
+              style={{ fontFamily: "var(--font-heading)" }}
+            >
+              <Plus className="w-4 h-4" />
+              Add Map Location
+            </Link>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#faf9f5] border-b border-[#e8e6dc]/50 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">City / Location</th>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">Region</th>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs text-center">Status</th>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {locations.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-[#b0aea5] py-12" style={{ fontFamily: "var(--font-ui)" }}>
+                      No locations found in the database.
+                    </td>
+                  </tr>
+                ) : (
+                  locations.map((loc) => (
+                    <tr key={loc.id} className="border-b border-[#e8e6dc]/50 hover:bg-[#2DD1AC]/3 transition-colors" style={{ fontFamily: "var(--font-ui)" }}>
+                      <td className="px-6 py-4 font-semibold text-[#2D3748]">{loc.name}</td>
+                      <td className="px-6 py-4 text-sm text-[#2D3748]">{loc.region}</td>
+                      <td className="px-6 py-4 text-center">
+                        {loc.is_active ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#788c5d] bg-[#788c5d]/10 px-2.5 py-1 rounded-full">
+                            <CheckCircle2 className="w-3 h-3" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#d97757] bg-[#d97757]/10 px-2.5 py-1 rounded-full">
+                            <XCircle className="w-3 h-3" /> Inactive
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/dashboard/admin/locations/${loc.id}/edit`}
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-[#2DD1AC]/10 hover:text-[#1E957A] transition-all"
+                            title="Edit Location"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteLocation(loc.id)}
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-red-500/10 hover:text-red-500 transition-all"
+                            title="Delete Location"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
