@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Facility, Location } from "@/lib/types";
-import { Building2, Edit2, ShieldAlert, Plus, MapPin } from "lucide-react";
+import { Building2, Edit2, ShieldAlert, Plus, MapPin, Trash2 } from "lucide-react";
 
 export function AdminDashboard({ profile }: { profile: Profile }) {
     const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -27,6 +27,20 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
 
         loadData();
     }, []);
+
+    const handleDeleteLocation = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this location? Facilities associated with this city may need to be updated manually.")) return;
+
+        const supabase = createClient();
+        const { error } = await supabase.from("locations").delete().eq("id", id);
+
+        if (error) {
+            alert("Failed to delete location. It might be in use.");
+            console.error(error);
+        } else {
+            setLocations(prev => prev.filter(loc => loc.id !== id));
+        }
+    };
 
     if (loading) {
         return (
@@ -147,12 +161,13 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
                                 <th className="p-4 font-medium">City / Location</th>
                                 <th className="p-4 font-medium">Region</th>
                                 <th className="p-4 font-medium text-center">Status</th>
+                                <th className="p-4 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {locations.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="p-8 text-center text-[#b0aea5] py-12">
+                                    <td colSpan={4} className="p-8 text-center text-[#b0aea5] py-12">
                                         No locations found in the database.
                                     </td>
                                 </tr>
@@ -166,6 +181,24 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
                                                 }`}>
                                                 {loc.is_active ? 'Active' : 'Inactive'}
                                             </span>
+                                        </td>
+                                        <td className="p-4 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/dashboard/admin/locations/${loc.id}/edit`}
+                                                    className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-[#2DD1AC]/10 hover:text-[#1E957A] transition-all"
+                                                    title="Edit Location"
+                                                >
+                                                    <Edit2 className="w-4 h-4" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteLocation(loc.id)}
+                                                    className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-red-500/10 hover:text-red-500 transition-all"
+                                                    title="Delete Location"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
