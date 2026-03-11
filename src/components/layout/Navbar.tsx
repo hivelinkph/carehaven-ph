@@ -10,15 +10,20 @@ import type { Profile } from "@/lib/types";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const loginRef = useRef<HTMLDivElement>(null);
+  const signupRef = useRef<HTMLDivElement>(null);
 
-  // Close login dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (loginRef.current && !loginRef.current.contains(e.target as Node)) {
         setLoginOpen(false);
+      }
+      if (signupRef.current && !signupRef.current.contains(e.target as Node)) {
+        setSignupOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -161,7 +166,7 @@ export default function Navbar() {
                 {/* Login Dropdown */}
                 <div className="relative" ref={loginRef}>
                   <button
-                    onClick={() => setLoginOpen(!loginOpen)}
+                    onClick={() => { setLoginOpen(!loginOpen); setSignupOpen(false); }}
                     className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors px-4 py-2"
                   >
                     <LogIn className="w-4 h-4" />
@@ -197,13 +202,37 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
-                <Link
-                  href="/auth/signup"
-                  className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 hover:from-[#2DD1AC]/90 hover:to-[#2DD1AC]/70 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all"
-                >
-                  <User className="w-4 h-4" />
-                  Sign Up
-                </Link>
+                {/* Sign Up Dropdown */}
+                <div className="relative" ref={signupRef}>
+                  <button
+                    onClick={() => { setSignupOpen(!signupOpen); setLoginOpen(false); }}
+                    className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 hover:from-[#2DD1AC]/90 hover:to-[#2DD1AC]/70 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all"
+                  >
+                    <User className="w-4 h-4" />
+                    Sign Up
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${signupOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {signupOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-[#e8e6dc] shadow-lg overflow-hidden animate-fade-in z-50">
+                      <Link
+                        href="/auth/signup"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
+                        onClick={() => setSignupOpen(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        Client Sign-up
+                      </Link>
+                      <Link
+                        href="/auth/provider-signup"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
+                        onClick={() => setSignupOpen(false)}
+                      >
+                        <Building2 className="w-4 h-4" />
+                        Provider Sign-up
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -309,12 +338,22 @@ export default function Navbar() {
                       <ShieldCheck className="w-4 h-4" />
                       Admin Login
                     </Link>
+                    <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-2 mt-4">Sign Up As</p>
                     <Link
                       href="/auth/signup"
-                      className="block text-center text-sm font-semibold text-white bg-[#2DD1AC] py-2.5 rounded-full hover:bg-[#2DD1AC]/90 transition-all mt-2"
+                      className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
                       onClick={() => setIsOpen(false)}
                     >
-                      Sign Up
+                      <User className="w-4 h-4 text-[#2DD1AC]" />
+                      Client Sign-up
+                    </Link>
+                    <Link
+                      href="/auth/provider-signup"
+                      className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Building2 className="w-4 h-4 text-[#2DD1AC]" />
+                      Provider Sign-up
                     </Link>
                   </div>
                 )}
