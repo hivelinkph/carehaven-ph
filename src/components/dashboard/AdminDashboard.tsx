@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Facility } from "@/lib/types";
-import { Building2, Edit2, ShieldAlert } from "lucide-react";
+import { Building2, Edit2, ShieldAlert, Plus } from "lucide-react";
 
 export function AdminDashboard({ profile }: { profile: Profile }) {
     const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -56,11 +56,19 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
             </div>
 
             <div className="glass-card overflow-hidden">
-                <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50">
+                <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
                         <Building2 className="w-5 h-5 text-[#2DD1AC]" />
                         All Facilities Directory
                     </h2>
+                    <Link
+                        href="/dashboard/admin/facilities/new"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors shadow-sm hover:shadow-md"
+                        style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Location
+                    </Link>
                 </div>
 
                 <div className="overflow-x-auto">
