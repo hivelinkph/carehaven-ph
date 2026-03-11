@@ -14,7 +14,7 @@ export default function HeroSection() {
           loop
           playsInline
           poster="/assets/images/hero-poster.jpg"
-          className="w-full h-full object-cover opacity-[0.85]"
+          className="w-full h-full object-cover opacity-[0.70]"
         >
           <source src="/assets/videos/herosection.mp4?v=3" type="video/mp4" />
         </video>
@@ -23,7 +23,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 w-full">
+      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-20 xl:px-32 pt-32 pb-20">
         <div className="max-w-2xl">
           {/* Badge */}
           <div
