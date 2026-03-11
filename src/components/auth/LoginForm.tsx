@@ -45,7 +45,15 @@ export default function LoginForm() {
       }
     }
 
-    router.push("/dashboard");
+    // Redirect based on user role
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", (await supabase.auth.getUser()).data.user!.id)
+      .single();
+
+    const destination = profile?.role === "provider" ? "/provider/dashboard" : "/dashboard";
+    router.push(destination);
     router.refresh();
   }
 

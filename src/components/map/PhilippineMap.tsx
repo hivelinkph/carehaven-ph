@@ -1,41 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapPin, Building2, ChevronRight, Heart, Star } from "lucide-react";
 import Link from "next/link";
 import { PHILIPPINE_REGIONS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility } from "@/lib/types";
-
-interface RegionData {
-  id: string;
-  name: string;
-  shortName: string;
-  majorCities: string[];
-  facilityCount: number;
-  cx: number;
-  cy: number;
-}
-
-const REGION_MARKERS: RegionData[] = [
-  { id: "ncr", ...PHILIPPINE_REGIONS["ncr"], facilityCount: 28, cx: 248, cy: 308 },
-  { id: "car", ...PHILIPPINE_REGIONS["car"], facilityCount: 5, cx: 240, cy: 220 },
-  { id: "region-1", ...PHILIPPINE_REGIONS["region-1"], facilityCount: 8, cx: 210, cy: 248 },
-  { id: "region-2", ...PHILIPPINE_REGIONS["region-2"], facilityCount: 4, cx: 275, cy: 235 },
-  { id: "region-3", ...PHILIPPINE_REGIONS["region-3"], facilityCount: 12, cx: 235, cy: 285 },
-  { id: "region-4a", ...PHILIPPINE_REGIONS["region-4a"], facilityCount: 15, cx: 260, cy: 335 },
-  { id: "region-4b", ...PHILIPPINE_REGIONS["region-4b"], facilityCount: 3, cx: 195, cy: 380 },
-  { id: "region-5", ...PHILIPPINE_REGIONS["region-5"], facilityCount: 6, cx: 305, cy: 370 },
-  { id: "region-6", ...PHILIPPINE_REGIONS["region-6"], facilityCount: 10, cx: 225, cy: 450 },
-  { id: "region-7", ...PHILIPPINE_REGIONS["region-7"], facilityCount: 14, cx: 290, cy: 460 },
-  { id: "region-8", ...PHILIPPINE_REGIONS["region-8"], facilityCount: 5, cx: 340, cy: 440 },
-  { id: "region-9", ...PHILIPPINE_REGIONS["region-9"], facilityCount: 4, cx: 195, cy: 560 },
-  { id: "region-10", ...PHILIPPINE_REGIONS["region-10"], facilityCount: 8, cx: 270, cy: 530 },
-  { id: "region-11", ...PHILIPPINE_REGIONS["region-11"], facilityCount: 11, cx: 310, cy: 570 },
-  { id: "region-12", ...PHILIPPINE_REGIONS["region-12"], facilityCount: 6, cx: 270, cy: 580 },
-  { id: "region-13", ...PHILIPPINE_REGIONS["region-13"], facilityCount: 4, cx: 330, cy: 520 },
-  { id: "barmm", ...PHILIPPINE_REGIONS["barmm"], facilityCount: 2, cx: 235, cy: 540 },
-];
+import { latLngToSvg } from "@/lib/mapUtils";
 
 // Build all location options from region major cities
 const ALL_LOCATIONS = Object.entries(PHILIPPINE_REGIONS)
@@ -45,12 +16,17 @@ const ALL_LOCATIONS = Object.entries(PHILIPPINE_REGIONS)
   .sort((a, b) => a.city.localeCompare(b.city));
 
 export default function PhilippineMap() {
-  const [selectedRegion, setSelectedRegion] = useState<RegionData | null>(null);
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const [selectedFacilityId, setSelectedFacilityId] = useState<string | null>(null);
+  const [hoveredFacilityId, setHoveredFacilityId] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>([]);
-  const [loading, setLoading] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Facilities that have valid coordinates for map rendering
+  const mappableFacilities = facilities.filter(
+    (f) => f.latitude != null && f.longitude != null && f.is_active
+  );
 
   // Fetch all active facilities on mount
   useEffect(() => {
@@ -67,45 +43,59 @@ export default function PhilippineMap() {
     fetchFacilities();
   }, []);
 
-  // Filter facilities when region or location changes
+  // Filter facilities when location changes
   useEffect(() => {
-    if (!selectedRegion && !selectedLocation) {
+    if (!selectedLocation) {
       setFilteredFacilities(facilities);
       return;
     }
 
-    let filtered = facilities;
-
-    if (selectedLocation) {
-      const loc = ALL_LOCATIONS.find((l) => l.city === selectedLocation);
-      if (loc) {
-        filtered = facilities.filter(
-          (f) => f.city.toLowerCase() === loc.city.toLowerCase() || f.region === loc.regionName
-        );
-        // Also highlight the matching region on the map
-        const matchingRegion = REGION_MARKERS.find((r) => r.id === loc.regionId);
-        if (matchingRegion && selectedRegion?.id !== matchingRegion.id) {
-          setSelectedRegion(matchingRegion);
-        }
-      }
-    } else if (selectedRegion) {
-      filtered = facilities.filter((f) => f.region === selectedRegion.name);
+    const loc = ALL_LOCATIONS.find((l) => l.city === selectedLocation);
+    if (loc) {
+      const filtered = facilities.filter(
+        (f) => f.city.toLowerCase() === loc.city.toLowerCase() || f.region === loc.regionName
+      );
+      setFilteredFacilities(filtered);
     }
+  }, [selectedLocation, facilities]);
 
-    setFilteredFacilities(filtered);
-  }, [selectedRegion, selectedLocation, facilities]);
+  // Filter by clicked facility's region
+  useEffect(() => {
+    if (!selectedFacilityId) return;
+    const facility = facilities.find((f) => f.id === selectedFacilityId);
+    if (facility && !selectedLocation) {
+      const filtered = facilities.filter((f) => f.region === facility.region);
+      setFilteredFacilities(filtered);
+    }
+  }, [selectedFacilityId, facilities, selectedLocation]);
 
-  function handleRegionClick(region: RegionData) {
-    setSelectedRegion(region);
-    setSelectedLocation(""); // clear dropdown when clicking map
+  function handleFacilityClick(facility: Facility) {
+    setSelectedFacilityId(facility.id);
+    setSelectedLocation("");
+
+    // Scroll the facility into view in the right panel
+    setTimeout(() => {
+      const el = document.getElementById(`facility-${facility.id}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 100);
   }
 
   function handleLocationChange(city: string) {
     setSelectedLocation(city);
+    setSelectedFacilityId(null);
     if (!city) {
-      setSelectedRegion(null);
+      setFilteredFacilities(facilities);
     }
   }
+
+  function handleClearSelection() {
+    setSelectedFacilityId(null);
+    setSelectedLocation("");
+    setFilteredFacilities(facilities);
+  }
+
+  const selectedFacility = facilities.find((f) => f.id === selectedFacilityId);
+  const regionLabel = selectedFacility?.region || (selectedLocation ? ALL_LOCATIONS.find((l) => l.city === selectedLocation)?.regionName : null);
 
   return (
     <section id="facilities-map" className="py-20 lg:py-28 bg-[#faf9f5]">
@@ -156,78 +146,94 @@ export default function PhilippineMap() {
                   style={{ filter: "drop-shadow(0 4px 12px rgba(45, 55, 72, 0.15))" }}
                 />
 
-                {/* Region Markers */}
-                {REGION_MARKERS.map((region) => (
-                  <g
-                    key={region.id}
-                    className="cursor-pointer"
-                    onMouseEnter={() => setHoveredRegion(region.id)}
-                    onMouseLeave={() => setHoveredRegion(null)}
-                    onClick={() => handleRegionClick(region)}
-                  >
-                    {/* Glowing pulse for hover/active */}
-                    {(hoveredRegion === region.id || selectedRegion?.id === region.id) && (
-                      <circle
-                        cx={region.cx}
-                        cy={region.cy}
-                        r={selectedRegion?.id === region.id ? 24 : 18}
-                        fill="#ff0000"
-                        opacity={selectedRegion?.id === region.id ? 0.25 : 0.15}
-                        className="animate-pulse"
-                      />
-                    )}
+                {/* Facility Heart Markers */}
+                {mappableFacilities.map((facility) => {
+                  const pos = latLngToSvg(facility.latitude!, facility.longitude!);
+                  const isSelected = selectedFacilityId === facility.id;
+                  const isHovered = hoveredFacilityId === facility.id;
+                  const label = facility.name;
 
-                    {/* Heart Marker */}
+                  return (
                     <g
-                      transform={`translate(${region.cx - 12}, ${region.cy - 12})`}
-                      style={{
-                        filter: selectedRegion?.id === region.id
-                          ? "drop-shadow(0 0 12px rgba(255, 0, 0, 0.9))"
-                          : "drop-shadow(0 0 5px rgba(255, 0, 0, 0.5))",
-                        transition: "all 0.3s ease",
-                      }}
+                      key={facility.id}
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredFacilityId(facility.id)}
+                      onMouseLeave={() => setHoveredFacilityId(null)}
+                      onClick={() => handleFacilityClick(facility)}
                     >
-                      <Heart
-                        width={24}
-                        height={24}
-                        color="white"
-                        fill={selectedRegion?.id === region.id ? "#ff0000" : "rgba(255, 0, 0, 0.85)"}
-                        strokeWidth={1.5}
-                        className={
-                          selectedRegion?.id === region.id
-                            ? "scale-125 transition-transform"
-                            : "scale-100 transition-transform hover:scale-110"
-                        }
-                      />
-                    </g>
-
-                    {/* Label on hover */}
-                    {hoveredRegion === region.id && (
-                      <g className="animate-fade-in">
-                        <rect
-                          x={region.cx + 12}
-                          y={region.cy - 14}
-                          width={region.shortName.length * 8 + 20}
-                          height={24}
-                          rx="6"
-                          fill="#2D3748"
-                          opacity="0.9"
+                      {/* Glowing pulse for hover/active */}
+                      {(isHovered || isSelected) && (
+                        <circle
+                          cx={pos.x}
+                          cy={pos.y}
+                          r={isSelected ? 24 : 18}
+                          fill="#ff0000"
+                          opacity={isSelected ? 0.25 : 0.15}
+                          className="animate-pulse"
                         />
-                        <text
-                          x={region.cx + 22}
-                          y={region.cy + 2}
-                          fill="white"
-                          fontSize="11"
-                          fontFamily="var(--font-ui)"
-                          fontWeight="500"
-                        >
-                          {region.shortName}
-                        </text>
+                      )}
+
+                      {/* Heart Marker */}
+                      <g
+                        transform={`translate(${pos.x - 12}, ${pos.y - 12})`}
+                        style={{
+                          filter: isSelected
+                            ? "drop-shadow(0 0 12px rgba(255, 0, 0, 0.9))"
+                            : "drop-shadow(0 0 5px rgba(255, 0, 0, 0.5))",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        <Heart
+                          width={24}
+                          height={24}
+                          color="white"
+                          fill={isSelected ? "#ff0000" : "rgba(255, 0, 0, 0.85)"}
+                          strokeWidth={1.5}
+                          className={
+                            isSelected
+                              ? "scale-125 transition-transform"
+                              : "scale-100 transition-transform hover:scale-110"
+                          }
+                        />
                       </g>
-                    )}
-                  </g>
-                ))}
+
+                      {/* Label on hover */}
+                      {isHovered && (
+                        <g className="animate-fade-in">
+                          <rect
+                            x={pos.x + 12}
+                            y={pos.y - 14}
+                            width={Math.min(label.length * 7 + 20, 200)}
+                            height={24}
+                            rx="6"
+                            fill="#2D3748"
+                            opacity="0.9"
+                          />
+                          <text
+                            x={pos.x + 22}
+                            y={pos.y + 2}
+                            fill="white"
+                            fontSize="11"
+                            fontFamily="var(--font-ui)"
+                            fontWeight="500"
+                          >
+                            {label.length > 24 ? label.slice(0, 22) + "…" : label}
+                          </text>
+                        </g>
+                      )}
+                    </g>
+                  );
+                })}
               </svg>
+
+              {/* Facility count badge */}
+              <div
+                className="absolute bottom-4 left-4 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-full border border-[#e8e6dc]/50 text-xs font-medium text-[#2D3748]"
+                style={{ fontFamily: "var(--font-ui)" }}
+              >
+                <Heart className="w-3 h-3 inline text-red-500 mr-1" fill="red" />
+                {mappableFacilities.length} {mappableFacilities.length === 1 ? "location" : "locations"} on map
+              </div>
             </div>
           </div>
 
@@ -254,18 +260,22 @@ export default function PhilippineMap() {
                 </select>
               </div>
 
-              {/* Region info badge */}
-              {selectedRegion && (
+              {/* Region / selection info badge */}
+              {regionLabel && (
                 <div className="flex items-center justify-between mb-4 px-3 py-2 bg-[#2DD1AC]/5 rounded-xl border border-[#2DD1AC]/15">
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-[#2DD1AC]" />
                     <span className="text-sm font-semibold text-[#2D3748]" style={{ fontFamily: "var(--font-ui)" }}>
-                      {selectedRegion.name}
+                      {regionLabel}
                     </span>
                   </div>
-                  <span className="text-xs font-medium text-[#2DD1AC]" style={{ fontFamily: "var(--font-ui)" }}>
-                    {filteredFacilities.length} {filteredFacilities.length === 1 ? "facility" : "facilities"}
-                  </span>
+                  <button
+                    onClick={handleClearSelection}
+                    className="text-xs font-medium text-[#b0aea5] hover:text-[#2D3748] transition-colors"
+                    style={{ fontFamily: "var(--font-ui)" }}
+                  >
+                    Clear
+                  </button>
                 </div>
               )}
 
@@ -275,15 +285,15 @@ export default function PhilippineMap() {
                   className="text-lg font-bold text-[#2D3748] mb-4"
                   style={{ fontFamily: "var(--font-heading)" }}
                 >
-                  {selectedRegion ? "Regional" : "National"} Rankings
+                  {regionLabel ? "Regional" : "National"} Rankings
                 </h3>
                 <p className="text-xs text-[#b0aea5] mb-4" style={{ fontFamily: "var(--font-ui)" }}>
-                  {selectedRegion
-                    ? `Facilities in ${selectedRegion.shortName} sorted alphabetically`
+                  {regionLabel
+                    ? `Facilities in ${regionLabel} sorted alphabetically`
                     : "Top facilities across all regions"}
                 </p>
 
-                <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+                <div ref={listRef} className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
                   {filteredFacilities.length === 0 ? (
                     <div className="text-center py-8">
                       <Building2 className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
@@ -297,8 +307,12 @@ export default function PhilippineMap() {
                     filteredFacilities.map((facility, index) => (
                       <Link
                         key={facility.id}
+                        id={`facility-${facility.id}`}
                         href={`/facilities/${facility.id}`}
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-[#2DD1AC]/5 border border-transparent hover:border-[#2DD1AC]/15 transition-all group"
+                        className={`flex items-center gap-4 p-3 rounded-xl border transition-all group ${selectedFacilityId === facility.id
+                          ? "bg-[#2DD1AC]/10 border-[#2DD1AC]/30"
+                          : "hover:bg-[#2DD1AC]/5 border-transparent hover:border-[#2DD1AC]/15"
+                          }`}
                       >
                         {/* Rank Number */}
                         <span
@@ -349,7 +363,7 @@ export default function PhilippineMap() {
                 {/* View All Link */}
                 {filteredFacilities.length > 0 && (
                   <Link
-                    href={selectedRegion ? `/facilities/region/${selectedRegion.id}` : "/facilities"}
+                    href="/facilities"
                     className="flex items-center justify-center gap-2 w-full mt-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all"
                     style={{ fontFamily: "var(--font-ui)" }}
                   >

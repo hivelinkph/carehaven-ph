@@ -31,11 +31,26 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protect dashboard routes (family users)
-  if (!user && pathname.startsWith('/dashboard')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    return NextResponse.redirect(url);
+  // Protect dashboard routes
+  if (pathname.startsWith('/dashboard')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/auth/login';
+      return NextResponse.redirect(url);
+    }
+
+    // Redirect providers to their dedicated dashboard
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role === 'provider') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/provider/dashboard';
+      return NextResponse.redirect(url);
+    }
   }
 
   // Protect provider routes
@@ -81,8 +96,14 @@ export async function middleware(request: NextRequest) {
 
   // Redirect logged-in users away from auth pages
   if (user && pathname.startsWith('/auth/')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = profile?.role === 'provider' ? '/provider/dashboard' : '/dashboard';
     return NextResponse.redirect(url);
   }
 
