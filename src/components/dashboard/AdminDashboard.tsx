@@ -3,22 +3,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Profile, Facility } from "@/lib/types";
-import { Building2, Edit2, ShieldAlert, Plus } from "lucide-react";
+import type { Profile, Facility, Location } from "@/lib/types";
+import { Building2, Edit2, ShieldAlert, Plus, MapPin } from "lucide-react";
 
 export function AdminDashboard({ profile }: { profile: Profile }) {
     const [facilities, setFacilities] = useState<Facility[]>([]);
+    const [locations, setLocations] = useState<Location[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadData() {
             const supabase = createClient();
-            const { data: facilitiesData } = await supabase
-                .from("facilities")
-                .select("*")
-                .order("created_at", { ascending: false });
 
-            setFacilities(facilitiesData || []);
+            const [facilitiesRes, locationsRes] = await Promise.all([
+                supabase.from("facilities").select("*").order("created_at", { ascending: false }),
+                supabase.from("locations").select("*").order("name", { ascending: true })
+            ]);
+
+            setFacilities(facilitiesRes.data || []);
+            setLocations(locationsRes.data || []);
             setLoading(false);
         }
 
@@ -67,7 +70,7 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
                         style={{ fontFamily: "var(--font-heading)" }}
                     >
                         <Plus className="w-4 h-4" />
-                        Add Location
+                        Add Facility
                     </Link>
                 </div>
 
@@ -112,6 +115,57 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
                                                 <Edit2 className="w-3.5 h-3.5" />
                                                 Admin Edit
                                             </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="glass-card overflow-hidden mt-8">
+                <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+                        <MapPin className="w-5 h-5 text-[#2DD1AC]" />
+                        All Locations Directory
+                    </h2>
+                    <Link
+                        href="/dashboard/admin/locations/new"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors shadow-sm hover:shadow-md"
+                        style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Map Location
+                    </Link>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-[#faf9f5] border-b border-[#e8e6dc]/50 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                                <th className="p-4 font-medium">City / Location</th>
+                                <th className="p-4 font-medium">Region</th>
+                                <th className="p-4 font-medium text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {locations.length === 0 ? (
+                                <tr>
+                                    <td colSpan={3} className="p-8 text-center text-[#b0aea5] py-12">
+                                        No locations found in the database.
+                                    </td>
+                                </tr>
+                            ) : (
+                                locations.map((loc) => (
+                                    <tr key={loc.id} className="border-b border-[#e8e6dc]/30 hover:bg-white/50 transition-colors">
+                                        <td className="p-4 font-semibold text-[#2D3748]">{loc.name}</td>
+                                        <td className="p-4 text-sm text-[#2D3748]">{loc.region}</td>
+                                        <td className="p-4 text-center">
+                                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${loc.is_active ? 'bg-[#2DD1AC]/10 text-[#1E957A]' : 'bg-[#d97757]/10 text-[#d97757]'
+                                                }`}>
+                                                {loc.is_active ? 'Active' : 'Inactive'}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))

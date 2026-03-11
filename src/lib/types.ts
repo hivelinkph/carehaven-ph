@@ -12,6 +12,16 @@ export interface Profile {
   updated_at: string;
 }
 
+export interface Location {
+  id: string;
+  name: string;
+  region: string;
+  latitude: number | null;
+  longitude: number | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface Patient {
   id: string;
   user_id: string;

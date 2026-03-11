@@ -3,75 +3,73 @@
 import { useState, useEffect, useRef } from "react";
 import { MapPin, Building2, ChevronRight, Heart, Star } from "lucide-react";
 import Link from "next/link";
-import { PHILIPPINE_REGIONS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility } from "@/lib/types";
+import type { Facility, Location } from "@/lib/types";
 import { latLngToSvg } from "@/lib/mapUtils";
-
-// Build all location options from region major cities
-const ALL_LOCATIONS = Object.entries(PHILIPPINE_REGIONS)
-  .flatMap(([regionId, region]) =>
-    region.majorCities.map((city) => ({ city, regionId, regionName: region.name }))
-  )
-  .sort((a, b) => a.city.localeCompare(b.city));
 
 export default function PhilippineMap() {
   const [selectedFacilityId, setSelectedFacilityId] = useState<string | null>(null);
-  const [hoveredFacilityId, setHoveredFacilityId] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
+  const [selectedLocationName, setSelectedLocationName] = useState("");
+
   const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>([]);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Facilities that have valid coordinates for map rendering
-  const mappableFacilities = facilities.filter(
-    (f) => f.latitude != null && f.longitude != null && f.is_active
+  // Locations that have valid coordinates for map rendering
+  const mappableLocations = locations.filter(
+    (loc) => loc.latitude != null && loc.longitude != null && loc.is_active
   );
 
-  // Fetch all active facilities on mount
+  // Fetch all active facilities and locations on mount
   useEffect(() => {
-    async function fetchFacilities() {
+    async function fetchData() {
       const supabase = createClient();
-      const { data } = await supabase
-        .from("facilities")
-        .select("*")
-        .eq("is_active", true)
-        .order("name", { ascending: true });
-      setFacilities(data || []);
-      setFilteredFacilities(data || []);
+
+      const [facRes, locRes] = await Promise.all([
+        supabase.from("facilities").select("*").eq("is_active", true).order("name", { ascending: true }),
+        supabase.from("locations").select("*").eq("is_active", true).order("name", { ascending: true })
+      ]);
+
+      setFacilities(facRes.data || []);
+      setFilteredFacilities(facRes.data || []);
+      setLocations(locRes.data || []);
     }
-    fetchFacilities();
+    fetchData();
   }, []);
 
   // Filter facilities when location changes
   useEffect(() => {
-    if (!selectedLocation) {
+    if (!selectedLocationName) {
       setFilteredFacilities(facilities);
       return;
     }
 
-    const loc = ALL_LOCATIONS.find((l) => l.city === selectedLocation);
-    if (loc) {
-      const filtered = facilities.filter(
-        (f) => f.city.toLowerCase() === loc.city.toLowerCase() || f.region === loc.regionName
-      );
-      setFilteredFacilities(filtered);
-    }
-  }, [selectedLocation, facilities]);
+    const filtered = facilities.filter(
+      (f) => f.city.toLowerCase() === selectedLocationName.toLowerCase()
+    );
+    setFilteredFacilities(filtered);
+  }, [selectedLocationName, facilities]);
 
-  // Filter by clicked facility's region
+  // Filter by clicked facility's region when a facility is selected from the list
   useEffect(() => {
     if (!selectedFacilityId) return;
     const facility = facilities.find((f) => f.id === selectedFacilityId);
-    if (facility && !selectedLocation) {
-      const filtered = facilities.filter((f) => f.region === facility.region);
+    if (facility && !selectedLocationName) {
+      const filtered = facilities.filter((f) => f.city === facility.city);
       setFilteredFacilities(filtered);
     }
-  }, [selectedFacilityId, facilities, selectedLocation]);
+  }, [selectedFacilityId, facilities, selectedLocationName]);
+
+  function handleLocationClick(loc: Location) {
+    setSelectedLocationName(loc.name);
+    setSelectedFacilityId(null);
+  }
 
   function handleFacilityClick(facility: Facility) {
     setSelectedFacilityId(facility.id);
-    setSelectedLocation("");
+    setSelectedLocationName("");
 
     // Scroll the facility into view in the right panel
     setTimeout(() => {
@@ -80,8 +78,8 @@ export default function PhilippineMap() {
     }, 100);
   }
 
-  function handleLocationChange(city: string) {
-    setSelectedLocation(city);
+  function handleLocationDropdownChange(city: string) {
+    setSelectedLocationName(city);
     setSelectedFacilityId(null);
     if (!city) {
       setFilteredFacilities(facilities);
@@ -90,12 +88,13 @@ export default function PhilippineMap() {
 
   function handleClearSelection() {
     setSelectedFacilityId(null);
-    setSelectedLocation("");
+    setSelectedLocationName("");
     setFilteredFacilities(facilities);
   }
 
   const selectedFacility = facilities.find((f) => f.id === selectedFacilityId);
-  const regionLabel = selectedFacility?.region || (selectedLocation ? ALL_LOCATIONS.find((l) => l.city === selectedLocation)?.regionName : null);
+  const activeLocationObj = locations.find((l) => l.name === (selectedLocationName || selectedFacility?.city));
+  const regionLabel = activeLocationObj ? activeLocationObj.region : null;
 
   return (
     <section id="facilities-map" className="py-20 lg:py-28 bg-[#faf9f5]">
@@ -146,20 +145,20 @@ export default function PhilippineMap() {
                   style={{ filter: "drop-shadow(0 4px 12px rgba(45, 55, 72, 0.15))" }}
                 />
 
-                {/* Facility Heart Markers */}
-                {mappableFacilities.map((facility) => {
-                  const pos = latLngToSvg(facility.latitude!, facility.longitude!);
-                  const isSelected = selectedFacilityId === facility.id;
-                  const isHovered = hoveredFacilityId === facility.id;
-                  const label = facility.name;
+                {/* Location Heart Markers */}
+                {mappableLocations.map((loc) => {
+                  const pos = latLngToSvg(loc.latitude!, loc.longitude!);
+                  const isSelected = selectedLocationName === loc.name || selectedFacility?.city === loc.name;
+                  const isHovered = hoveredLocationId === loc.id;
+                  const label = loc.name;
 
                   return (
                     <g
-                      key={facility.id}
+                      key={loc.id}
                       className="cursor-pointer"
-                      onMouseEnter={() => setHoveredFacilityId(facility.id)}
-                      onMouseLeave={() => setHoveredFacilityId(null)}
-                      onClick={() => handleFacilityClick(facility)}
+                      onMouseEnter={() => setHoveredLocationId(loc.id)}
+                      onMouseLeave={() => setHoveredLocationId(null)}
+                      onClick={() => handleLocationClick(loc)}
                     >
                       {/* Glowing pulse for hover/active */}
                       {(isHovered || isSelected) && (
@@ -226,13 +225,13 @@ export default function PhilippineMap() {
                 })}
               </svg>
 
-              {/* Facility count badge */}
+              {/* Location count badge */}
               <div
                 className="absolute bottom-4 left-4 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-full border border-[#e8e6dc]/50 text-xs font-medium text-[#2D3748]"
                 style={{ fontFamily: "var(--font-ui)" }}
               >
                 <Heart className="w-3 h-3 inline text-red-500 mr-1" fill="red" />
-                {mappableFacilities.length} {mappableFacilities.length === 1 ? "location" : "locations"} on map
+                {mappableLocations.length} {mappableLocations.length === 1 ? "city location" : "city locations"} on map
               </div>
             </div>
           </div>
@@ -246,15 +245,15 @@ export default function PhilippineMap() {
                   Select Location...
                 </label>
                 <select
-                  value={selectedLocation}
-                  onChange={(e) => handleLocationChange(e.target.value)}
+                  value={selectedLocationName}
+                  onChange={(e) => handleLocationDropdownChange(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-[#141413] focus:outline-none focus:border-[#2DD1AC] transition-all cursor-pointer appearance-none"
                   style={{ fontSize: "16px" }}
                 >
                   <option value="">All Locations</option>
-                  {ALL_LOCATIONS.map((loc) => (
-                    <option key={`${loc.city}-${loc.regionId}`} value={loc.city}>
-                      {loc.city}
+                  {locations.map((loc) => (
+                    <option key={loc.id} value={loc.name}>
+                      {loc.name}
                     </option>
                   ))}
                 </select>
