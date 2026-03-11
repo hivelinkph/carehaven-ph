@@ -16,7 +16,7 @@ export default function HeroSection() {
           poster="/assets/images/hero-poster.jpg"
           className="w-full h-full object-cover"
         >
-          <source src="/assets/videos/herosection.mp4?v=2" type="video/mp4" />
+          <source src="/assets/videos/herosection.mp4?v=3" type="video/mp4" />
         </video>
         {/* Warm overlay */}
         <div className="hero-overlay absolute inset-0" />
