@@ -18,56 +18,23 @@ export const MAP_ANCHORS = [
     { lat: 7.21, lng: 124.25, x: 235, y: 540 },  // BARMM
 ];
 
-/** Convert geographic lat/lng to SVG coordinates using inverse distance weighting. */
+/**
+ * Convert geographic lat/lng to SVG coordinates using a linear projection based on map bounds.
+ * Allows pins to be placed anywhere on the SVG map continuously.
+ */
 export function latLngToSvg(lat: number, lng: number): { x: number; y: number } {
-    let totalWeight = 0;
-    let weightedX = 0;
-    let weightedY = 0;
-
-    for (const anchor of MAP_ANCHORS) {
-        const dLat = lat - anchor.lat;
-        const dLng = lng - anchor.lng;
-        const dist = Math.sqrt(dLat * dLat + dLng * dLng);
-
-        if (dist < 0.001) {
-            return { x: anchor.x, y: anchor.y };
-        }
-
-        const weight = 1 / (dist * dist);
-        totalWeight += weight;
-        weightedX += anchor.x * weight;
-        weightedY += anchor.y * weight;
-    }
-
     return {
-        x: Math.round(weightedX / totalWeight),
-        y: Math.round(weightedY / totalWeight),
+        x: 15.68 * lng - 1666.93,
+        y: -34.17 * lat + 809.81,
     };
 }
 
-/** Convert SVG coordinates (viewBox="0 0 500 700") back to geographic lat/lng using inverse distance weighting. */
+/** 
+ * Convert SVG coordinates (viewBox="0 0 500 700") back to geographic lat/lng using the inverse linear projection.
+ */
 export function svgToLatLng(x: number, y: number): { lat: number; lng: number } {
-    let totalWeight = 0;
-    let weightedLat = 0;
-    let weightedLng = 0;
-
-    for (const anchor of MAP_ANCHORS) {
-        const dx = x - anchor.x;
-        const dy = y - anchor.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 1) {
-            return { lat: anchor.lat, lng: anchor.lng };
-        }
-
-        const weight = 1 / (dist * dist);
-        totalWeight += weight;
-        weightedLat += anchor.lat * weight;
-        weightedLng += anchor.lng * weight;
-    }
-
     return {
-        lat: Number((weightedLat / totalWeight).toFixed(6)),
-        lng: Number((weightedLng / totalWeight).toFixed(6)),
+        lat: Number(((y - 809.81) / -34.17).toFixed(6)),
+        lng: Number(((x + 1666.93) / 15.68).toFixed(6)),
     };
 }
