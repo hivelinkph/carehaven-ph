@@ -1,14 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { Mail, Phone, Heart } from "lucide-react";
+import { Mail, Phone, Heart, Building2, ShieldCheck, User } from "lucide-react";
+
+const ROLE_CONFIG = {
+  client: {
+    title: "Client Login",
+    subtitle: "Sign in to check on your loved ones",
+    icon: User,
+    redirect: "/dashboard",
+  },
+  provider: {
+    title: "Provider Login",
+    subtitle: "Sign in to manage your facility",
+    icon: Building2,
+    redirect: "/provider/dashboard",
+  },
+  admin: {
+    title: "Admin Login",
+    subtitle: "Sign in to the admin dashboard",
+    icon: ShieldCheck,
+    redirect: "/admin",
+  },
+} as const;
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role") as keyof typeof ROLE_CONFIG | null;
+  const roleConfig = roleParam && ROLE_CONFIG[roleParam] ? ROLE_CONFIG[roleParam] : ROLE_CONFIG.client;
+
   const [mode, setMode] = useState<"email" | "phone">("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -45,14 +70,18 @@ export default function LoginForm() {
       }
     }
 
-    // Redirect based on user role
+    // Redirect based on actual user role
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", (await supabase.auth.getUser()).data.user!.id)
       .single();
 
-    const destination = profile?.role === "provider" ? "/provider/dashboard" : "/dashboard";
+    const destination = profile?.role === "admin"
+      ? "/admin"
+      : profile?.role === "provider"
+      ? "/provider/dashboard"
+      : "/dashboard";
     router.push(destination);
     router.refresh();
   }
@@ -71,10 +100,10 @@ export default function LoginForm() {
             className="text-3xl font-bold text-[#2D3748] mt-6 mb-2"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            Welcome Back
+            {roleConfig.title}
           </h1>
           <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
-            Sign in to check on your loved ones
+            {roleConfig.subtitle}
           </p>
         </div>
 

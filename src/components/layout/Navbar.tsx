@@ -1,16 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Heart, User, LogIn, LogOut, LayoutDashboard, Building2, ShieldCheck } from "lucide-react";
+import { Menu, X, Heart, User, LogIn, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const loginRef = useRef<HTMLDivElement>(null);
+
+  // Close login dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (loginRef.current && !loginRef.current.contains(e.target as Node)) {
+        setLoginOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const router = useRouter();
   const supabase = createClient();
 
@@ -145,13 +158,45 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  href="/auth/login"
-                  className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors px-4 py-2"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Log In
-                </Link>
+                {/* Login Dropdown */}
+                <div className="relative" ref={loginRef}>
+                  <button
+                    onClick={() => setLoginOpen(!loginOpen)}
+                    className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors px-4 py-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Log In
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${loginOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {loginOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-[#e8e6dc] shadow-lg overflow-hidden animate-fade-in z-50">
+                      <Link
+                        href="/auth/login?role=client"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
+                        onClick={() => setLoginOpen(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        Client Login
+                      </Link>
+                      <Link
+                        href="/auth/login?role=provider"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
+                        onClick={() => setLoginOpen(false)}
+                      >
+                        <Building2 className="w-4 h-4" />
+                        Provider Login
+                      </Link>
+                      <Link
+                        href="/auth/login?role=admin"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-[#b0aea5] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
+                        onClick={() => setLoginOpen(false)}
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        Admin Login
+                      </Link>
+                    </div>
+                  )}
+                </div>
                 <Link
                   href="/auth/signup"
                   className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 hover:from-[#2DD1AC]/90 hover:to-[#2DD1AC]/70 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all"
@@ -238,16 +283,36 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <div className="flex gap-3">
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-2">Log In As</p>
                     <Link
-                      href="/auth/login"
-                      className="flex-1 text-center text-sm font-medium text-[#2D3748] border border-[#e8e6dc] py-2.5 rounded-full hover:bg-[#e8e6dc]/30 transition-all"
+                      href="/auth/login?role=client"
+                      className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
+                      onClick={() => setIsOpen(false)}
                     >
-                      Log In
+                      <User className="w-4 h-4 text-[#2DD1AC]" />
+                      Client Login
+                    </Link>
+                    <Link
+                      href="/auth/login?role=provider"
+                      className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Building2 className="w-4 h-4 text-[#2DD1AC]" />
+                      Provider Login
+                    </Link>
+                    <Link
+                      href="/auth/login?role=admin"
+                      className="flex items-center gap-3 text-sm text-[#b0aea5] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      Admin Login
                     </Link>
                     <Link
                       href="/auth/signup"
-                      className="flex-1 text-center text-sm font-semibold text-white bg-[#2DD1AC] py-2.5 rounded-full hover:bg-[#2DD1AC]/90 transition-all"
+                      className="block text-center text-sm font-semibold text-white bg-[#2DD1AC] py-2.5 rounded-full hover:bg-[#2DD1AC]/90 transition-all mt-2"
+                      onClick={() => setIsOpen(false)}
                     >
                       Sign Up
                     </Link>
