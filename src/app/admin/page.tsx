@@ -87,8 +87,7 @@ export default function AdminDashboard() {
     const matchesSearch =
       !search ||
       f.name.toLowerCase().includes(search.toLowerCase()) ||
-      f.city.toLowerCase().includes(search.toLowerCase()) ||
-      f.region.toLowerCase().includes(search.toLowerCase());
+      f.city.toLowerCase().includes(search.toLowerCase());
 
     const matchesFilter =
       filter === "all" ||
@@ -212,7 +211,6 @@ export default function AdminDashboard() {
                           <MapPin className="w-3.5 h-3.5 text-[#b0aea5]" />
                           {facility.city}
                         </div>
-                        <div className="text-xs text-[#b0aea5]">{facility.region}</div>
                       </td>
                       <td className="px-6 py-4">
                         {facility.rating ? (
@@ -246,8 +244,8 @@ export default function AdminDashboard() {
                           <button
                             onClick={() => toggleFacilityStatus(facility.id, facility.is_active)}
                             className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${facility.is_active
-                                ? "text-[#d97757] hover:bg-[#d97757]/10"
-                                : "text-[#788c5d] hover:bg-[#788c5d]/10"
+                              ? "text-[#d97757] hover:bg-[#d97757]/10"
+                              : "text-[#788c5d] hover:bg-[#788c5d]/10"
                               }`}
                           >
                             {facility.is_active ? "Deactivate" : "Approve"}

@@ -143,15 +143,7 @@ html {
   transform: translateY(-2px);
 }
 
-/* Hero video overlay */
-.hero-overlay {
-  background: linear-gradient(
-    135deg,
-    rgba(250, 249, 245, 0.92) 0%,
-    rgba(250, 249, 245, 0.78) 40%,
-    rgba(45, 209, 172, 0.15) 100%
-  );
-}
+/* Hero video overlay - removed for clear video display */
 
 /* Map region hover effect */
 .map-region {

@@ -38,19 +38,6 @@ export async function middleware(request: NextRequest) {
       url.pathname = '/auth/login';
       return NextResponse.redirect(url);
     }
-
-    // Redirect providers to their dedicated dashboard
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role === 'provider') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/provider/dashboard';
-      return NextResponse.redirect(url);
-    }
   }
 
   // Protect provider routes
@@ -103,7 +90,7 @@ export async function middleware(request: NextRequest) {
       .single();
 
     const url = request.nextUrl.clone();
-    url.pathname = profile?.role === 'provider' ? '/provider/dashboard' : '/dashboard';
+    url.pathname = profile?.role === 'provider' ? '/dashboard/provider' : profile?.role === 'admin' ? '/admin' : '/dashboard';
     return NextResponse.redirect(url);
   }
 

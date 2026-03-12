@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility } from "@/lib/types";
-import { PHILIPPINE_REGIONS, SERVICES_LIST } from "@/lib/constants";
+import { SERVICES_LIST } from "@/lib/constants";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import {
@@ -29,7 +29,6 @@ export default function EditFacilityPage() {
 
   // Form state
   const [name, setName] = useState("");
-  const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
@@ -45,10 +44,6 @@ export default function EditFacilityPage() {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newVideoUrl, setNewVideoUrl] = useState("");
 
-  const regionEntries = Object.entries(PHILIPPINE_REGIONS);
-  const selectedRegionKey = regionEntries.find(([, r]) => r.name === region)?.[0] || "";
-  const availableCities = PHILIPPINE_REGIONS[selectedRegionKey]?.majorCities || [];
-
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -60,11 +55,10 @@ export default function EditFacilityPage() {
         .eq("owner_id", user.id)
         .single();
 
-      if (!data) { router.push("/provider/dashboard"); return; }
+      if (!data) { router.push("/dashboard/provider"); return; }
 
       setFacility(data);
       setName(data.name);
-      setRegion(data.region);
       setCity(data.city);
       setAddress(data.address || "");
       setDescription(data.description || "");
@@ -121,7 +115,6 @@ export default function EditFacilityPage() {
       .from("facilities")
       .update({
         name,
-        region,
         city,
         address: address || null,
         description: description || null,
@@ -159,7 +152,7 @@ export default function EditFacilityPage() {
     <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
-          href="/provider/dashboard"
+          href="/dashboard/provider"
           className="inline-flex items-center gap-2 text-sm text-[#b0aea5] hover:text-[#2DD1AC] transition-colors mb-6"
           style={{ fontFamily: "var(--font-ui)" }}
         >
@@ -178,45 +171,7 @@ export default function EditFacilityPage() {
           <div className="glass-card p-6 space-y-5">
             <h2 className="text-lg font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>Basic Information</h2>
             <Input label="Facility Name" value={name} onChange={(e) => setName(e.target.value)} required />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-ui)" }}>Region</label>
-                <select
-                  value={selectedRegionKey}
-                  onChange={(e) => {
-                    const key = e.target.value;
-                    setRegion(PHILIPPINE_REGIONS[key]?.name || "");
-                    setCity("");
-                  }}
-                  className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-[#141413] focus:outline-none focus:border-[#2DD1AC] transition-all"
-                  style={{ fontFamily: "var(--font-body)", fontSize: "16px" }}
-                  required
-                >
-                  <option value="">Select region...</option>
-                  {regionEntries.map(([id, r]) => (
-                    <option key={id} value={id}>{r.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-ui)" }}>City</label>
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-[#141413] focus:outline-none focus:border-[#2DD1AC] transition-all"
-                  style={{ fontFamily: "var(--font-body)", fontSize: "16px" }}
-                  required
-                  disabled={!selectedRegionKey}
-                >
-                  <option value="">Select city...</option>
-                  {availableCities.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
+            <Input label="City" value={city} onChange={(e) => setCity(e.target.value)} required />
             <Input label="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
 
             <div>
@@ -255,11 +210,10 @@ export default function EditFacilityPage() {
                   key={service}
                   type="button"
                   onClick={() => toggleService(service)}
-                  className={`text-sm px-3 py-1.5 rounded-full border transition-all ${
-                    selectedServices.includes(service)
-                      ? "bg-[#2DD1AC] text-white border-[#2DD1AC]"
-                      : "bg-white text-[#2D3748] border-[#e8e6dc] hover:border-[#2DD1AC]"
-                  }`}
+                  className={`text-sm px-3 py-1.5 rounded-full border transition-all ${selectedServices.includes(service)
+                    ? "bg-[#2DD1AC] text-white border-[#2DD1AC]"
+                    : "bg-white text-[#2D3748] border-[#e8e6dc] hover:border-[#2DD1AC]"
+                    }`}
                   style={{ fontFamily: "var(--font-ui)" }}
                 >
                   {service}

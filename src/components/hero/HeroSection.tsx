@@ -5,8 +5,8 @@ import { Search, Heart, Shield } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Video Background */}
+    <section className="relative min-h-screen flex items-end overflow-hidden">
+      {/* Video Background - full, no overlay */}
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
@@ -14,44 +14,39 @@ export default function HeroSection() {
           loop
           playsInline
           poster="/assets/images/hero-poster.jpg"
-          className="w-full h-full object-cover opacity-[0.70]"
+          className="w-full h-full object-cover"
         >
           <source src="/assets/videos/herosection.mp4?v=3" type="video/mp4" />
         </video>
-        {/* Warm overlay */}
-        <div className="hero-overlay absolute inset-0" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-20 xl:px-32 pt-32 pb-20">
+      {/* Content - bottom left, no panel */}
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-40">
         <div className="max-w-2xl">
           {/* Badge */}
           <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2DD1AC]/10 border border-[#2DD1AC]/20 mb-8 animate-fade-in-up"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2DD1AC]/15 border border-[#2DD1AC]/30 mb-6 animate-fade-in-up"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <Heart className="w-4 h-4 text-[#2DD1AC]" fill="#2DD1AC" />
-            <span className="text-sm font-medium text-[#2D3748]">
+            <span className="text-sm font-medium text-white drop-shadow-md">
               Trusted by 500+ Filipino families
             </span>
           </div>
 
           {/* Headline */}
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D3748] leading-tight mb-6 animate-fade-in-up delay-100"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up delay-100"
+            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
           >
             Compassionate Care,{" "}
-            <span className="relative">
-              <span className="relative z-10 text-[#2DD1AC]">Close to Home</span>
-              <span className="absolute bottom-1 left-0 right-0 h-3 bg-[#2DD1AC]/15 rounded-sm -z-0" />
-            </span>
+            <span className="text-[#2DD1AC]">Close to Home</span>
           </h1>
 
           {/* Subtitle */}
           <p
-            className="text-lg sm:text-xl text-[#2D3748]/70 leading-relaxed mb-10 max-w-xl animate-fade-in-up delay-200"
-            style={{ fontFamily: "var(--font-body)" }}
+            className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-xl animate-fade-in-up delay-200"
+            style={{ fontFamily: "var(--font-body)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}
           >
             Find trusted assisted living facilities across the Philippines.
             Your loved ones deserve professional care in a warm, loving environment
@@ -60,7 +55,7 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div
-            className="flex flex-col sm:flex-row gap-4 mb-16 animate-fade-in-up delay-300"
+            className="flex flex-col sm:flex-row gap-4 mb-8 animate-fade-in-up delay-300"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <Link
@@ -72,33 +67,34 @@ export default function HeroSection() {
             </Link>
             <Link
               href="/auth/signup"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-[#2D3748] bg-white/70 backdrop-blur-sm border border-[#e8e6dc] rounded-full hover:bg-white hover:shadow-md transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 hover:shadow-md transition-all"
             >
               <Shield className="w-5 h-5 text-[#d97757]" />
               Get Started Free
             </Link>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap gap-8 animate-fade-in-up delay-400" style={{ fontFamily: "var(--font-ui)" }}>
+          {/* Trust Indicators - small panel */}
+          <div
+            className="inline-flex gap-8 px-6 py-4 bg-[#2D3748]/80 backdrop-blur-sm rounded-xl animate-fade-in-up delay-400"
+            style={{ fontFamily: "var(--font-ui)" }}
+          >
             {[
               { number: "120+", label: "Facilities" },
               { number: "17", label: "Regions" },
               { number: "24/7", label: "Monitoring" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-2xl font-bold text-[#2D3748]">{stat.number}</div>
-                <div className="text-xs font-medium text-[#b0aea5] uppercase tracking-wider">{stat.label}</div>
+                <div className="text-2xl font-bold text-white">{stat.number}</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Decorative Elements */}
+      {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#faf9f5] to-transparent z-10" />
-      <div className="absolute top-1/4 right-10 w-72 h-72 bg-[#2DD1AC]/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-[#d97757]/5 rounded-full blur-3xl" />
     </section>
   );
 }

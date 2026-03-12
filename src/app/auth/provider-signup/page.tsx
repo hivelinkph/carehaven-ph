@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { PHILIPPINE_REGIONS, SERVICES_LIST } from "@/lib/constants";
+import { SERVICES_LIST } from "@/lib/constants";
 import { Mail, Heart, Building2, ChevronRight } from "lucide-react";
 
 export default function ProviderSignupPage() {
@@ -24,7 +24,6 @@ export default function ProviderSignupPage() {
 
   // Step 2: Facility
   const [facilityName, setFacilityName] = useState("");
-  const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
@@ -41,10 +40,6 @@ export default function ProviderSignupPage() {
       prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]
     );
   }
-
-  const regionEntries = Object.entries(PHILIPPINE_REGIONS);
-  const selectedRegionData = regionEntries.find(([id]) => id === region)?.[1];
-  const availableCities = selectedRegionData?.majorCities || [];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,7 +87,6 @@ export default function ProviderSignupPage() {
     // 3. Create facility
     const { error: facilityError } = await supabase.from("facilities").insert({
       name: facilityName,
-      region: selectedRegionData?.name || region,
       city,
       address,
       description,
@@ -230,44 +224,7 @@ export default function ProviderSignupPage() {
 
               <Input label="Facility Name" placeholder="Name of your facility" value={facilityName} onChange={(e) => setFacilityName(e.target.value)} required />
 
-              {/* Region Dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-ui)" }}>
-                  Region
-                </label>
-                <select
-                  value={region}
-                  onChange={(e) => { setRegion(e.target.value); setCity(""); }}
-                  className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-[#141413] focus:outline-none focus:border-[#2DD1AC] transition-all"
-                  style={{ fontFamily: "var(--font-body)", fontSize: "16px" }}
-                  required
-                >
-                  <option value="">Select region...</option>
-                  {regionEntries.map(([id, r]) => (
-                    <option key={id} value={id}>{r.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* City Dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-ui)" }}>
-                  City
-                </label>
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-[#141413] focus:outline-none focus:border-[#2DD1AC] transition-all"
-                  style={{ fontFamily: "var(--font-body)", fontSize: "16px" }}
-                  required
-                  disabled={!region}
-                >
-                  <option value="">Select city...</option>
-                  {availableCities.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
+              <Input label="City" placeholder="e.g. Quezon City" value={city} onChange={(e) => setCity(e.target.value)} required />
 
               <Input label="Address" placeholder="Street address" value={address} onChange={(e) => setAddress(e.target.value)} />
 

@@ -13,8 +13,16 @@ export default function Navbar() {
   const [signupOpen, setSignupOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
+
+  // Toggle navbar background on scroll
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -68,23 +76,23 @@ export default function Navbar() {
   const dashboardLink = profile?.role === "admin"
     ? "/admin"
     : profile?.role === "provider"
-    ? "/provider/dashboard"
-    : "/dashboard";
+      ? "/dashboard/provider"
+      : "/dashboard";
 
   const dashboardLabel = profile?.role === "admin"
     ? "Admin"
     : profile?.role === "provider"
-    ? "My Facility"
-    : "Dashboard";
+      ? "My Facility"
+      : "Dashboard";
 
   const DashboardIcon = profile?.role === "admin"
     ? ShieldCheck
     : profile?.role === "provider"
-    ? Building2
-    : LayoutDashboard;
+      ? Building2
+      : LayoutDashboard;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#e8e6dc]/60">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/80 backdrop-blur-md border-b border-[#e8e6dc]/60 shadow-sm" : "bg-black/30 backdrop-blur-sm border-b border-transparent"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -94,7 +102,7 @@ export default function Navbar() {
             </div>
             <div>
               <span
-                className="text-xl font-bold text-[#2D3748] tracking-tight"
+                className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled ? "text-[#2D3748]" : "text-white"}`}
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 CareHaven
@@ -109,25 +117,25 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-8" style={{ fontFamily: "var(--font-ui)" }}>
             <Link
               href="/#facilities-map"
-              className="text-sm font-medium text-[#2D3748]/70 hover:text-[#2DD1AC] transition-colors"
+              className={`text-sm font-medium hover:text-[#2DD1AC] transition-colors ${isScrolled ? "text-[#2D3748]/70" : "text-white/90"}`}
             >
               Find Facilities
             </Link>
             <Link
               href="/#services"
-              className="text-sm font-medium text-[#2D3748]/70 hover:text-[#2DD1AC] transition-colors"
+              className={`text-sm font-medium hover:text-[#2DD1AC] transition-colors ${isScrolled ? "text-[#2D3748]/70" : "text-white/90"}`}
             >
               Services
             </Link>
             <Link
               href="/#about"
-              className="text-sm font-medium text-[#2D3748]/70 hover:text-[#2DD1AC] transition-colors"
+              className={`text-sm font-medium hover:text-[#2DD1AC] transition-colors ${isScrolled ? "text-[#2D3748]/70" : "text-white/90"}`}
             >
               About
             </Link>
             <Link
               href="/facilities"
-              className="text-sm font-medium text-[#2D3748]/70 hover:text-[#2DD1AC] transition-colors"
+              className={`text-sm font-medium hover:text-[#2DD1AC] transition-colors ${isScrolled ? "text-[#2D3748]/70" : "text-white/90"}`}
             >
               All Facilities
             </Link>
@@ -139,7 +147,7 @@ export default function Navbar() {
               <>
                 <Link
                   href={dashboardLink}
-                  className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors px-4 py-2"
+                  className={`flex items-center gap-2 text-sm font-medium hover:text-[#2DD1AC] transition-colors px-4 py-2 ${isScrolled ? "text-[#2D3748]" : "text-white"}`}
                 >
                   <DashboardIcon className="w-4 h-4" />
                   {dashboardLabel}
@@ -147,7 +155,7 @@ export default function Navbar() {
                 {profile?.role === "provider" && (
                   <Link
                     href="/dashboard"
-                    className="flex items-center gap-2 text-sm font-medium text-[#2D3748]/60 hover:text-[#2DD1AC] transition-colors px-3 py-2"
+                    className={`flex items-center gap-2 text-sm font-medium hover:text-[#2DD1AC] transition-colors px-3 py-2 ${isScrolled ? "text-[#2D3748]/60" : "text-white/70"}`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     Patient Hub
@@ -167,7 +175,7 @@ export default function Navbar() {
                 <div className="relative" ref={loginRef}>
                   <button
                     onClick={() => { setLoginOpen(!loginOpen); setSignupOpen(false); }}
-                    className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors px-4 py-2"
+                    className={`flex items-center gap-2 text-sm font-medium hover:text-[#2DD1AC] transition-colors px-4 py-2 ${isScrolled ? "text-[#2D3748]" : "text-white"}`}
                   >
                     <LogIn className="w-4 h-4" />
                     Log In
@@ -243,7 +251,7 @@ export default function Navbar() {
             className="md:hidden p-2 rounded-lg hover:bg-[#e8e6dc]/50 transition-colors"
             aria-label="Toggle menu"
           >
-            {isOpen ? <X className="w-6 h-6 text-[#2D3748]" /> : <Menu className="w-6 h-6 text-[#2D3748]" />}
+            {isOpen ? <X className={`w-6 h-6 ${isScrolled ? "text-[#2D3748]" : "text-white"}`} /> : <Menu className={`w-6 h-6 ${isScrolled ? "text-[#2D3748]" : "text-white"}`} />}
           </button>
         </div>
 

@@ -99,7 +99,7 @@ export function ProviderDashboard({ profile }: { profile: Profile }) {
                                         <h3 className="text-lg font-bold text-white truncate drop-shadow-md" style={{ fontFamily: "var(--font-heading)" }}>
                                             {facility.name}
                                         </h3>
-                                        <p className="text-sm text-white/90 drop-shadow-md" style={{ fontFamily: "var(--font-ui)" }}>{facility.city}, {facility.region}</p>
+                                        <p className="text-sm text-white/90 drop-shadow-md" style={{ fontFamily: "var(--font-ui)" }}>{facility.city}</p>
                                     </div>
                                 </div>
 

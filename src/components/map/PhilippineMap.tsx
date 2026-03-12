@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MapPin, Building2, ChevronRight, Heart, Star } from "lucide-react";
+import { MapPin, ChevronRight, Heart } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility, Location } from "@/lib/types";
@@ -93,8 +93,7 @@ export default function PhilippineMap() {
   }
 
   const selectedFacility = facilities.find((f) => f.id === selectedFacilityId);
-  const activeLocationObj = locations.find((l) => l.name === (selectedLocationName || selectedFacility?.city));
-  const regionLabel = activeLocationObj ? activeLocationObj.region : null;
+  const activeCityName = selectedLocationName || selectedFacility?.city || "";
 
   return (
     <section id="facilities-map" className="py-20 lg:py-28 bg-[#faf9f5]">
@@ -259,13 +258,13 @@ export default function PhilippineMap() {
                 </select>
               </div>
 
-              {/* Region / selection info badge */}
-              {regionLabel && (
+              {/* Active city badge with clear */}
+              {activeCityName && (
                 <div className="flex items-center justify-between mb-4 px-3 py-2 bg-[#2DD1AC]/5 rounded-xl border border-[#2DD1AC]/15">
                   <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#2DD1AC]" />
+                    <MapPin className="w-4 h-4 text-[#2DD1AC]" />
                     <span className="text-sm font-semibold text-[#2D3748]" style={{ fontFamily: "var(--font-ui)" }}>
-                      {regionLabel}
+                      {activeCityName}
                     </span>
                   </div>
                   <button
@@ -278,24 +277,18 @@ export default function PhilippineMap() {
                 </div>
               )}
 
-              {/* Facility Rankings List */}
+              {/* Facility List */}
               <div>
-                <h3
-                  className="text-lg font-bold text-[#2D3748] mb-4"
-                  style={{ fontFamily: "var(--font-heading)" }}
-                >
-                  {regionLabel ? "Regional" : "National"} Rankings
-                </h3>
                 <p className="text-xs text-[#b0aea5] mb-4" style={{ fontFamily: "var(--font-ui)" }}>
-                  {regionLabel
-                    ? `Facilities in ${regionLabel} sorted alphabetically`
-                    : "Top facilities across all regions"}
+                  {activeCityName
+                    ? `Facilities in ${activeCityName} — sorted alphabetically`
+                    : "All facilities — sorted alphabetically"}
                 </p>
 
                 <div ref={listRef} className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
                   {filteredFacilities.length === 0 ? (
                     <div className="text-center py-8">
-                      <Building2 className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
+                      <MapPin className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
                       <p className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
                         {facilities.length === 0
                           ? "No facilities listed yet"
@@ -303,24 +296,16 @@ export default function PhilippineMap() {
                       </p>
                     </div>
                   ) : (
-                    filteredFacilities.map((facility, index) => (
+                    filteredFacilities.map((facility) => (
                       <Link
                         key={facility.id}
                         id={`facility-${facility.id}`}
                         href={`/facilities/${facility.id}`}
-                        className={`flex items-center gap-4 p-3 rounded-xl border transition-all group ${selectedFacilityId === facility.id
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all group ${selectedFacilityId === facility.id
                           ? "bg-[#2DD1AC]/10 border-[#2DD1AC]/30"
                           : "hover:bg-[#2DD1AC]/5 border-transparent hover:border-[#2DD1AC]/15"
                           }`}
                       >
-                        {/* Rank Number */}
-                        <span
-                          className="text-2xl font-bold text-[#2DD1AC] w-8 text-right shrink-0"
-                          style={{ fontFamily: "var(--font-heading)" }}
-                        >
-                          {index + 1}
-                        </span>
-
                         {/* Facility Info */}
                         <div className="flex-1 min-w-0">
                           <h4
@@ -335,25 +320,7 @@ export default function PhilippineMap() {
                           </div>
                         </div>
 
-                        {/* Rating */}
-                        {facility.rating ? (
-                          <div className="text-right shrink-0">
-                            <div className="flex items-center gap-1">
-                              <Star className="w-3.5 h-3.5 text-[#d97757]" fill="#d97757" />
-                              <span
-                                className="text-lg font-bold text-[#2DD1AC]"
-                                style={{ fontFamily: "var(--font-heading)" }}
-                              >
-                                {facility.rating}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-[#b0aea5] uppercase tracking-wider" style={{ fontFamily: "var(--font-ui)" }}>
-                              Score
-                            </span>
-                          </div>
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-[#b0aea5] group-hover:text-[#2DD1AC] shrink-0" />
-                        )}
+                        <ChevronRight className="w-4 h-4 text-[#b0aea5] group-hover:text-[#2DD1AC] shrink-0" />
                       </Link>
                     ))
                   )}

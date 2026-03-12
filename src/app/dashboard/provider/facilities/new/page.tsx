@@ -7,7 +7,7 @@ export default function NewFacilityPage() {
         <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link
-                    href="/dashboard"
+                    href="/dashboard/provider"
                     className="inline-flex items-center gap-2 text-sm text-[#b0aea5] hover:text-[#2DD1AC] mb-6 transition-colors"
                     style={{ fontFamily: "var(--font-ui)" }}
                 >

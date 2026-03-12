@@ -19,6 +19,11 @@ import {
   ChevronRight,
   Play,
   X,
+  MessageCircle,
+  Send,
+  Facebook,
+  Instagram,
+  Linkedin,
 } from "lucide-react";
 
 export default function FacilityDetailPage() {
@@ -124,9 +129,8 @@ export default function FacilityDetailPage() {
                       <button
                         key={i}
                         onClick={() => setActiveImageIndex(i)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          i === activeImageIndex ? "bg-white w-6" : "bg-white/50"
-                        }`}
+                        className={`w-2 h-2 rounded-full transition-all ${i === activeImageIndex ? "bg-white w-6" : "bg-white/50"
+                          }`}
                       />
                     ))}
                   </div>
@@ -139,9 +143,8 @@ export default function FacilityDetailPage() {
                     <button
                       key={i}
                       onClick={() => setActiveImageIndex(i)}
-                      className={`w-20 h-14 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
-                        i === activeImageIndex ? "border-[#2DD1AC] opacity-100" : "border-transparent opacity-60 hover:opacity-80"
-                      }`}
+                      className={`w-20 h-14 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${i === activeImageIndex ? "border-[#2DD1AC] opacity-100" : "border-transparent opacity-60 hover:opacity-80"
+                        }`}
                     >
                       <img src={url} alt="" className="w-full h-full object-cover" />
                     </button>
@@ -168,7 +171,7 @@ export default function FacilityDetailPage() {
                   <div className="flex items-center gap-4 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
                     <span className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
-                      {facility.city}, {facility.region}
+                      {facility.city}
                     </span>
                     {facility.rating && (
                       <span className="flex items-center gap-1">
@@ -308,13 +311,13 @@ export default function FacilityDetailPage() {
                 {facility.phone && (
                   <div className="flex items-center gap-3 text-[#2D3748]">
                     <Phone className="w-4 h-4 text-[#2DD1AC] shrink-0" />
-                    <span>{facility.phone}</span>
+                    <a href={`tel:${facility.phone}`} className="hover:text-[#2DD1AC] transition-colors">{facility.phone}</a>
                   </div>
                 )}
                 {facility.email && (
                   <div className="flex items-center gap-3 text-[#2D3748]">
                     <Mail className="w-4 h-4 text-[#2DD1AC] shrink-0" />
-                    <span>{facility.email}</span>
+                    <a href={`mailto:${facility.email}`} className="hover:text-[#2DD1AC] transition-colors">{facility.email}</a>
                   </div>
                 )}
                 {facility.website && (
@@ -326,23 +329,133 @@ export default function FacilityDetailPage() {
                   </div>
                 )}
               </div>
+
+              {/* Social & Messaging Icons */}
+              {(facility.phone || facility.email || facility.messenger_url || facility.whatsapp || facility.viber || facility.telegram || facility.facebook_url || facility.instagram_url || facility.linkedin_url) && (
+                <div className="mt-5 pt-5 border-t border-[#e8e6dc]/50">
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    {facility.phone && (
+                      <a
+                        href={`tel:${facility.phone}`}
+                        title="Call"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#2DD1AC" }}
+                      >
+                        <Phone className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.email && (
+                      <a
+                        href={`mailto:${facility.email}`}
+                        title="Email"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#EA4335" }}
+                      >
+                        <Mail className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.messenger_url && (
+                      <a
+                        href={facility.messenger_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Messenger"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#0084FF" }}
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.whatsapp && (
+                      <a
+                        href={`https://wa.me/${facility.whatsapp.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="WhatsApp"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#25D366" }}
+                      >
+                        <Phone className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.viber && (
+                      <a
+                        href={`viber://chat?number=${facility.viber.replace(/[^0-9+]/g, "")}`}
+                        title="Viber"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#7360F2" }}
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.telegram && (
+                      <a
+                        href={facility.telegram.startsWith("@") ? `https://t.me/${facility.telegram.slice(1)}` : `https://t.me/${facility.telegram.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Telegram"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#0088CC" }}
+                      >
+                        <Send className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.facebook_url && (
+                      <a
+                        href={facility.facebook_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Facebook"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#1877F2" }}
+                      >
+                        <Facebook className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.instagram_url && (
+                      <a
+                        href={facility.instagram_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Instagram"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#E4405F" }}
+                      >
+                        <Instagram className="w-5 h-5" />
+                      </a>
+                    )}
+                    {facility.linkedin_url && (
+                      <a
+                        href={facility.linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="LinkedIn"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 hover:shadow-lg"
+                        style={{ backgroundColor: "#0A66C2" }}
+                      >
+                        <Linkedin className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Video Modal */}
+      {/* Video Modal - Full Screen */}
       {showVideoModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setShowVideoModal(null)}>
-          <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" onClick={() => setShowVideoModal(null)}>
+          <div className="relative w-full h-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowVideoModal(null)}
-              className="absolute -top-12 right-0 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
-            <div className="aspect-video rounded-2xl overflow-hidden bg-black">
-              <video src={showVideoModal} controls autoPlay className="w-full h-full" />
+            <div className="w-full h-full flex items-center justify-center bg-black">
+              <video src={showVideoModal} controls autoPlay className="w-full h-full object-contain" />
             </div>
           </div>
         </div>

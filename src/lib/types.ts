@@ -44,7 +44,7 @@ export interface Facility {
   id: string;
   name: string;
   description: string | null;
-  region: string;
+  region: string | null;
   city: string;
   address: string | null;
   phone: string | null;
@@ -61,6 +61,13 @@ export interface Facility {
   rating: number | null;
   latitude: number | null;
   longitude: number | null;
+  messenger_url: string | null;
+  whatsapp: string | null;
+  viber: string | null;
+  telegram: string | null;
+  facebook_url: string | null;
+  instagram_url: string | null;
+  linkedin_url: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

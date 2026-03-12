@@ -38,9 +38,9 @@ export default function GalleryCarousel() {
                     className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
                     style={{ fontFamily: "var(--font-heading)" }}
                 >
-                    A Glimpse Into Our <span className="text-[#2DD1AC]">Facilities</span>
+                    <span className="text-[#2DD1AC]">A Glimpse Into Our Facilities</span>
                 </h2>
-                <p className="text-lg text-[#b0aea5] max-w-2xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
+                <p className="text-lg text-gray-300 max-w-2xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
                     Experience the comfort, warmth, and state-of-the-art care environments that make our assisted living homes truly special.
                 </p>
             </div>

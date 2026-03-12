@@ -167,7 +167,7 @@ export default function AdminFacilityReviewPage() {
                 {facility.name}
               </h2>
               <div className="flex flex-wrap items-center gap-4 text-sm text-[#b0aea5] mb-4" style={{ fontFamily: "var(--font-ui)" }}>
-                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{facility.city}, {facility.region}</span>
+                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{facility.city}</span>
                 {facility.rating && <span className="flex items-center gap-1"><Star className="w-4 h-4 text-[#d97757]" fill="#d97757" />{facility.rating}</span>}
                 {facility.capacity && <span className="flex items-center gap-1"><Users className="w-4 h-4" />{facility.capacity} beds</span>}
               </div>

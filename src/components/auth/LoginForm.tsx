@@ -19,7 +19,7 @@ const ROLE_CONFIG = {
     title: "Provider Login",
     subtitle: "Sign in to manage your facility",
     icon: Building2,
-    redirect: "/provider/dashboard",
+    redirect: "/dashboard/provider",
   },
   admin: {
     title: "Admin Login",
@@ -80,8 +80,8 @@ export default function LoginForm() {
     const destination = profile?.role === "admin"
       ? "/admin"
       : profile?.role === "provider"
-      ? "/provider/dashboard"
-      : "/dashboard";
+        ? "/dashboard/provider"
+        : "/dashboard";
     router.push(destination);
     router.refresh();
   }
@@ -114,22 +114,20 @@ export default function LoginForm() {
         >
           <button
             onClick={() => setMode("email")}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              mode === "email"
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "email"
                 ? "bg-white text-[#2D3748] shadow-sm"
                 : "text-[#b0aea5] hover:text-[#2D3748]"
-            }`}
+              }`}
           >
             <Mail className="w-4 h-4" />
             Email
           </button>
           <button
             onClick={() => setMode("phone")}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              mode === "phone"
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "phone"
                 ? "bg-white text-[#2D3748] shadow-sm"
                 : "text-[#b0aea5] hover:text-[#2D3748]"
-            }`}
+              }`}
           >
             <Phone className="w-4 h-4" />
             Phone
