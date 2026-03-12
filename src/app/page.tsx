@@ -1,4 +1,5 @@
 import HeroSection from "@/components/hero/HeroSection";
+import ProvidersMarquee from "@/components/home/ProvidersMarquee";
 import GalleryCarousel from "@/components/hero/GalleryCarousel";
 import PhilippineMap from "@/components/map/PhilippineMap";
 import {
@@ -88,6 +89,9 @@ export default function Home() {
     <>
       {/* Hero */}
       <HeroSection />
+
+      {/* Providers Marquee */}
+      <ProvidersMarquee />
 
       {/* Gallery Carousel */}
       <GalleryCarousel />
