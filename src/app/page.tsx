@@ -65,7 +65,7 @@ const TESTIMONIALS = [
     name: "Maria Santos",
     location: "Quezon City",
     quote:
-      "CareHaven helped us find the perfect facility for our Lola. The daily health updates give us peace of mind even though we live abroad.",
+      "SeniorLiving PH helped us find the perfect facility for our Lola. The daily health updates give us peace of mind even though we live abroad.",
     rating: 5,
   },
   {
@@ -79,7 +79,7 @@ const TESTIMONIALS = [
     name: "Elena Reyes",
     location: "Davao City",
     quote:
-      "Finding a compassionate care home for my mother was so stressful until we found CareHaven. The Philippine map feature made it so easy.",
+      "Finding a compassionate care home for my mother was so stressful until we found SeniorLiving PH. The Philippine map feature made it so easy.",
     rating: 5,
   },
 ];
@@ -151,65 +151,82 @@ export default function Home() {
       {/* Philippine Map */}
       <PhilippineMap />
 
-      {/* About / Why CareHaven */}
+      {/* About SeniorLiving PH */}
       <section id="about" className="py-20 lg:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6a9bcc]/10 border border-[#6a9bcc]/20 mb-6"
+              style={{ fontFamily: "var(--font-ui)" }}
+            >
+              <Heart className="w-4 h-4 text-[#6a9bcc]" fill="#6a9bcc" />
+              <span className="text-sm font-medium text-[#2D3748]">About Us</span>
+            </div>
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3748] mb-6"
+              style={{ fontFamily: "var(--font-heading)" }}
+            >
+              About <span className="text-[#6a9bcc]">SeniorLiving PH</span>
+            </h2>
+            <p className="text-lg text-[#b0aea5] leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
+              SeniorLiving PH is a trusted platform that helps Filipino families find the right assisted living and senior care options for their loved ones. Our mission is simple: make the search for quality senior care easier, more transparent, and less stressful for families.
+            </p>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-16">
+            {/* Challenge & Solution */}
+            <div className="bg-[#faf9f5] rounded-3xl p-8 sm:p-10 lg:p-12 border border-[#e8e6dc]/50">
+              <p className="text-lg text-[#2D3748] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
+                Finding the right care environment can be overwhelming. Families often struggle to compare facilities, understand pricing, or determine which services best meet their loved one&apos;s needs. SeniorLiving PH was created to simplify this process by connecting families with reputable assisted living communities and senior care providers across the Philippines.
+              </p>
+            </div>
+
+            {/* How Matching Works */}
             <div>
-              <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6a9bcc]/10 border border-[#6a9bcc]/20 mb-6"
-                style={{ fontFamily: "var(--font-ui)" }}
-              >
-                <Heart className="w-4 h-4 text-[#6a9bcc]" fill="#6a9bcc" />
-                <span className="text-sm font-medium text-[#2D3748]">Why CareHaven</span>
-              </div>
-              <h2
-                className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-6"
+              <h3
+                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                Because Your Loved Ones Deserve{" "}
-                <span className="text-[#6a9bcc]">the Very Best</span>
-              </h2>
-              <p className="text-lg text-[#b0aea5] leading-relaxed mb-8" style={{ fontFamily: "var(--font-body)" }}>
-                We understand how difficult it is to entrust the care of a parent, grandparent,
-                or loved one to someone else. That&apos;s why CareHaven PH was built — to give
-                Filipino families transparency, trust, and peace of mind.
+                How Our Matching Process{" "}
+                <span className="text-[#2DD1AC]">Works</span>
+              </h3>
+              <p className="text-lg text-[#b0aea5] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
+                Our platform uses a neutral matching process designed to prioritize the needs of seniors and their families. When families reach out, we learn about their situation — such as care needs, location preferences, budget, and lifestyle considerations. Based on this information, we present suitable assisted living and senior care options from our network of trusted facility partners.
               </p>
-              <div className="space-y-4">
-                {[
-                  "Every facility verified for quality and safety",
-                  "Daily health reports sent directly to your dashboard",
-                  "Licensed Filipino caregivers with genuine compassion",
-                  "Transparent pricing with no hidden fees",
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#2DD1AC]/10 flex items-center justify-center mt-0.5 shrink-0">
-                      <div className="w-2 h-2 rounded-full bg-[#2DD1AC]" />
-                    </div>
-                    <span className="text-[#2D3748]" style={{ fontFamily: "var(--font-body)" }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+                Families can then review, compare, and connect directly with these providers to explore the best fit for their loved ones.
+              </p>
             </div>
-            <div className="relative">
-              <div className="aspect-[4/3] rounded-3xl bg-gradient-to-br from-[#e8e6dc]/30 to-[#2DD1AC]/5 border border-[#e8e6dc]/50 flex items-center justify-center overflow-hidden">
-                <div className="text-center p-8">
-                  <div className="w-20 h-20 rounded-2xl bg-[#2DD1AC]/10 flex items-center justify-center mx-auto mb-4">
-                    <Heart className="w-10 h-10 text-[#2DD1AC]" fill="#2DD1AC" />
-                  </div>
-                  <p className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-                    Place your facility image here
-                  </p>
-                  <p className="text-xs text-[#b0aea5]/60 mt-1" style={{ fontFamily: "var(--font-ui)" }}>
-                    /public/assets/images/
-                  </p>
-                </div>
-              </div>
-              {/* Decorative */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#2DD1AC]/10 rounded-full blur-2xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#d97757]/10 rounded-full blur-2xl" />
+
+            {/* Always Free */}
+            <div className="bg-gradient-to-br from-[#2DD1AC]/5 to-[#6a9bcc]/5 rounded-3xl p-8 sm:p-10 lg:p-12 border border-[#2DD1AC]/15">
+              <h3
+                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Always <span className="text-[#2DD1AC]">Free</span> for Families
+              </h3>
+              <p className="text-lg text-[#b0aea5] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
+                SeniorLiving PH is completely free for families seeking assisted living options. There are no consultation fees, no referral fees, and no hidden charges for using our service.
+              </p>
+              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+                Our platform is supported by our partner assisted living communities and care providers, who pay a referral or marketing fee when families choose their facilities. This allows us to maintain our service without adding financial burden to families during an already challenging decision-making process.
+              </p>
+            </div>
+
+            {/* Our Commitment */}
+            <div>
+              <h3
+                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Our <span className="text-[#d97757]">Commitment</span>
+              </h3>
+              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+                We are committed to helping Filipino families make informed and confident decisions about senior care. By providing clear information, trusted facility connections, and a supportive matching process, SeniorLiving PH aims to make the journey to finding the right assisted living community simpler and more reassuring.
+              </p>
             </div>
           </div>
         </div>
@@ -275,7 +292,7 @@ export default function Home() {
             className="text-lg text-white/60 max-w-2xl mx-auto mb-10"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            Join thousands of Filipino families who trust CareHaven PH to help
+            Join thousands of Filipino families who trust SeniorLiving PH to help
             them find compassionate, professional care for their loved ones.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center" style={{ fontFamily: "var(--font-ui)" }}>

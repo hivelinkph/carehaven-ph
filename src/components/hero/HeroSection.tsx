@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Heart, Shield } from "lucide-react";
+import { Search, Home } from "lucide-react";
+import FloatingNav from "@/components/layout/FloatingNav";
 
 export default function HeroSection() {
   return (
@@ -20,32 +21,24 @@ export default function HeroSection() {
         </video>
       </div>
 
+      {/* Floating Nav - buttons over video */}
+      <FloatingNav />
+
       {/* Content - bottom left, no panel */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-40">
         <div className="max-w-2xl">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2DD1AC]/15 border border-[#2DD1AC]/30 mb-6 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            <Heart className="w-4 h-4 text-[#2DD1AC]" fill="#2DD1AC" />
-            <span className="text-sm font-medium text-white drop-shadow-md">
-              Trusted by 500+ Filipino families
-            </span>
-          </div>
-
           {/* Headline */}
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up delay-100"
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up"
             style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
           >
-            Compassionate Care,{" "}
-            <span className="text-[#2DD1AC]">Close to Home</span>
+            Find the Perfect Home for{" "}
+            <span className="text-[#2DD1AC]">Your Loved One</span>
           </h1>
 
           {/* Subtitle */}
           <p
-            className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-xl animate-fade-in-up delay-200"
+            className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-xl animate-fade-in-up delay-100"
             style={{ fontFamily: "var(--font-body)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}
           >
             Find trusted assisted living facilities across the Philippines.
@@ -55,7 +48,7 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div
-            className="flex flex-col sm:flex-row gap-4 mb-8 animate-fade-in-up delay-300"
+            className="flex flex-col sm:flex-row gap-4 mb-8 animate-fade-in-up delay-200"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <Link
@@ -66,17 +59,17 @@ export default function HeroSection() {
               Find a Facility
             </Link>
             <Link
-              href="/auth/signup"
+              href="/facilities"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 hover:shadow-md transition-all"
             >
-              <Shield className="w-5 h-5 text-[#d97757]" />
-              Get Started Free
+              <Home className="w-5 h-5 text-[#d97757]" />
+              Find a Home
             </Link>
           </div>
 
           {/* Trust Indicators - small panel */}
           <div
-            className="inline-flex gap-8 px-6 py-4 bg-[#2D3748]/80 backdrop-blur-sm rounded-xl animate-fade-in-up delay-400"
+            className="inline-flex gap-8 px-6 py-4 bg-[#2D3748]/80 backdrop-blur-sm rounded-xl animate-fade-in-up delay-300"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             {[

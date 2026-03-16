@@ -17,7 +17,7 @@ export default function Footer() {
                 className="text-xl font-bold text-white tracking-tight"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                CareHaven <span className="text-[#2DD1AC]">PH</span>
+                SeniorLiving <span className="text-[#2DD1AC]">PH</span>
               </span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
@@ -40,7 +40,7 @@ export default function Footer() {
                 { label: "Find Facilities", href: "/facilities" },
                 { label: "Browse by Region", href: "/#facilities-map" },
                 { label: "Our Services", href: "/#services" },
-                { label: "About CareHaven", href: "/#about" },
+                { label: "About SeniorLiving PH", href: "/#about" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-white/60 hover:text-[#2DD1AC] transition-colors">
@@ -80,7 +80,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 shrink-0 text-[#2DD1AC]" />
-                <span>hello@carehaven.ph</span>
+                <span>hello@seniorliving.ph</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 shrink-0 text-[#2DD1AC]" />
@@ -98,7 +98,7 @@ export default function Footer() {
           style={{ fontFamily: "var(--font-ui)" }}
         >
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} CareHaven PH. All rights reserved.
+            &copy; {new Date().getFullYear()} SeniorLiving PH. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-white/40">
             <Link href="#" className="hover:text-white/70 transition-colors">Privacy Policy</Link>

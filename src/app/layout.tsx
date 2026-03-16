@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora, Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 const playfair = Playfair_Display({
@@ -26,7 +25,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "CareHaven PH | Compassionate Assisted Living in the Philippines",
+  title: "SeniorLiving PH | Find the Perfect Home for Your Loved One",
   description:
     "Find trusted assisted living facilities across the Philippines. Browse by region, manage patient profiles, and track daily health monitoring — all in one place.",
   keywords: [
@@ -49,7 +48,6 @@ export default function RootLayout({
         className={`${playfair.variable} ${lora.variable} ${poppins.variable} antialiased`}
         style={{ fontFamily: "var(--font-body)" }}
       >
-        <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />
       </body>
