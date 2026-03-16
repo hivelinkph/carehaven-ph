@@ -104,6 +104,12 @@ export default function FloatingNav() {
 
         {/* Desktop Floating Buttons */}
         <div className="hidden md:flex items-center gap-3" style={{ fontFamily: "var(--font-ui)" }}>
+          <Link
+            href="/#about"
+            className="text-sm font-medium text-white/90 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/20 transition-all"
+          >
+            About Us
+          </Link>
           {session ? (
             <>
               <Link

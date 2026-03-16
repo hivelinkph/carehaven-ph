@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Home } from "lucide-react";
+import { Search } from "lucide-react";
 import FloatingNav from "@/components/layout/FloatingNav";
 
 export default function HeroSection() {
@@ -33,7 +33,7 @@ export default function HeroSection() {
             style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
           >
             Find the Perfect Home for{" "}
-            <span className="text-[#2DD1AC]">Your Loved One</span>
+            <span className="text-white">Your Loved One</span>
           </h1>
 
           {/* Subtitle */}
@@ -56,33 +56,10 @@ export default function HeroSection() {
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 rounded-full shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:shadow-[#2DD1AC]/30 hover:-translate-y-0.5 transition-all"
             >
               <Search className="w-5 h-5" />
-              Find a Facility
-            </Link>
-            <Link
-              href="/facilities"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border border-white/20 rounded-full hover:bg-white/20 hover:shadow-md transition-all"
-            >
-              <Home className="w-5 h-5 text-[#d97757]" />
               Find a Home
             </Link>
           </div>
 
-          {/* Trust Indicators - small panel */}
-          <div
-            className="inline-flex gap-8 px-6 py-4 bg-[#2D3748]/80 backdrop-blur-sm rounded-xl animate-fade-in-up delay-300"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            {[
-              { number: "120+", label: "Facilities" },
-              { number: "17", label: "Regions" },
-              { number: "24/7", label: "Monitoring" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-2xl font-bold text-white">{stat.number}</div>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">{stat.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
