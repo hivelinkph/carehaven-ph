@@ -106,7 +106,7 @@ export default function FloatingNav() {
         <div className="hidden md:flex items-center gap-3" style={{ fontFamily: "var(--font-ui)" }}>
           <Link
             href="/#about"
-            className="text-sm font-medium text-white/90 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/20 transition-all"
+            className="text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
           >
             About Us
           </Link>
@@ -114,7 +114,7 @@ export default function FloatingNav() {
             <>
               <Link
                 href={dashboardLink}
-                className="flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/20 transition-all"
+                className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
               >
                 <DashboardIcon className="w-4 h-4" />
                 {dashboardLabel}
@@ -122,7 +122,7 @@ export default function FloatingNav() {
               {profile?.role === "provider" && (
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/20 transition-all"
+                  className="flex items-center gap-2 text-sm font-medium text-[#2D3748]/70 hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   Patient Hub
@@ -142,7 +142,7 @@ export default function FloatingNav() {
               <div className="relative" ref={loginRef}>
                 <button
                   onClick={() => { setLoginOpen(!loginOpen); setSignupOpen(false); }}
-                  className="flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/20 transition-all"
+                  className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
                 >
                   <LogIn className="w-4 h-4" />
                   Log In

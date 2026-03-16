@@ -24,8 +24,8 @@ export default function HeroSection() {
       {/* Floating Nav - buttons over video */}
       <FloatingNav />
 
-      {/* Content - bottom left, no panel */}
-      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-40">
+      {/* Content - bottom left */}
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-16 sm:pb-20">
         <div className="max-w-2xl">
           {/* Headline */}
           <h1
@@ -33,7 +33,7 @@ export default function HeroSection() {
             style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
           >
             Find the Perfect Home for{" "}
-            <span className="text-white">Your Loved One</span>
+            <span className="text-[#2DD1AC]">Your Loved One</span>
           </h1>
 
           {/* Subtitle */}
