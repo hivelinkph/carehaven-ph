@@ -1,15 +1,31 @@
 "use client";
 
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Building2 } from "lucide-react";
 import FloatingNav from "@/components/layout/FloatingNav";
+import SearchPanel from "@/components/hero/SearchPanel";
 
 export default function HeroSection() {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleOpenSearch = useCallback(() => {
+    setSearchOpen(true);
+    videoRef.current?.pause();
+  }, []);
+
+  const handleCloseSearch = useCallback(() => {
+    setSearchOpen(false);
+    videoRef.current?.play();
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-end overflow-hidden">
       {/* Video Background - full, no overlay */}
       <div className="absolute inset-0 z-0">
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
@@ -19,6 +35,13 @@ export default function HeroSection() {
         >
           <source src="/assets/videos/herosection.mp4?v=3" type="video/mp4" />
         </video>
+        {/* Darken overlay when search is open */}
+        {searchOpen && (
+          <div
+            className="absolute inset-0 bg-black/40 transition-opacity duration-300"
+            onClick={handleCloseSearch}
+          />
+        )}
       </div>
 
       {/* Floating Nav - buttons over video */}
@@ -58,10 +81,20 @@ export default function HeroSection() {
               <Search className="w-5 h-5" />
               Find a Home
             </Link>
+            <button
+              onClick={handleOpenSearch}
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-[#2D3748] bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            >
+              <Building2 className="w-5 h-5 text-[#d97757]" />
+              Search Facilities
+            </button>
           </div>
 
         </div>
       </div>
+
+      {/* Search Panel - slides in from right */}
+      {searchOpen && <SearchPanel onClose={handleCloseSearch} />}
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#faf9f5] to-transparent z-10" />
