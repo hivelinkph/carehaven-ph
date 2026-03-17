@@ -106,13 +106,13 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
   }, [searchQuery, locationsWithCounts]);
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-full sm:w-[520px] z-30 flex flex-col animate-slide-in-right">
+    <div className="absolute right-0 top-0 bottom-0 w-full md:w-[55%] lg:w-[50%] z-30 flex flex-col animate-slide-in-right">
       {/* Panel */}
       <div className="h-full bg-white/95 backdrop-blur-xl shadow-2xl overflow-y-auto">
-        {/* Close button */}
+        {/* Header */}
         <div className="sticky top-0 bg-white/95 backdrop-blur-xl z-10 border-b border-[#e8e6dc]/50">
           {/* Category Tabs */}
-          <div className="flex items-center gap-1 px-5 pt-5 pb-3 overflow-x-auto">
+          <div className="flex items-center gap-1.5 px-6 lg:px-8 pt-6 pb-3 overflow-x-auto">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -138,7 +138,7 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
           </div>
 
           {/* Search Input */}
-          <div className="px-5 pb-4">
+          <div className="px-6 lg:px-8 pb-4">
             <div className="flex items-center gap-3 px-4 py-3.5 border-2 border-[#2DD1AC]/40 rounded-xl bg-white focus-within:border-[#2DD1AC] transition-colors">
               <Search className="w-5 h-5 text-[#b0aea5] shrink-0" />
               <input
@@ -158,7 +158,7 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
         </div>
 
         {/* Content */}
-        <div className="px-5 py-4">
+        <div className="px-6 lg:px-8 py-5">
           {/* Sponsored Section - shows when a location is selected */}
           {selectedLocation && (
             <div className="mb-6">
@@ -210,7 +210,7 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
               <span className="font-bold text-[#2D3748]">Facilities</span>{" "}
               <span className="text-[#b0aea5] text-sm">in Philippines</span>
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredLocations.map((loc) => (
                 <button
                   key={loc.name}
