@@ -22,6 +22,8 @@ import {
   Image,
   Save,
   X,
+  Upload,
+  Loader2,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -33,6 +35,7 @@ export default function AdminDashboard() {
   const [filter, setFilter] = useState<"all" | "active" | "pending">("all");
   const [editingTestimonial, setEditingTestimonial] = useState<Partial<Testimonial> | null>(null);
   const [savingTestimonial, setSavingTestimonial] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -129,6 +132,25 @@ export default function AdminDashboard() {
 
     setEditingTestimonial(null);
     setSavingTestimonial(false);
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!editingTestimonial) return;
+    setUploadingAvatar(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("testimonial-avatars")
+        .upload(path, file, { upsert: false });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("testimonial-avatars").getPublicUrl(path);
+      setEditingTestimonial({ ...editingTestimonial, image_url: publicUrl });
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+      alert("Failed to upload image. Please try again.");
+    }
+    setUploadingAvatar(false);
   };
 
   const handleDeleteTestimonial = async (id: string) => {
@@ -467,15 +489,43 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">
-                    <span className="flex items-center gap-1"><Image className="w-3 h-3" /> Photo URL</span>
+                    <span className="flex items-center gap-1"><Image className="w-3 h-3" /> Avatar Photo</span>
                   </label>
-                  <input
-                    type="text"
-                    value={editingTestimonial.image_url || ""}
-                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, image_url: e.target.value })}
-                    placeholder="https://..."
-                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC]"
-                  />
+                  <div className="flex items-center gap-4">
+                    {editingTestimonial.image_url ? (
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#e8e6dc] shrink-0">
+                        <img src={editingTestimonial.image_url} alt="Avatar" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setEditingTestimonial({ ...editingTestimonial, image_url: "" })}
+                          className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#e8e6dc] flex items-center justify-center shrink-0 bg-[#faf9f5]">
+                        <Image className="w-5 h-5 text-[#b0aea5]" />
+                      </div>
+                    )}
+                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-[#e8e6dc] rounded-xl cursor-pointer hover:border-[#2DD1AC] hover:bg-[#2DD1AC]/5 transition-all ${uploadingAvatar ? "opacity-50 pointer-events-none" : ""}`}>
+                      {uploadingAvatar ? (
+                        <><Loader2 className="w-4 h-4 text-[#2DD1AC] animate-spin" /><span className="text-sm text-[#b0aea5]">Uploading...</span></>
+                      ) : (
+                        <><Upload className="w-4 h-4 text-[#b0aea5]" /><span className="text-sm text-[#b0aea5]">Choose photo</span></>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleAvatarUpload(file);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">Sort Order</label>
