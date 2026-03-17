@@ -61,8 +61,8 @@ export default function ShuffleCards() {
   if (testimonials.length === 0) return null;
 
   return (
-    <div className="grid place-content-center px-8 py-12">
-      <div className="relative -ml-[100px] h-[450px] w-[350px] md:-ml-[175px]">
+    <div className="flex flex-col items-center px-4 py-12">
+      <div className="relative h-[440px] w-[min(340px,85vw)] md:h-[470px] md:w-[400px]">
         {testimonials.map((t, index) => (
           <TestimonialCard
             key={t.id}
@@ -76,7 +76,7 @@ export default function ShuffleCards() {
         ))}
       </div>
       <p
-        className="text-center text-sm text-[#b0aea5] mt-4 ml-16 md:-ml-0"
+        className="text-center text-sm text-[#b0aea5] mt-4"
         style={{ fontFamily: "var(--font-ui)" }}
       >
         Swipe card to see more
