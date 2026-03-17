@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Facility, Location } from "@/lib/types";
-import { Building2, Edit2, ShieldAlert, Plus, MapPin, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Building2, Edit2, ShieldAlert, Plus, MapPin, Trash2, LogOut } from "lucide-react";
 
 export function AdminDashboard({ profile }: { profile: Profile }) {
+    const router = useRouter();
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [locations, setLocations] = useState<Location[]>([]);
     const [loading, setLoading] = useState(true);
@@ -67,9 +69,22 @@ export function AdminDashboard({ profile }: { profile: Profile }) {
                         Admin Dashboard
                     </h1>
                     <p className="text-[#b0aea5] text-lg" style={{ fontFamily: "var(--font-body)" }}>
-                        Master Administration for All Facilities
+                        Manage all facility listings and provider profiles
                     </p>
                 </div>
+                <button
+                    onClick={async () => {
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        router.push("/");
+                        router.refresh();
+                    }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-full hover:bg-red-600 transition-all shadow-md shrink-0"
+                    style={{ fontFamily: "var(--font-ui)" }}
+                >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                </button>
             </div>
 
             <div className="glass-card overflow-hidden">
