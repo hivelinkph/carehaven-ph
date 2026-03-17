@@ -6,40 +6,37 @@ import { motion } from "framer-motion";
 interface TestimonialCardProps {
   handleShuffle: () => void;
   testimonial: string;
-  position: string;
-  id: number;
+  position: number; // 0 = front, 1, 2, ... = further back
+  imageUrl: string | null;
   author: string;
+  total: number;
 }
 
 export function TestimonialCard({
   handleShuffle,
   testimonial,
   position,
-  id,
+  imageUrl,
   author,
+  total,
 }: TestimonialCardProps) {
   const dragRef = React.useRef(0);
-  const isFront = position === "front";
+  const isFront = position === 0;
+  // Only show top 3 cards visually
+  const isVisible = position < 3;
+
+  const rotate = position === 0 ? -6 : position === 1 ? 0 : 6;
+  const xOffset = position === 0 ? 0 : position === 1 ? 33 : 66;
+  const zIndex = total - position;
 
   return (
     <motion.div
-      style={{
-        zIndex:
-          position === "front" ? "2" : position === "middle" ? "1" : "0",
-      }}
+      style={{ zIndex }}
       animate={{
-        rotate:
-          position === "front"
-            ? "-6deg"
-            : position === "middle"
-              ? "0deg"
-              : "6deg",
-        x:
-          position === "front"
-            ? "0%"
-            : position === "middle"
-              ? "33%"
-              : "66%",
+        rotate: isVisible ? `${rotate}deg` : "6deg",
+        x: isVisible ? `${xOffset}%` : "66%",
+        opacity: isVisible ? 1 : 0,
+        scale: isVisible ? 1 : 0.95,
       }}
       drag={true}
       dragElastic={0.35}
@@ -65,7 +62,7 @@ export function TestimonialCard({
       }`}
     >
       <img
-        src={`https://i.pravatar.cc/128?img=${id}`}
+        src={imageUrl || `https://i.pravatar.cc/128?img=${Math.abs(author.charCodeAt(0) % 70)}`}
         alt={`Avatar of ${author}`}
         className="pointer-events-none mx-auto h-32 w-32 rounded-full border-2 border-[#e8e6dc] bg-[#faf9f5] object-cover"
       />

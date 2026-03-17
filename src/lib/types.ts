@@ -110,6 +110,18 @@ export interface PhilippineRegion {
   majorCities: string[];
 }
 
+export interface Testimonial {
+  id: string;
+  name: string;
+  location: string;
+  quote: string;
+  image_url: string | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export type VitalStatus = 'normal' | 'warning' | 'critical';
 
 export interface VitalReading {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility, Location } from "@/lib/types";
+import type { Facility, Location, Testimonial } from "@/lib/types";
 import {
   Building2,
   MapPin,
@@ -17,15 +17,22 @@ import {
   Plus,
   Trash2,
   Edit2,
-  LogOut
+  LogOut,
+  MessageSquareQuote,
+  Image,
+  Save,
+  X,
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "pending">("all");
+  const [editingTestimonial, setEditingTestimonial] = useState<Partial<Testimonial> | null>(null);
+  const [savingTestimonial, setSavingTestimonial] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -46,13 +53,15 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [facRes, locRes] = await Promise.all([
+      const [facRes, locRes, testRes] = await Promise.all([
         supabase.from("facilities").select("*").order("created_at", { ascending: false }),
-        supabase.from("locations").select("*").order("name", { ascending: true })
+        supabase.from("locations").select("*").order("name", { ascending: true }),
+        supabase.from("testimonials").select("*").order("sort_order", { ascending: true })
       ]);
 
       setFacilities(facRes.data || []);
       setLocations(locRes.data || []);
+      setTestimonials(testRes.data || []);
       setLoading(false);
     }
     load();
@@ -81,6 +90,52 @@ export default function AdminDashboard() {
       console.error(error);
     } else {
       setLocations(prev => prev.filter(loc => loc.id !== id));
+    }
+  };
+
+  const handleSaveTestimonial = async () => {
+    if (!editingTestimonial?.name || !editingTestimonial?.quote || !editingTestimonial?.location) return;
+    setSavingTestimonial(true);
+
+    const payload = {
+      name: editingTestimonial.name,
+      location: editingTestimonial.location,
+      quote: editingTestimonial.quote,
+      image_url: editingTestimonial.image_url || null,
+      is_active: editingTestimonial.is_active ?? true,
+      sort_order: editingTestimonial.sort_order ?? testimonials.length,
+    };
+
+    if (editingTestimonial.id) {
+      const { data, error } = await supabase
+        .from("testimonials")
+        .update(payload)
+        .eq("id", editingTestimonial.id)
+        .select()
+        .single();
+      if (!error && data) {
+        setTestimonials((prev) => prev.map((t) => (t.id === data.id ? data : t)));
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("testimonials")
+        .insert(payload)
+        .select()
+        .single();
+      if (!error && data) {
+        setTestimonials((prev) => [...prev, data]);
+      }
+    }
+
+    setEditingTestimonial(null);
+    setSavingTestimonial(false);
+  };
+
+  const handleDeleteTestimonial = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this testimonial?")) return;
+    const { error } = await supabase.from("testimonials").delete().eq("id", id);
+    if (!error) {
+      setTestimonials((prev) => prev.filter((t) => t.id !== id));
     }
   };
 
@@ -338,6 +393,185 @@ export default function AdminDashboard() {
                             onClick={() => handleDeleteLocation(loc.id)}
                             className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-red-500/10 hover:text-red-500 transition-all"
                             title="Delete Location"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Testimonials Management */}
+        <div className="glass-card overflow-hidden mt-8">
+          <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+              <MessageSquareQuote className="w-5 h-5 text-[#2DD1AC]" />
+              Testimonials ({testimonials.length})
+            </h2>
+            <button
+              onClick={() => setEditingTestimonial({ name: "", location: "", quote: "", image_url: "", is_active: true, sort_order: testimonials.length })}
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors shadow-sm hover:shadow-md"
+              style={{ fontFamily: "var(--font-ui)" }}
+            >
+              <Plus className="w-4 h-4" />
+              Add Testimonial
+            </button>
+          </div>
+
+          {/* Edit/Add Modal */}
+          {editingTestimonial && (
+            <div className="p-6 border-b border-[#e8e6dc]/50 bg-[#2DD1AC]/5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
+                  {editingTestimonial.id ? "Edit Testimonial" : "New Testimonial"}
+                </h3>
+                <button onClick={() => setEditingTestimonial(null)} className="p-1.5 rounded-lg hover:bg-[#e8e6dc]/50 transition-colors">
+                  <X className="w-5 h-5 text-[#b0aea5]" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4" style={{ fontFamily: "var(--font-ui)" }}>
+                <div>
+                  <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">Name *</label>
+                  <input
+                    type="text"
+                    value={editingTestimonial.name || ""}
+                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, name: e.target.value })}
+                    placeholder="e.g. Maria Santos"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">Location *</label>
+                  <input
+                    type="text"
+                    value={editingTestimonial.location || ""}
+                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, location: e.target.value })}
+                    placeholder="e.g. Quezon City"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC]"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">Quote *</label>
+                  <textarea
+                    value={editingTestimonial.quote || ""}
+                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, quote: e.target.value })}
+                    placeholder="Their testimonial..."
+                    rows={3}
+                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC] resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">
+                    <span className="flex items-center gap-1"><Image className="w-3 h-3" /> Photo URL</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTestimonial.image_url || ""}
+                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, image_url: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#b0aea5] uppercase tracking-wider mb-1.5">Sort Order</label>
+                  <input
+                    type="number"
+                    value={editingTestimonial.sort_order ?? 0}
+                    onChange={(e) => setEditingTestimonial({ ...editingTestimonial, sort_order: parseInt(e.target.value) || 0 })}
+                    className="w-full px-4 py-3 bg-white border-2 border-[#e8e6dc] rounded-xl text-sm focus:outline-none focus:border-[#2DD1AC]"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSaveTestimonial}
+                  disabled={savingTestimonial || !editingTestimonial.name || !editingTestimonial.quote || !editingTestimonial.location}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  <Save className="w-4 h-4" />
+                  {savingTestimonial ? "Saving..." : "Save Testimonial"}
+                </button>
+                <button
+                  onClick={() => setEditingTestimonial(null)}
+                  className="px-6 py-2.5 text-sm font-medium text-[#b0aea5] hover:text-[#2D3748] transition-colors"
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Testimonials List */}
+          <div className="overflow-x-auto">
+            <table className="w-full" style={{ fontFamily: "var(--font-ui)" }}>
+              <thead>
+                <tr className="border-b border-[#e8e6dc]">
+                  <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Person</th>
+                  <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Quote</th>
+                  <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Status</th>
+                  <th className="text-right text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {testimonials.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-12">
+                      <MessageSquareQuote className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
+                      <p className="text-sm text-[#b0aea5]">No testimonials yet. Add your first one!</p>
+                    </td>
+                  </tr>
+                ) : (
+                  testimonials.map((t) => (
+                    <tr key={t.id} className="border-b border-[#e8e6dc]/50 hover:bg-[#2DD1AC]/3 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#e8e6dc]/30 border border-[#e8e6dc]/50 flex items-center justify-center shrink-0 overflow-hidden">
+                            {t.image_url ? (
+                              <img src={t.image_url} alt={t.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-sm font-bold text-[#b0aea5]">{t.name.charAt(0)}</span>
+                            )}
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-[#2D3748]">{t.name}</div>
+                            <div className="text-xs text-[#b0aea5]">{t.location}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-[#2D3748] line-clamp-2 max-w-xs">&ldquo;{t.quote}&rdquo;</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        {t.is_active ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#788c5d] bg-[#788c5d]/10 px-2.5 py-1 rounded-full">
+                            <CheckCircle2 className="w-3 h-3" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#d97757] bg-[#d97757]/10 px-2.5 py-1 rounded-full">
+                            <XCircle className="w-3 h-3" /> Hidden
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setEditingTestimonial(t)}
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-[#2DD1AC]/10 hover:text-[#1E957A] transition-all"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTestimonial(t.id)}
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-[#e8e6dc]/50 text-[#2D3748] hover:bg-red-500/10 hover:text-red-500 transition-all"
+                            title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

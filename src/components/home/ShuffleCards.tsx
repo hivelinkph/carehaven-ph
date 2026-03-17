@@ -1,50 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TestimonialCard } from "@/components/ui/testimonial-cards";
+import { createClient } from "@/lib/supabase/client";
 
-const testimonials = [
+const FALLBACK_TESTIMONIALS = [
   {
-    id: 1,
-    testimonial:
-      "SeniorLiving PH helped us find the perfect facility for our Lola. The daily health updates give us peace of mind even though we live abroad.",
-    author: "Maria Santos - Quezon City",
+    id: "1",
+    name: "Maria Santos",
+    location: "Quezon City",
+    quote: "SeniorLiving PH helped us find the perfect facility for our Lola. The daily health updates give us peace of mind even though we live abroad.",
+    image_url: null,
   },
   {
-    id: 2,
-    testimonial:
-      "The health monitoring dashboard is incredible. I can check my father's blood pressure and sugar levels every day from my phone.",
-    author: "Roberto Cruz - Cebu City",
+    id: "2",
+    name: "Roberto Cruz",
+    location: "Cebu City",
+    quote: "The health monitoring dashboard is incredible. I can check my father's blood pressure and sugar levels every day from my phone.",
+    image_url: null,
   },
   {
-    id: 3,
-    testimonial:
-      "Finding a compassionate care home for my mother was so stressful until we found SeniorLiving PH. The Philippine map feature made it so easy.",
-    author: "Elena Reyes - Davao City",
+    id: "3",
+    name: "Elena Reyes",
+    location: "Davao City",
+    quote: "Finding a compassionate care home for my mother was so stressful until we found SeniorLiving PH. The Philippine map feature made it so easy.",
+    image_url: null,
   },
 ];
 
 export default function ShuffleCards() {
-  const [positions, setPositions] = useState(["front", "middle", "back"]);
+  const [testimonials, setTestimonials] = useState<
+    { id: string; name: string; location: string; quote: string; image_url: string | null }[]
+  >([]);
+  const [positions, setPositions] = useState<number[]>([]);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      const items = data && data.length > 0 ? data : FALLBACK_TESTIMONIALS;
+      setTestimonials(items);
+      setPositions(items.map((_, i) => i));
+    }
+    fetchTestimonials();
+  }, []);
 
   const handleShuffle = () => {
-    const newPositions = [...positions];
-    newPositions.unshift(newPositions.pop()!);
-    setPositions(newPositions);
+    setPositions((prev) => {
+      const newPos = [...prev];
+      newPos.push(newPos.shift()!);
+      return newPos;
+    });
   };
+
+  if (testimonials.length === 0) return null;
 
   return (
     <div className="grid place-content-center px-8 py-12">
       <div className="relative -ml-[100px] h-[450px] w-[350px] md:-ml-[175px]">
-        {testimonials.map((testimonial, index) => (
+        {testimonials.map((t, index) => (
           <TestimonialCard
-            key={testimonial.id}
-            {...testimonial}
+            key={t.id}
+            testimonial={t.quote}
+            author={`${t.name} - ${t.location}`}
+            imageUrl={t.image_url}
             handleShuffle={handleShuffle}
             position={positions[index]}
+            total={testimonials.length}
           />
         ))}
       </div>
+      <p
+        className="text-center text-sm text-[#b0aea5] mt-4 ml-16 md:-ml-0"
+        style={{ fontFamily: "var(--font-ui)" }}
+      >
+        Swipe card to see more
+      </p>
     </div>
   );
 }
