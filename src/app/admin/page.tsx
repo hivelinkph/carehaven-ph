@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   Plus,
   Trash2,
-  Edit2
+  Edit2,
+  LogOut
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -112,16 +113,30 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <ShieldCheck className="w-7 h-7 text-[#2DD1AC]" />
-            <h1 className="text-3xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
-              Admin Dashboard
-            </h1>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <ShieldCheck className="w-7 h-7 text-[#2DD1AC]" />
+              <h1 className="text-3xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
+                Admin Dashboard
+              </h1>
+            </div>
+            <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
+              Manage all facility listings and provider profiles
+            </p>
           </div>
-          <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
-            Manage all facility listings and provider profiles
-          </p>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              router.push("/");
+              router.refresh();
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-full hover:bg-red-600 transition-all shadow-md shrink-0"
+            style={{ fontFamily: "var(--font-ui)" }}
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
         </div>
 
         {/* Stats */}
