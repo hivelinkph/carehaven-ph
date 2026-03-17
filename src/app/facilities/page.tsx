@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility, Location } from "@/lib/types";
 import FacilityCard from "@/components/facilities/FacilityCard";
-import { Search, Building2, SlidersHorizontal, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Search, Building2, SlidersHorizontal, MapPin, ArrowLeft } from "lucide-react";
 
 export default function FacilitiesPage() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -58,6 +59,16 @@ export default function FacilitiesPage() {
   return (
     <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back to Home */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors mb-6"
+          style={{ fontFamily: "var(--font-ui)" }}
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-12">
           <div
