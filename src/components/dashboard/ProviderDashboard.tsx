@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Facility } from "@/lib/types";
-import { Plus, Edit2, Building2, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Edit2, Building2, Eye, LogOut } from "lucide-react";
 
 export function ProviderDashboard({ profile }: { profile: Profile }) {
+    const router = useRouter();
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -50,14 +52,29 @@ export function ProviderDashboard({ profile }: { profile: Profile }) {
                         Manage your Assisted Living Facilities
                     </p>
                 </div>
-                <Link
-                    href="/dashboard/provider/facilities/new"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#2DD1AC] rounded-full hover:bg-[#2DD1AC]/90 transition-all shadow-md shrink-0"
-                    style={{ fontFamily: "var(--font-ui)" }}
-                >
-                    <Plus className="w-4 h-4" />
-                    Add Facility
-                </Link>
+                <div className="flex items-center gap-3 shrink-0">
+                    <Link
+                        href="/dashboard/provider/facilities/new"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#2DD1AC] rounded-full hover:bg-[#2DD1AC]/90 transition-all shadow-md"
+                        style={{ fontFamily: "var(--font-ui)" }}
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Facility
+                    </Link>
+                    <button
+                        onClick={async () => {
+                            const supabase = createClient();
+                            await supabase.auth.signOut();
+                            router.push("/");
+                            router.refresh();
+                        }}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-full hover:bg-red-600 transition-all shadow-md"
+                        style={{ fontFamily: "var(--font-ui)" }}
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                    </button>
+                </div>
             </div>
 
             <div className="mb-10">
