@@ -2,6 +2,7 @@ import HeroSection from "@/components/hero/HeroSection";
 import ProvidersMarquee from "@/components/home/ProvidersMarquee";
 import GalleryCarousel from "@/components/hero/GalleryCarousel";
 import PhilippineMap from "@/components/map/PhilippineMap";
+import ShuffleCards from "@/components/home/ShuffleCards";
 import {
   Stethoscope,
   HeartPulse,
@@ -9,7 +10,6 @@ import {
   Shield,
   Clock,
   Smartphone,
-  Star,
   ArrowRight,
   Heart,
 } from "lucide-react";
@@ -57,30 +57,6 @@ const SERVICES = [
     description:
       "Get notified of health readings, medication schedules, and care activities through your dashboard.",
     color: "#d97757",
-  },
-];
-
-const TESTIMONIALS = [
-  {
-    name: "Maria Santos",
-    location: "Quezon City",
-    quote:
-      "SeniorLiving PH helped us find the perfect facility for our Lola. The daily health updates give us peace of mind even though we live abroad.",
-    rating: 5,
-  },
-  {
-    name: "Roberto Cruz",
-    location: "Cebu City",
-    quote:
-      "The health monitoring dashboard is incredible. I can check my father's blood pressure and sugar levels every day from my phone.",
-    rating: 5,
-  },
-  {
-    name: "Elena Reyes",
-    location: "Davao City",
-    quote:
-      "Finding a compassionate care home for my mother was so stressful until we found SeniorLiving PH. The Philippine map feature made it so easy.",
-    rating: 5,
   },
 ];
 
@@ -233,9 +209,9 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 lg:py-28 bg-[#faf9f5]">
+      <section className="py-20 lg:py-28 bg-[#faf9f5] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2
               className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-4"
               style={{ fontFamily: "var(--font-heading)" }}
@@ -248,30 +224,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t) => (
-              <div
-                key={t.name}
-                className="glass-card p-8 flex flex-col"
-              >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-[#d97757]" fill="#d97757" />
-                  ))}
-                </div>
-                <p
-                  className="text-[#2D3748] leading-relaxed mb-6 flex-1"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div style={{ fontFamily: "var(--font-ui)" }}>
-                  <p className="text-sm font-semibold text-[#2D3748]">{t.name}</p>
-                  <p className="text-xs text-[#b0aea5]">{t.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ShuffleCards />
         </div>
       </section>
 
