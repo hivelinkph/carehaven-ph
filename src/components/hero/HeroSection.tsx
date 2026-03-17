@@ -56,7 +56,7 @@ export default function HeroSection() {
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <Link
-              href="/#facilities-map"
+              href="/find-a-home"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 rounded-full shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:shadow-[#2DD1AC]/30 hover:-translate-y-0.5 transition-all"
             >
               <Search className="w-5 h-5" />
