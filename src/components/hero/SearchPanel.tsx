@@ -8,23 +8,25 @@ import type { Facility } from "@/lib/types";
 
 const CATEGORIES = [
   { key: "all", label: "All", icon: LayoutGrid },
-  { key: "independent", label: "Independent Living", icon: Building2 },
-  { key: "assisted", label: "Assisted Living", icon: Home },
-  { key: "memory", label: "Memory Care Facility", icon: Brain },
+  { key: "Independent Living", label: "Independent Living", icon: Building2 },
+  { key: "Assisted Living", label: "Assisted Living", icon: Home },
+  { key: "Memory Care Facility", label: "Memory Care Facility", icon: Brain },
 ];
 
-// Top Philippine locations with placeholder images
-const TOP_LOCATIONS = [
-  { name: "Manila", image: "https://images.unsplash.com/photo-1573455494060-c5595004fb6c?w=80&h=80&fit=crop" },
-  { name: "Cebu", image: "https://images.unsplash.com/photo-1568890020845-4e9bf1a1a7be?w=80&h=80&fit=crop" },
-  { name: "Davao City", image: "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=80&h=80&fit=crop" },
-  { name: "Baguio", image: "https://images.unsplash.com/photo-1583430999185-7d47e8c1e0e2?w=80&h=80&fit=crop" },
-  { name: "Palawan", image: "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=80&h=80&fit=crop" },
-  { name: "Boracay Island", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=80&h=80&fit=crop" },
-  { name: "Quezon City", image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop" },
-  { name: "Makati", image: "https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=80&h=80&fit=crop" },
-  { name: "Iloilo", image: "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=80&h=80&fit=crop" },
-];
+// Fallback images for top Philippine locations
+const LOCATION_IMAGES: Record<string, string> = {
+  "manila": "https://images.unsplash.com/photo-1573455494060-c5595004fb6c?w=80&h=80&fit=crop",
+  "cebu": "https://images.unsplash.com/photo-1568890020845-4e9bf1a1a7be?w=80&h=80&fit=crop",
+  "davao city": "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=80&h=80&fit=crop",
+  "baguio": "https://images.unsplash.com/photo-1583430999185-7d47e8c1e0e2?w=80&h=80&fit=crop",
+  "palawan": "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=80&h=80&fit=crop",
+  "boracay island": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=80&h=80&fit=crop",
+  "quezon city": "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop",
+  "makati": "https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=80&h=80&fit=crop",
+  "iloilo": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=80&h=80&fit=crop",
+};
+
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop";
 
 interface SearchPanelProps {
   onClose: () => void;
@@ -49,53 +51,38 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
     fetchFacilities();
   }, []);
 
-  // Count facilities per location
-  const locationCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    facilities.forEach((f) => {
-      const city = f.city;
-      counts[city] = (counts[city] || 0) + 1;
-    });
-    return counts;
-  }, [facilities]);
+  // Filter facilities by active category
+  const categoryFilteredFacilities = useMemo(() => {
+    if (activeCategory === "all") return facilities;
+    return facilities.filter((f) =>
+      f.facility_types?.includes(activeCategory)
+    );
+  }, [facilities, activeCategory]);
 
-  // Merge top locations with real counts, sorted by count descending
+  // Count facilities per location (respecting category filter)
   const locationsWithCounts = useMemo(() => {
-    // Combine TOP_LOCATIONS with any real cities that have facilities
-    const allCities = new Map<string, { name: string; image: string; count: number }>();
-
-    // Add top locations first
-    TOP_LOCATIONS.forEach((loc) => {
-      allCities.set(loc.name.toLowerCase(), {
-        name: loc.name,
-        image: loc.image,
-        count: locationCounts[loc.name] || Math.floor(Math.random() * 15000) + 500,
-      });
+    const counts: Record<string, number> = {};
+    categoryFilteredFacilities.forEach((f) => {
+      counts[f.city] = (counts[f.city] || 0) + 1;
     });
 
-    // Add any additional cities from actual facilities that aren't already in the list
-    Object.entries(locationCounts).forEach(([city, count]) => {
-      if (!allCities.has(city.toLowerCase())) {
-        allCities.set(city.toLowerCase(), {
-          name: city,
-          image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop",
-          count,
-        });
-      }
-    });
-
-    return Array.from(allCities.values())
+    return Object.entries(counts)
+      .map(([name, count]) => ({
+        name,
+        count,
+        image: LOCATION_IMAGES[name.toLowerCase()] || DEFAULT_IMAGE,
+      }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 9);
-  }, [locationCounts]);
+  }, [categoryFilteredFacilities]);
 
   // Sponsored facilities for the selected location
   const sponsoredFacilities = useMemo(() => {
     if (!selectedLocation) return [];
-    return facilities
+    return categoryFilteredFacilities
       .filter((f) => f.city.toLowerCase() === selectedLocation.toLowerCase())
       .slice(0, 3);
-  }, [selectedLocation, facilities]);
+  }, [selectedLocation, categoryFilteredFacilities]);
 
   // Filter locations by search query
   const filteredLocations = useMemo(() => {
@@ -116,7 +103,10 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
+                onClick={() => {
+                  setActiveCategory(cat.key);
+                  setSelectedLocation(null);
+                }}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat.key
                     ? "bg-[#2D3748] text-white"
@@ -210,36 +200,42 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
               <span className="font-bold text-[#2D3748]">Facilities</span>{" "}
               <span className="text-[#b0aea5] text-sm">in Philippines</span>
             </p>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredLocations.map((loc) => (
-                <button
-                  key={loc.name}
-                  onClick={() => setSelectedLocation(loc.name)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all ${
-                    selectedLocation === loc.name
-                      ? "bg-[#2DD1AC]/10 border border-[#2DD1AC]/30"
-                      : "hover:bg-[#faf9f5] border border-transparent"
-                  }`}
-                >
-                  <img
-                    src={loc.image}
-                    alt={loc.name}
-                    className="w-11 h-11 rounded-lg object-cover shrink-0"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop";
-                    }}
-                  />
-                  <div>
-                    <p className="text-sm font-semibold text-[#2D3748] leading-tight" style={{ fontFamily: "var(--font-ui)" }}>
-                      {loc.name}
-                    </p>
-                    <p className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-                      ({loc.count.toLocaleString()})
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
+            {filteredLocations.length > 0 ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                {filteredLocations.map((loc) => (
+                  <button
+                    key={loc.name}
+                    onClick={() => setSelectedLocation(loc.name)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all ${
+                      selectedLocation === loc.name
+                        ? "bg-[#2DD1AC]/10 border border-[#2DD1AC]/30"
+                        : "hover:bg-[#faf9f5] border border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={loc.image}
+                      alt={loc.name}
+                      className="w-11 h-11 rounded-lg object-cover shrink-0"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = DEFAULT_IMAGE;
+                      }}
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-[#2D3748] leading-tight" style={{ fontFamily: "var(--font-ui)" }}>
+                        {loc.name}
+                      </p>
+                      <p className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                        ({loc.count.toLocaleString()})
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#b0aea5] italic py-4" style={{ fontFamily: "var(--font-body)" }}>
+                No facilities found{searchQuery ? ` matching "${searchQuery}"` : ""}{activeCategory !== "all" ? ` for ${activeCategory}` : ""}.
+              </p>
+            )}
           </div>
         </div>
       </div>

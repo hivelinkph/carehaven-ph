@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility, Location } from "@/lib/types";
-import { SERVICES_LIST } from "@/lib/constants";
+import { SERVICES_LIST, FACILITY_TYPES } from "@/lib/constants";
 import {
     Upload,
     X,
@@ -64,6 +64,7 @@ export function FacilityForm({ facility, mode, isAdmin }: FacilityFormProps) {
     const [capacity, setCapacity] = useState(facility?.capacity?.toString() || "");
     const [priceMin, setPriceMin] = useState(facility?.price_range_min?.toString() || "");
     const [priceMax, setPriceMax] = useState(facility?.price_range_max?.toString() || "");
+    const [selectedFacilityTypes, setSelectedFacilityTypes] = useState<string[]>(facility?.facility_types || []);
     const [selectedServices, setSelectedServices] = useState<string[]>(facility?.services || []);
     const [images, setImages] = useState<UploadedFile[]>(
         facility?.image_urls?.map((url) => ({ url, name: url.split("/").pop() || "image" })) || []
@@ -88,6 +89,12 @@ export function FacilityForm({ facility, mode, isAdmin }: FacilityFormProps) {
         }
         loadLocations();
     }, []);
+
+    function toggleFacilityType(type: string) {
+        setSelectedFacilityTypes((prev) =>
+            prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+        );
+    }
 
     function toggleService(service: string) {
         setSelectedServices((prev) =>
@@ -213,6 +220,7 @@ export function FacilityForm({ facility, mode, isAdmin }: FacilityFormProps) {
             website: website || null,
             image_urls: imageUrlsToSave,
             video_urls: videoUrlsToSave,
+            facility_types: selectedFacilityTypes,
             services: selectedServices,
             capacity: capacity ? parseInt(capacity, 10) : null,
             price_range_min: priceMin ? parseFloat(priceMin) : null,
@@ -314,6 +322,35 @@ export function FacilityForm({ facility, mode, isAdmin }: FacilityFormProps) {
                         placeholder="Describe your facility, its care philosophy, and what makes it special..."
                         className={inputCls}
                     />
+                </div>
+            </div>
+
+            {/* Facility Type */}
+            <div className="space-y-5">
+                <div className="flex items-center gap-2 pb-3 border-b border-[#e8e6dc]">
+                    <Building2 className="w-5 h-5 text-[#6a9bcc]" />
+                    <h2 className="text-base font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>Type of Facility</h2>
+                </div>
+                <p className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Select all categories that apply to your facility.</p>
+                <div className="space-y-3">
+                    {FACILITY_TYPES.map((type) => (
+                        <label
+                            key={type}
+                            className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                selectedFacilityTypes.includes(type)
+                                    ? "border-[#2DD1AC] bg-[#2DD1AC]/5"
+                                    : "border-[#e8e6dc] hover:border-[#2DD1AC]/40"
+                            }`}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={selectedFacilityTypes.includes(type)}
+                                onChange={() => toggleFacilityType(type)}
+                                className="w-5 h-5 rounded border-2 border-[#e8e6dc] text-[#2DD1AC] focus:ring-[#2DD1AC] accent-[#2DD1AC]"
+                            />
+                            <span className="text-sm font-medium text-[#2D3748]" style={{ fontFamily: "var(--font-ui)" }}>{type}</span>
+                        </label>
+                    ))}
                 </div>
             </div>
 

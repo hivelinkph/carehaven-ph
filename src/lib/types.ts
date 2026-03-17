@@ -53,6 +53,7 @@ export interface Facility {
   image_urls: string[];
   video_urls: string[];
   owner_id: string | null;
+  facility_types: string[];
   services: string[];
   amenities: string[];
   capacity: number | null;

@@ -53,6 +53,12 @@ export const FACILITY_STATUS = {
   SUSPENDED: 'suspended',
 } as const;
 
+export const FACILITY_TYPES = [
+  'Independent Living',
+  'Assisted Living',
+  'Memory Care Facility',
+] as const;
+
 export const SERVICES_LIST = [
   '24/7 Nursing Care',
   'Physical Therapy',
