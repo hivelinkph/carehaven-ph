@@ -11,6 +11,7 @@ type StepType = "single" | "multi" | "info" | "loading" | "results" | "confirmat
 
 interface MatchedFacility {
   facility: Facility;
+  providerId: string;
   score: number;
   matchedAreas: string[];
 }
@@ -203,7 +204,7 @@ export default function FindAHomePage() {
       }
 
       if (score > 0) {
-        scored.push({ facility, score, matchedAreas });
+        scored.push({ facility, providerId: profile.provider_id, score, matchedAreas });
       }
     }
 
@@ -215,11 +216,11 @@ export default function FindAHomePage() {
     if (top3.length > 0) {
       const impressions = top3.map((m) => ({
         facility_id: m.facility.id,
-        provider_id: m.facility.owner_id || m.facility.id,
+        provider_id: m.providerId,
         client_answers: answers,
         match_score: m.score,
       }));
-      await supabase.from("match_impressions").insert(impressions).select();
+      await supabase.from("match_impressions").insert(impressions);
     }
 
     setMatchedFacilities(top3);
