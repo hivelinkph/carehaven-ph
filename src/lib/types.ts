@@ -122,6 +122,28 @@ export interface Testimonial {
   updated_at: string;
 }
 
+export interface QuestionnaireConfig {
+  id: string;
+  step_id: string;
+  title: string;
+  subtitle: string | null;
+  answer_type: 'single' | 'multi';
+  options: { label: string; value: string; icon?: string }[];
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProviderCareProfile {
+  id: string;
+  provider_id: string;
+  facility_id: string;
+  answers: Record<string, string | string[]>;
+  updated_at: string;
+  created_at: string;
+}
+
 export type VitalStatus = 'normal' | 'warning' | 'critical';
 
 export interface VitalReading {

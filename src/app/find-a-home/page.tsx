@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Check, Loader2, Heart, Users, Shield, Activity, Smile, HandHeart } from "lucide-react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { ChevronLeft, ChevronRight, Check, Loader2, Heart, HandHeart } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import type { QuestionnaireConfig } from "@/lib/types";
 
 // Step definitions
 type StepType = "single" | "multi" | "info" | "loading" | "contact" | "confirmation";
@@ -44,161 +46,62 @@ function getPossessive(answers: Record<string, string | string[]>): string {
   return `your ${getPersonLabel(answers)}'s`;
 }
 
-const STEPS: Step[] = [
-  {
-    id: "who",
-    type: "single",
-    title: "Who needs senior living?",
-    subtitle: "We'll personalize your search based on your answer.",
-    options: [
-      { label: "Mom", value: "mom", icon: "👩" },
-      { label: "Dad", value: "dad", icon: "👨" },
-      { label: "My Wife", value: "wife", icon: "👩‍🦳" },
-      { label: "My Husband", value: "husband", icon: "👨‍🦳" },
-      { label: "Myself", value: "myself", icon: "🙋" },
-      { label: "Other / Several", value: "other", icon: "👥" },
-    ],
-  },
-  {
-    id: "age",
-    type: "single",
-    dynamicTitle: (a) => `What is ${getPossessive(a)} age?`,
-    subtitle: "This helps us find age-appropriate facilities.",
-    options: [
-      { label: "55 – 64", value: "55-64" },
-      { label: "65 – 74", value: "65-74" },
-      { label: "75 – 84", value: "75-84" },
-      { label: "85+", value: "85+" },
-    ],
-  },
-  {
-    id: "timeline",
-    type: "single",
-    title: "How quickly do you need to find an option?",
-    subtitle: "We'll prioritize based on your timeline.",
-    options: [
-      { label: "Immediately", value: "immediately" },
-      { label: "Within 30 days", value: "30-days" },
-      { label: "Within 60 days", value: "60-days" },
-      { label: "No rush, just exploring", value: "no-rush" },
-    ],
-  },
-  {
-    id: "timeline-info",
-    type: "info",
-    infoMessage: (a) => {
-      const timeline = a.timeline as string;
-      if (timeline === "immediately" || timeline === "30-days") {
-        return "Good news: We can help you find care upon very short notice. Our network of facilities across the Philippines is ready to assist.";
-      }
-      return "Great! Taking time to research is a smart move. We'll help you find the perfect fit at your own pace.";
-    },
-  },
-  {
-    id: "living",
-    type: "single",
-    dynamicTitle: (a) => `Where is ${getPersonLabel(a)} living now?`,
-    subtitle: "This helps us understand current care needs.",
-    options: [
-      { label: "Home alone", value: "home-alone", icon: "🏠" },
-      { label: "Home with someone", value: "home-with-someone", icon: "🏡" },
-      { label: "Assisted Living / Nursing Home", value: "assisted-living", icon: "🏥" },
-      { label: "Hospital", value: "hospital", icon: "🏨" },
-      { label: "Rehab Facility", value: "rehab", icon: "🏢" },
-    ],
-  },
-  {
-    id: "looking-for",
-    type: "multi",
-    title: "What are you looking for in a senior living facility?",
-    subtitle: "Select all that apply.",
-    options: [
-      { label: "Companionship & social life", value: "companionship" },
-      { label: "Safety & security", value: "safety" },
-      { label: "Access to medical care", value: "medical-care" },
-      { label: "Activities & enrichment", value: "activities" },
-      { label: "Relief for caregiver", value: "caregiver-relief" },
-      { label: "Peace of mind", value: "peace-of-mind" },
-    ],
-  },
-  {
-    id: "mobility",
-    type: "single",
-    dynamicTitle: (a) => `How's ${getPossessive(a)} current mobility?`,
-    subtitle: "This helps match facilities with the right accessibility features.",
-    options: [
-      { label: "Great – fully independent", value: "great" },
-      { label: "Good – mostly independent", value: "good" },
-      { label: "Can walk with assistance", value: "walk-with-help" },
-      { label: "Uses a wheelchair", value: "wheelchair" },
-      { label: "Mostly immobile / bedridden", value: "immobile" },
-    ],
-  },
-  {
-    id: "assistance",
-    type: "multi",
-    dynamicTitle: (a) => `What does ${getPersonLabel(a)} need assistance with?`,
-    subtitle: "Select all that apply.",
-    options: [
-      { label: "Housekeeping", value: "housekeeping" },
-      { label: "Meal preparation", value: "meal-prep" },
-      { label: "Toileting", value: "toileting" },
-      { label: "Bathing & grooming", value: "bathing" },
-      { label: "Medication management", value: "medication" },
-      { label: "Diabetic care", value: "diabetic-care" },
-      { label: "Social activities", value: "social" },
-      { label: "Other", value: "other" },
-      { label: "None of these", value: "none" },
-    ],
-  },
-  {
-    id: "cognitive",
-    type: "multi",
-    dynamicTitle: (a) => `Has ${getPersonLabel(a)} experienced any of the following?`,
-    subtitle: "Select all that apply. This helps us identify memory care needs.",
-    options: [
-      { label: "Forgetfulness", value: "forgetfulness" },
-      { label: "Memory loss", value: "memory-loss" },
-      { label: "Confusion or disorientation", value: "confusion" },
-      { label: "Social withdrawal", value: "withdrawal" },
-      { label: "Aggressiveness", value: "aggressiveness" },
-      { label: "Hallucinations", value: "hallucinations" },
-      { label: "Needs 24/7 care", value: "24-7-care" },
-      { label: "Diagnosed with Alzheimer's", value: "alzheimers" },
-      { label: "None of these", value: "none" },
-    ],
-  },
-  {
-    id: "budget",
-    type: "single",
-    title: "What is your monthly budget for senior living?",
-    subtitle: "This helps us find options within your range.",
-    options: [
-      { label: "Below ₱20,000", value: "below-20k" },
-      { label: "₱20,000 – ₱40,000", value: "20k-40k" },
-      { label: "₱40,000 – ₱70,000", value: "40k-70k" },
-      { label: "₱70,000 – ₱100,000", value: "70k-100k" },
-      { label: "₱100,000+", value: "100k-plus" },
-      { label: "Not sure yet", value: "not-sure" },
-    ],
-  },
-  {
-    id: "loading",
-    type: "loading",
-  },
-  {
+// Convert DB config to Step format
+function buildStepsFromConfig(configs: QuestionnaireConfig[]): Step[] {
+  const questionSteps: Step[] = configs
+    .filter((c) => c.is_active)
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((c) => ({
+      id: c.step_id,
+      type: c.answer_type as StepType,
+      title: c.title,
+      subtitle: c.subtitle || undefined,
+      options: c.options,
+    }));
+
+  // Insert special steps: info after timeline, loading + contact + confirmation at end
+  const result: Step[] = [];
+  for (const s of questionSteps) {
+    result.push(s);
+    if (s.id === "timeline") {
+      result.push({
+        id: "timeline-info",
+        type: "info",
+        infoMessage: (a) => {
+          const timeline = a.timeline as string;
+          if (timeline === "immediately" || timeline === "30-days") {
+            return "Good news: We can help you find care upon very short notice. Our network of facilities across the Philippines is ready to assist.";
+          }
+          return "Great! Taking time to research is a smart move. We'll help you find the perfect fit at your own pace.";
+        },
+      });
+    }
+  }
+
+  result.push({ id: "loading", type: "loading" });
+  result.push({
     id: "contact",
     type: "contact",
     title: "Almost there! Where should we send your results?",
     subtitle: "A senior care advisor will reach out to help you find the best match.",
-  },
-  {
-    id: "confirmation",
-    type: "confirmation",
-  },
-];
+  });
+  result.push({ id: "confirmation", type: "confirmation" });
 
-const PROGRESS_STEPS = STEPS.filter((s) => s.type !== "info" && s.type !== "loading" && s.type !== "confirmation");
+  return result;
+}
+
+// Fallback hardcoded steps if DB fetch fails
+const FALLBACK_CONFIGS: QuestionnaireConfig[] = [
+  { id: "f1", step_id: "who", title: "Who needs senior living?", subtitle: "We'll personalize your search based on your answer.", answer_type: "single", options: [{ label: "Mom", value: "mom", icon: "👩" }, { label: "Dad", value: "dad", icon: "👨" }, { label: "My Wife", value: "wife", icon: "👩‍🦳" }, { label: "My Husband", value: "husband", icon: "👨‍🦳" }, { label: "Myself", value: "myself", icon: "🙋" }, { label: "Other / Several", value: "other", icon: "👥" }], sort_order: 0, is_active: true, created_at: "", updated_at: "" },
+  { id: "f2", step_id: "age", title: "What is the age?", subtitle: "This helps us find age-appropriate facilities.", answer_type: "single", options: [{ label: "55 – 64", value: "55-64" }, { label: "65 – 74", value: "65-74" }, { label: "75 – 84", value: "75-84" }, { label: "85+", value: "85+" }], sort_order: 1, is_active: true, created_at: "", updated_at: "" },
+  { id: "f3", step_id: "timeline", title: "How quickly do you need to find an option?", subtitle: "We'll prioritize based on your timeline.", answer_type: "single", options: [{ label: "Immediately", value: "immediately" }, { label: "Within 30 days", value: "30-days" }, { label: "Within 60 days", value: "60-days" }, { label: "No rush, just exploring", value: "no-rush" }], sort_order: 2, is_active: true, created_at: "", updated_at: "" },
+  { id: "f4", step_id: "living", title: "Where is your loved one living now?", subtitle: "This helps us understand current care needs.", answer_type: "single", options: [{ label: "Home alone", value: "home-alone", icon: "🏠" }, { label: "Home with someone", value: "home-with-someone", icon: "🏡" }, { label: "Assisted Living / Nursing Home", value: "assisted-living", icon: "🏥" }, { label: "Hospital", value: "hospital", icon: "🏨" }, { label: "Rehab Facility", value: "rehab", icon: "🏢" }], sort_order: 3, is_active: true, created_at: "", updated_at: "" },
+  { id: "f5", step_id: "looking-for", title: "What are you looking for in a senior living facility?", subtitle: "Select all that apply.", answer_type: "multi", options: [{ label: "Companionship & social life", value: "companionship" }, { label: "Safety & security", value: "safety" }, { label: "Access to medical care", value: "medical-care" }, { label: "Activities & enrichment", value: "activities" }, { label: "Relief for caregiver", value: "caregiver-relief" }, { label: "Peace of mind", value: "peace-of-mind" }], sort_order: 4, is_active: true, created_at: "", updated_at: "" },
+  { id: "f6", step_id: "mobility", title: "How is the current mobility?", subtitle: "This helps match facilities with the right accessibility features.", answer_type: "single", options: [{ label: "Great – fully independent", value: "great" }, { label: "Good – mostly independent", value: "good" }, { label: "Can walk with assistance", value: "walk-with-help" }, { label: "Uses a wheelchair", value: "wheelchair" }, { label: "Mostly immobile / bedridden", value: "immobile" }], sort_order: 5, is_active: true, created_at: "", updated_at: "" },
+  { id: "f7", step_id: "assistance", title: "What assistance is needed?", subtitle: "Select all that apply.", answer_type: "multi", options: [{ label: "Housekeeping", value: "housekeeping" }, { label: "Meal preparation", value: "meal-prep" }, { label: "Toileting", value: "toileting" }, { label: "Bathing & grooming", value: "bathing" }, { label: "Medication management", value: "medication" }, { label: "Diabetic care", value: "diabetic-care" }, { label: "Social activities", value: "social" }, { label: "Other", value: "other" }, { label: "None of these", value: "none" }], sort_order: 6, is_active: true, created_at: "", updated_at: "" },
+  { id: "f8", step_id: "cognitive", title: "Has your loved one experienced any of the following?", subtitle: "Select all that apply. This helps us identify memory care needs.", answer_type: "multi", options: [{ label: "Forgetfulness", value: "forgetfulness" }, { label: "Memory loss", value: "memory-loss" }, { label: "Confusion or disorientation", value: "confusion" }, { label: "Social withdrawal", value: "withdrawal" }, { label: "Aggressiveness", value: "aggressiveness" }, { label: "Hallucinations", value: "hallucinations" }, { label: "Needs 24/7 care", value: "24-7-care" }, { label: "Diagnosed with Alzheimer's", value: "alzheimers" }, { label: "None of these", value: "none" }], sort_order: 7, is_active: true, created_at: "", updated_at: "" },
+  { id: "f9", step_id: "budget", title: "What is your monthly budget for senior living?", subtitle: "This helps us find options within your range.", answer_type: "single", options: [{ label: "Below ₱20,000", value: "below-20k" }, { label: "₱20,000 – ₱40,000", value: "20k-40k" }, { label: "₱40,000 – ₱70,000", value: "40k-70k" }, { label: "₱70,000 – ₱100,000", value: "70k-100k" }, { label: "₱100,000+", value: "100k-plus" }, { label: "Not sure yet", value: "not-sure" }], sort_order: 8, is_active: true, created_at: "", updated_at: "" },
+];
 
 export default function FindAHomePage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -210,6 +113,28 @@ export default function FindAHomePage() {
     phone: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [dbConfigs, setDbConfigs] = useState<QuestionnaireConfig[] | null>(null);
+
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("questionnaire_config")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order", { ascending: true });
+        if (data && data.length > 0) setDbConfigs(data);
+        else setDbConfigs(FALLBACK_CONFIGS);
+      } catch {
+        setDbConfigs(FALLBACK_CONFIGS);
+      }
+    }
+    fetchConfig();
+  }, []);
+
+  const STEPS = useMemo(() => buildStepsFromConfig(dbConfigs || FALLBACK_CONFIGS), [dbConfigs]);
+  const PROGRESS_STEPS = useMemo(() => STEPS.filter((s) => s.type !== "info" && s.type !== "loading" && s.type !== "confirmation"), [STEPS]);
 
   const step = STEPS[currentStep];
 
