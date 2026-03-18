@@ -28,6 +28,9 @@ import {
   ToggleLeft,
   ToggleRight,
   GripVertical,
+  BarChart3,
+  TrendingUp,
+  Trophy,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -45,6 +48,8 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Partial<QuestionnaireConfig> | null>(null);
   const [savingQuestion, setSavingQuestion] = useState(false);
+  const [reportData, setReportData] = useState<{ facility_id: string; facility_name: string; impression_count: number; avg_score: number }[]>([]);
+  const [reportTotal, setReportTotal] = useState(0);
   const router = useRouter();
   const supabase = createClient();
 
@@ -64,17 +69,40 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [facRes, locRes, testRes, qRes] = await Promise.all([
+      const [facRes, locRes, testRes, qRes, impRes] = await Promise.all([
         supabase.from("facilities").select("*").order("created_at", { ascending: false }),
         supabase.from("locations").select("*").order("name", { ascending: true }),
         supabase.from("testimonials").select("*").order("sort_order", { ascending: true }),
         supabase.from("questionnaire_config").select("*").order("sort_order", { ascending: true }),
+        supabase.from("match_impressions").select("*"),
       ]);
 
       setFacilities(facRes.data || []);
       setLocations(locRes.data || []);
       setTestimonials(testRes.data || []);
       setQuestions(qRes.data || []);
+
+      // Build report data from impressions
+      const impressions = impRes.data || [];
+      setReportTotal(impressions.length);
+      const facilityMap = new Map<string, { count: number; totalScore: number }>();
+      for (const imp of impressions) {
+        const existing = facilityMap.get(imp.facility_id) || { count: 0, totalScore: 0 };
+        existing.count += 1;
+        existing.totalScore += Number(imp.match_score) || 0;
+        facilityMap.set(imp.facility_id, existing);
+      }
+      const allFacs = facRes.data || [];
+      const report = Array.from(facilityMap.entries())
+        .map(([fid, stats]) => ({
+          facility_id: fid,
+          facility_name: allFacs.find((f: Facility) => f.id === fid)?.name || "Unknown Facility",
+          impression_count: stats.count,
+          avg_score: stats.count > 0 ? Math.round((stats.totalScore / stats.count) * 10) / 10 : 0,
+        }))
+        .sort((a, b) => b.impression_count - a.impression_count);
+      setReportData(report);
+
       setLoading(false);
     }
     load();
@@ -947,6 +975,124 @@ export default function AdminDashboard() {
                 </table>
               </div>
             </div>
+          )}
+          {/* ===== REPORTS TAB ===== */}
+          {activeTab === "reports" && (
+            <>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="glass-card p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-[#2DD1AC]/10 flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-[#2DD1AC]" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>{reportTotal}</div>
+                      <div className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Total Match Impressions</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-card p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-[#d97757]/10 flex items-center justify-center">
+                      <Trophy className="w-5 h-5 text-[#d97757]" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>{reportData.length}</div>
+                      <div className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Providers in Results</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-card p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-[#6a9bcc]/10 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-[#6a9bcc]" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
+                        {reportData.length > 0 ? reportData[0].avg_score : 0}
+                      </div>
+                      <div className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Top Avg Match Score</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Provider Engagement Table */}
+              <div className="glass-card overflow-hidden">
+                <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50">
+                  <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+                    <BarChart3 className="w-5 h-5 text-[#2DD1AC]" />
+                    Provider Engagement — Top 3 Appearances
+                  </h2>
+                  <p className="text-sm text-[#b0aea5] mt-1" style={{ fontFamily: "var(--font-body)" }}>
+                    Shows how often each facility appears in client match results.
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full" style={{ fontFamily: "var(--font-ui)" }}>
+                    <thead>
+                      <tr className="border-b border-[#e8e6dc]">
+                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Rank</th>
+                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Facility</th>
+                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Times in Top 3</th>
+                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Avg Match Score</th>
+                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Engagement</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reportData.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="text-center py-12">
+                            <BarChart3 className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
+                            <p className="text-sm text-[#b0aea5]">No match data yet. Results appear when clients complete the Find a Home questionnaire.</p>
+                          </td>
+                        </tr>
+                      ) : (
+                        reportData.map((row, index) => {
+                          const maxCount = reportData[0]?.impression_count || 1;
+                          const barWidth = Math.round((row.impression_count / maxCount) * 100);
+                          return (
+                            <tr key={row.facility_id} className="border-b border-[#e8e6dc]/50 hover:bg-[#2DD1AC]/3 transition-colors">
+                              <td className="px-6 py-4">
+                                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                                  index === 0
+                                    ? "bg-[#d97757]/10 text-[#d97757]"
+                                    : index === 1
+                                    ? "bg-[#b0aea5]/15 text-[#b0aea5]"
+                                    : index === 2
+                                    ? "bg-[#d97757]/5 text-[#d97757]/70"
+                                    : "bg-[#e8e6dc]/30 text-[#b0aea5]"
+                                }`}>
+                                  {index + 1}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="text-sm font-semibold text-[#2D3748]">{row.facility_name}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-lg font-bold text-[#2D3748]">{row.impression_count}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm font-semibold text-[#2DD1AC]">{row.avg_score}</span>
+                              </td>
+                              <td className="px-6 py-4 min-w-[180px]">
+                                <div className="h-3 bg-[#e8e6dc] rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/60 rounded-full transition-all duration-500"
+                                    style={{ width: `${barWidth}%` }}
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

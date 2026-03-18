@@ -1,13 +1,19 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Check, Loader2, Heart, HandHeart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, Heart, MapPin, Star, Building2, Lock, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { QuestionnaireConfig } from "@/lib/types";
+import type { QuestionnaireConfig, Facility, ProviderCareProfile } from "@/lib/types";
 
 // Step definitions
-type StepType = "single" | "multi" | "info" | "loading" | "contact" | "confirmation";
+type StepType = "single" | "multi" | "info" | "loading" | "results" | "confirmation";
+
+interface MatchedFacility {
+  facility: Facility;
+  score: number;
+  matchedAreas: string[];
+}
 
 interface Option {
   label: string;
@@ -80,10 +86,10 @@ function buildStepsFromConfig(configs: QuestionnaireConfig[]): Step[] {
 
   result.push({ id: "loading", type: "loading" });
   result.push({
-    id: "contact",
-    type: "contact",
-    title: "Almost there! Where should we send your results?",
-    subtitle: "A senior care advisor will reach out to help you find the best match.",
+    id: "results",
+    type: "results",
+    title: "Your Top Matches",
+    subtitle: "Based on your answers, here are the best facilities for your needs.",
   });
   result.push({ id: "confirmation", type: "confirmation" });
 
@@ -106,14 +112,9 @@ const FALLBACK_CONFIGS: QuestionnaireConfig[] = [
 export default function FindAHomePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-  const [contactForm, setContactForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-  const [submitting, setSubmitting] = useState(false);
   const [dbConfigs, setDbConfigs] = useState<QuestionnaireConfig[] | null>(null);
+  const [matchedFacilities, setMatchedFacilities] = useState<MatchedFacility[]>([]);
+  const [matchingDone, setMatchingDone] = useState(false);
 
   useEffect(() => {
     async function fetchConfig() {
@@ -133,8 +134,100 @@ export default function FindAHomePage() {
     fetchConfig();
   }, []);
 
+  // Matching algorithm: compare client answers with provider care profiles
+  const runMatching = useCallback(async () => {
+    const supabase = createClient();
+
+    // Fetch all provider care profiles with their facility data
+    const { data: profiles } = await supabase
+      .from("provider_care_profiles")
+      .select("*");
+
+    if (!profiles || profiles.length === 0) {
+      setMatchedFacilities([]);
+      setMatchingDone(true);
+      return;
+    }
+
+    // Fetch facilities for those profiles
+    const facilityIds = profiles.map((p: ProviderCareProfile) => p.facility_id);
+    const { data: facilities } = await supabase
+      .from("facilities")
+      .select("*")
+      .in("id", facilityIds)
+      .eq("is_active", true);
+
+    if (!facilities || facilities.length === 0) {
+      setMatchedFacilities([]);
+      setMatchingDone(true);
+      return;
+    }
+
+    // Score each provider profile against client answers
+    const scored: MatchedFacility[] = [];
+
+    for (const profile of profiles as ProviderCareProfile[]) {
+      const facility = facilities.find((f: Facility) => f.id === profile.facility_id);
+      if (!facility) continue;
+
+      let score = 0;
+      const matchedAreas: string[] = [];
+      const providerAnswers = profile.answers;
+
+      // Compare each question's answer
+      for (const [stepId, clientAnswer] of Object.entries(answers)) {
+        const providerAnswer = providerAnswers[stepId];
+        if (!providerAnswer) continue;
+
+        const clientValues = Array.isArray(clientAnswer) ? clientAnswer : [clientAnswer];
+        const providerValues = Array.isArray(providerAnswer) ? providerAnswer : [providerAnswer];
+
+        // Count overlapping values
+        const overlap = clientValues.filter((v) => providerValues.includes(v));
+        if (overlap.length > 0) {
+          score += overlap.length;
+          // Map step_id to readable label
+          const stepLabels: Record<string, string> = {
+            who: "Care recipient",
+            age: "Age range",
+            timeline: "Timeline",
+            living: "Living situation",
+            "looking-for": "Desired features",
+            mobility: "Mobility needs",
+            assistance: "Assistance needs",
+            cognitive: "Cognitive care",
+            budget: "Budget range",
+          };
+          matchedAreas.push(stepLabels[stepId] || stepId);
+        }
+      }
+
+      if (score > 0) {
+        scored.push({ facility, score, matchedAreas });
+      }
+    }
+
+    // Sort by score descending, take top 3
+    scored.sort((a, b) => b.score - a.score);
+    const top3 = scored.slice(0, 3);
+
+    // Record impressions for reporting
+    if (top3.length > 0) {
+      const impressions = top3.map((m) => ({
+        facility_id: m.facility.id,
+        provider_id: m.facility.owner_id || m.facility.id,
+        client_answers: answers,
+        match_score: m.score,
+      }));
+      await supabase.from("match_impressions").insert(impressions).select();
+    }
+
+    setMatchedFacilities(top3);
+    setMatchingDone(true);
+  }, [answers]);
+
   const STEPS = useMemo(() => buildStepsFromConfig(dbConfigs || FALLBACK_CONFIGS), [dbConfigs]);
-  const PROGRESS_STEPS = useMemo(() => STEPS.filter((s) => s.type !== "info" && s.type !== "loading" && s.type !== "confirmation"), [STEPS]);
+  const PROGRESS_STEPS = useMemo(() => STEPS.filter((s) => s.type !== "info" && s.type !== "loading" && s.type !== "confirmation" && s.type !== "results"), [STEPS]);
 
   const step = STEPS[currentStep];
 
@@ -155,15 +248,12 @@ export default function FindAHomePage() {
   );
 
   const canGoNext = useCallback(() => {
-    if (step.type === "info" || step.type === "loading" || step.type === "confirmation") return true;
-    if (step.type === "contact") {
-      return contactForm.firstName && contactForm.lastName && contactForm.email && contactForm.phone;
-    }
+    if (step.type === "info" || step.type === "loading" || step.type === "confirmation" || step.type === "results") return true;
     const answer = answers[step.id];
     if (step.type === "single") return !!answer;
     if (step.type === "multi") return Array.isArray(answer) && answer.length > 0;
     return false;
-  }, [step, answers, contactForm]);
+  }, [step, answers]);
 
   const handleSingleSelect = (value: string) => {
     setAnswers((prev) => ({ ...prev, [step.id]: value }));
@@ -192,14 +282,17 @@ export default function FindAHomePage() {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
 
-      // Auto-advance loading step after delay
+      // Auto-advance loading step after matching completes
       if (STEPS[nextStep].type === "loading") {
-        setTimeout(() => {
-          setCurrentStep(nextStep + 1);
-        }, 2500);
+        setMatchingDone(false);
+        runMatching().then(() => {
+          setTimeout(() => {
+            setCurrentStep(nextStep + 1);
+          }, 1500);
+        });
       }
     }
-  }, [currentStep]);
+  }, [currentStep, runMatching]);
 
   const goBack = () => {
     if (currentStep > 0) {
@@ -208,26 +301,6 @@ export default function FindAHomePage() {
       if (STEPS[prev].type === "loading") prev--;
       setCurrentStep(prev);
     }
-  };
-
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    try {
-      // Store lead in Supabase
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-      await supabase.from("care_leads").insert({
-        first_name: contactForm.firstName,
-        last_name: contactForm.lastName,
-        email: contactForm.email,
-        phone: contactForm.phone,
-        answers: answers,
-      });
-    } catch {
-      // Continue to confirmation even if save fails
-    }
-    setSubmitting(false);
-    goNext();
   };
 
   // Progress calculation
@@ -440,126 +513,194 @@ export default function FindAHomePage() {
             </div>
           )}
 
-          {/* Contact Form Step */}
-          {step.type === "contact" && (
+          {/* Results Step - Top 3 Matches */}
+          {step.type === "results" && (
             <div className="animate-fade-in-up">
               <h1
-                className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-3 leading-tight"
+                className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-3 leading-tight text-center"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 {getTitle(step)}
               </h1>
               <p
-                className="text-lg text-[#b0aea5] mb-10"
+                className="text-lg text-[#b0aea5] mb-8 text-center"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {getSubtitle(step)}
               </p>
-              <div className="space-y-4 mb-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      className="block text-sm font-medium text-[#2D3748] mb-1.5"
-                      style={{ fontFamily: "var(--font-ui)" }}
+
+              {matchedFacilities.length > 0 ? (
+                <div className="space-y-4 mb-8">
+                  {matchedFacilities.map((match, index) => (
+                    <div
+                      key={match.facility.id}
+                      className={`bg-white border-2 rounded-2xl overflow-hidden transition-all hover:shadow-lg ${
+                        index === 0
+                          ? "border-[#2DD1AC] shadow-md"
+                          : "border-[#e8e6dc] hover:border-[#2DD1AC]/40"
+                      }`}
                     >
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      value={contactForm.firstName}
-                      onChange={(e) =>
-                        setContactForm((p) => ({ ...p, firstName: e.target.value }))
-                      }
-                      className="w-full px-5 py-4 rounded-xl border-2 border-[#e8e6dc] bg-white text-[#2D3748] outline-none focus:border-[#2DD1AC] transition-colors text-base"
-                      style={{ fontFamily: "var(--font-body)" }}
-                      placeholder="Juan"
-                    />
+                      {index === 0 && (
+                        <div className="bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 text-white text-xs font-semibold px-4 py-1.5 text-center" style={{ fontFamily: "var(--font-ui)" }}>
+                          Best Match
+                        </div>
+                      )}
+                      <div className="p-5">
+                        <div className="flex items-start gap-4">
+                          {/* Facility Image */}
+                          <div className="w-20 h-20 rounded-xl bg-[#e8e6dc]/30 border border-[#e8e6dc]/50 flex items-center justify-center shrink-0 overflow-hidden">
+                            {match.facility.image_urls?.[0] ? (
+                              <img src={match.facility.image_urls[0]} alt={match.facility.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Building2 className="w-8 h-8 text-[#b0aea5]" />
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h3
+                                className="text-lg font-bold text-[#2D3748] leading-tight"
+                                style={{ fontFamily: "var(--font-heading)" }}
+                              >
+                                {match.facility.name}
+                              </h3>
+                              <span
+                                className="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-[#2DD1AC] bg-[#2DD1AC]/10 px-2.5 py-1 rounded-full"
+                                style={{ fontFamily: "var(--font-ui)" }}
+                              >
+                                #{index + 1}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-2 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                              <span className="flex items-center gap-1">
+                                <MapPin className="w-3.5 h-3.5" />
+                                {match.facility.city}
+                              </span>
+                              {match.facility.rating && (
+                                <span className="flex items-center gap-1">
+                                  <Star className="w-3.5 h-3.5 text-[#d97757]" fill="#d97757" />
+                                  {match.facility.rating}
+                                </span>
+                              )}
+                            </div>
+
+                            {match.facility.description && (
+                              <p
+                                className="text-sm text-[#2D3748]/70 line-clamp-2 mb-3"
+                                style={{ fontFamily: "var(--font-body)" }}
+                              >
+                                {match.facility.description}
+                              </p>
+                            )}
+
+                            {/* Matched Areas */}
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {match.matchedAreas.map((area) => (
+                                <span
+                                  key={area}
+                                  className="text-xs bg-[#2DD1AC]/10 text-[#2DD1AC] px-2.5 py-1 rounded-full font-medium"
+                                  style={{ fontFamily: "var(--font-ui)" }}
+                                >
+                                  {area}
+                                </span>
+                              ))}
+                            </div>
+
+                            {/* Services */}
+                            {match.facility.services && match.facility.services.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5">
+                                {match.facility.services.slice(0, 4).map((s) => (
+                                  <span key={s} className="text-xs bg-[#e8e6dc]/50 text-[#2D3748]/60 px-2 py-0.5 rounded-full" style={{ fontFamily: "var(--font-ui)" }}>
+                                    {s}
+                                  </span>
+                                ))}
+                                {match.facility.services.length > 4 && (
+                                  <span className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                                    +{match.facility.services.length - 4} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Price Range */}
+                            {(match.facility.price_range_min || match.facility.price_range_max) && (
+                              <p className="text-sm font-semibold text-[#2D3748] mt-2" style={{ fontFamily: "var(--font-ui)" }}>
+                                {match.facility.price_range_min && match.facility.price_range_max
+                                  ? `₱${match.facility.price_range_min.toLocaleString()} – ₱${match.facility.price_range_max.toLocaleString()}/mo`
+                                  : match.facility.price_range_min
+                                  ? `From ₱${match.facility.price_range_min.toLocaleString()}/mo`
+                                  : `Up to ₱${match.facility.price_range_max!.toLocaleString()}/mo`}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : matchingDone ? (
+                <div className="text-center py-12 mb-8">
+                  <Building2 className="w-12 h-12 text-[#b0aea5] mx-auto mb-4" />
+                  <p className="text-lg font-semibold text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-heading)" }}>
+                    No matches found yet
+                  </p>
+                  <p className="text-sm text-[#b0aea5] max-w-md mx-auto" style={{ fontFamily: "var(--font-body)" }}>
+                    We&apos;re still growing our network. Browse all facilities to find one that fits your needs.
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center py-12 mb-8">
+                  <Loader2 className="w-10 h-10 text-[#2DD1AC] animate-spin mx-auto mb-4" />
+                  <p className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Finding your best matches...</p>
+                </div>
+              )}
+
+              {/* Login prompt */}
+              <div className="bg-[#2D3748]/5 border-2 border-[#e8e6dc] rounded-2xl p-5 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#6a9bcc]/15 flex items-center justify-center shrink-0">
+                    <Lock className="w-5 h-5 text-[#6a9bcc]" />
                   </div>
                   <div>
-                    <label
-                      className="block text-sm font-medium text-[#2D3748] mb-1.5"
+                    <p className="text-sm font-semibold text-[#2D3748] mb-1" style={{ fontFamily: "var(--font-ui)" }}>
+                      Want to chat with providers?
+                    </p>
+                    <p className="text-sm text-[#b0aea5] mb-3" style={{ fontFamily: "var(--font-body)" }}>
+                      Sign in to see contact details and message facilities directly.
+                    </p>
+                    <Link
+                      href="/auth/login"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#6a9bcc] text-white hover:bg-[#5a8bbc] transition-all shadow-sm"
                       style={{ fontFamily: "var(--font-ui)" }}
                     >
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      value={contactForm.lastName}
-                      onChange={(e) =>
-                        setContactForm((p) => ({ ...p, lastName: e.target.value }))
-                      }
-                      className="w-full px-5 py-4 rounded-xl border-2 border-[#e8e6dc] bg-white text-[#2D3748] outline-none focus:border-[#2DD1AC] transition-colors text-base"
-                      style={{ fontFamily: "var(--font-body)" }}
-                      placeholder="Dela Cruz"
-                    />
+                      <MessageCircle className="w-4 h-4" />
+                      Sign In to Connect
+                    </Link>
                   </div>
-                </div>
-                <div>
-                  <label
-                    className="block text-sm font-medium text-[#2D3748] mb-1.5"
-                    style={{ fontFamily: "var(--font-ui)" }}
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={contactForm.email}
-                    onChange={(e) =>
-                      setContactForm((p) => ({ ...p, email: e.target.value }))
-                    }
-                    className="w-full px-5 py-4 rounded-xl border-2 border-[#e8e6dc] bg-white text-[#2D3748] outline-none focus:border-[#2DD1AC] transition-colors text-base"
-                    style={{ fontFamily: "var(--font-body)" }}
-                    placeholder="juan@email.com"
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block text-sm font-medium text-[#2D3748] mb-1.5"
-                    style={{ fontFamily: "var(--font-ui)" }}
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={contactForm.phone}
-                    onChange={(e) =>
-                      setContactForm((p) => ({ ...p, phone: e.target.value }))
-                    }
-                    className="w-full px-5 py-4 rounded-xl border-2 border-[#e8e6dc] bg-white text-[#2D3748] outline-none focus:border-[#2DD1AC] transition-colors text-base"
-                    style={{ fontFamily: "var(--font-body)" }}
-                    placeholder="+63 9XX XXX XXXX"
-                  />
                 </div>
               </div>
-              <button
-                onClick={handleSubmit}
-                disabled={!canGoNext() || submitting}
-                className={`w-full py-4 rounded-full text-base font-semibold transition-all ${
-                  canGoNext() && !submitting
-                    ? "bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 text-white shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:-translate-y-0.5"
-                    : "bg-[#e8e6dc] text-[#b0aea5] cursor-not-allowed"
-                }`}
-                style={{ fontFamily: "var(--font-ui)" }}
-              >
-                {submitting ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Submitting...
-                  </span>
-                ) : (
-                  "Get My Results"
-                )}
-              </button>
-              <p
-                className="text-xs text-[#b0aea5] text-center mt-4"
-                style={{ fontFamily: "var(--font-ui)" }}
-              >
-                By submitting, you agree to be contacted by a SeniorLiving PH advisor.
-              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/facilities"
+                  className="px-8 py-4 rounded-full text-base font-semibold bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 text-white shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all text-center"
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  Browse All Facilities
+                </Link>
+                <Link
+                  href="/"
+                  className="px-8 py-4 rounded-full text-base font-semibold text-[#2D3748] bg-white border-2 border-[#e8e6dc] hover:border-[#2DD1AC]/40 hover:shadow-md transition-all text-center"
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  Back to Home
+                </Link>
+              </div>
             </div>
           )}
 
-          {/* Confirmation Step */}
+          {/* Confirmation Step - now just a thank you */}
           {step.type === "confirmation" && (
             <div className="animate-fade-in-up text-center">
               <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-[#2DD1AC]/15 flex items-center justify-center">
@@ -569,47 +710,26 @@ export default function FindAHomePage() {
                 className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-4"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                We&apos;ve received your details!
+                Thank you for using SeniorLiving PH!
               </h1>
               <p
-                className="text-lg text-[#b0aea5] mb-4 max-w-md mx-auto"
+                className="text-lg text-[#b0aea5] mb-8 max-w-md mx-auto"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                A dedicated senior care advisor will review your preferences and
-                reach out within 24 hours with personalized facility recommendations.
+                We hope you found a great match. Create an account to connect directly
+                with facilities and get personalized recommendations.
               </p>
-              <div className="bg-white border-2 border-[#e8e6dc] rounded-2xl p-6 max-w-sm mx-auto mb-8">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-[#2DD1AC]/15 flex items-center justify-center">
-                    <HandHeart className="w-6 h-6 text-[#2DD1AC]" />
-                  </div>
-                  <div className="text-left">
-                    <p
-                      className="text-sm font-semibold text-[#2D3748]"
-                      style={{ fontFamily: "var(--font-ui)" }}
-                    >
-                      Your Care Advisor
-                    </p>
-                    <p
-                      className="text-xs text-[#b0aea5]"
-                      style={{ fontFamily: "var(--font-ui)" }}
-                    >
-                      Will contact you within 24 hours
-                    </p>
-                  </div>
-                </div>
-                <p
-                  className="text-sm text-[#2D3748]/70"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  In the meantime, feel free to browse our facilities or explore
-                  our resources.
-                </p>
-              </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
-                  href="/facilities"
+                  href="/auth/login"
                   className="px-8 py-4 rounded-full text-base font-semibold bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 text-white shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  Create Account
+                </Link>
+                <Link
+                  href="/facilities"
+                  className="px-8 py-4 rounded-full text-base font-semibold text-[#2D3748] bg-white border-2 border-[#e8e6dc] hover:border-[#2DD1AC]/40 hover:shadow-md transition-all"
                   style={{ fontFamily: "var(--font-ui)" }}
                 >
                   Browse Facilities
@@ -626,7 +746,7 @@ export default function FindAHomePage() {
           )}
 
           {/* Navigation Arrows - for multi-select and info steps */}
-          {step.type !== "loading" && step.type !== "confirmation" && step.type !== "single" && (
+          {step.type !== "loading" && step.type !== "confirmation" && step.type !== "single" && step.type !== "results" && (
             <div className="flex items-center justify-between mt-12">
               <button
                 onClick={goBack}
@@ -641,7 +761,7 @@ export default function FindAHomePage() {
                 <ChevronLeft className="w-5 h-5" />
                 Back
               </button>
-              {step.type !== "contact" && step.type !== "info" && (
+              {step.type !== "info" && (
                 <button
                   onClick={goNext}
                   disabled={!canGoNext()}

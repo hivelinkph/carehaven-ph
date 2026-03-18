@@ -144,6 +144,15 @@ export interface ProviderCareProfile {
   created_at: string;
 }
 
+export interface MatchImpression {
+  id: string;
+  facility_id: string;
+  provider_id: string;
+  client_answers: Record<string, string | string[]>;
+  match_score: number;
+  created_at: string;
+}
+
 export type VitalStatus = 'normal' | 'warning' | 'critical';
 
 export interface VitalReading {

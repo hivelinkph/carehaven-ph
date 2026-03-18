@@ -1,8 +1,8 @@
 "use client";
 
-import { Building2, ClipboardList, MessageSquareQuote, Menu, X, LogOut } from "lucide-react";
+import { Building2, ClipboardList, MessageSquareQuote, BarChart3, Menu, X, LogOut } from "lucide-react";
 
-export type AdminTab = "facilities" | "questionnaire" | "testimonials";
+export type AdminTab = "facilities" | "questionnaire" | "testimonials" | "reports";
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -16,6 +16,7 @@ const TABS: { key: AdminTab; label: string; icon: typeof Building2 }[] = [
   { key: "facilities", label: "Facilities", icon: Building2 },
   { key: "questionnaire", label: "Questionnaire", icon: ClipboardList },
   { key: "testimonials", label: "Testimonials", icon: MessageSquareQuote },
+  { key: "reports", label: "Reports", icon: BarChart3 },
 ];
 
 export default function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle, onSignOut }: AdminSidebarProps) {
