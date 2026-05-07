@@ -1,24 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-const IMAGES = [
-    { id: 1, src: "/assets/images/pics1.jpg", alt: "Assisted Living Facility 1" },
-    { id: 2, src: "/assets/images/pics2.jpg", alt: "Assisted Living Facility 2" },
-    { id: 3, src: "/assets/images/pics3.jpg", alt: "Assisted Living Facility 3" },
-    { id: 4, src: "/assets/images/pics4.jpg", alt: "Assisted Living Facility 4" },
-];
+import { createClient } from "@/lib/supabase/client";
+import type { GalleryImage } from "@/lib/types";
 
 export default function GalleryCarousel() {
+    const [images, setImages] = useState<GalleryImage[]>([]);
+    const [loading, setLoading] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
 
+    useEffect(() => {
+        let cancelled = false;
+        async function load() {
+            const supabase = createClient();
+            const { data } = await supabase
+                .from("gallery_images")
+                .select("*")
+                .eq("is_active", true)
+                .order("sort_order", { ascending: true })
+                .order("created_at", { ascending: true });
+            if (!cancelled) {
+                setImages(data || []);
+                setLoading(false);
+            }
+        }
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (loading || images.length === 0) {
+        return null;
+    }
+
     const nextCard = () => {
-        setActiveIndex((prev) => (prev + 1) % IMAGES.length);
+        setActiveIndex((prev) => (prev + 1) % images.length);
     };
 
     const prevCard = () => {
-        setActiveIndex((prev) => (prev - 1 + IMAGES.length) % IMAGES.length);
+        setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
     const setCard = (index: number) => {
@@ -59,27 +81,16 @@ export default function GalleryCarousel() {
                     <ChevronLeft className="w-8 h-8" />
                 </button>
 
-                {IMAGES.map((img, index) => {
-                    // Calculate offset relative to active card
-                    let offset = index - activeIndex;
-
-                    let absOffset = Math.abs(offset);
-                    let isActive = offset === 0;
-
-                    // Horizontal slide
-                    let translateX = offset * 55;
-
-                    // The active picture should be 100% bigger: 1 vs 0.45
-                    let scale = isActive ? 1 : 0.45;
-
-                    // Rotate like cards fanned out
-                    let rotateY = offset * -25; // cards face toward center
-                    let rotateZ = offset * 2; // slight fan tilt
-
-                    let zIndex = 20 - absOffset;
-
-                    // Fade heavily offset cards
-                    let opacity = isActive ? 1 : (absOffset === 1 ? 0.7 : 0);
+                {images.map((img, index) => {
+                    const offset = index - activeIndex;
+                    const absOffset = Math.abs(offset);
+                    const isActive = offset === 0;
+                    const translateX = offset * 55;
+                    const scale = isActive ? 1 : 0.45;
+                    const rotateY = offset * -25;
+                    const rotateZ = offset * 2;
+                    const zIndex = 20 - absOffset;
+                    const opacity = isActive ? 1 : (absOffset === 1 ? 0.7 : 0);
 
                     return (
                         <div
@@ -97,8 +108,8 @@ export default function GalleryCarousel() {
                         >
                             <div
                                 className="w-full h-full bg-cover bg-center transition-transform duration-700 hover:scale-105"
-                                style={{ backgroundImage: `url(${img.src})` }}
-                                aria-label={img.alt}
+                                style={{ backgroundImage: `url(${img.image_url})` }}
+                                aria-label={img.alt_text || "Gallery image"}
                             />
                             {/* Overlay shadow for depth */}
                             {!isActive && (
@@ -120,7 +131,7 @@ export default function GalleryCarousel() {
 
             {/* Controls (Dots only) */}
             <div className="relative z-10 flex justify-center items-center gap-3 mt-8">
-                {IMAGES.map((_, idx) => (
+                {images.map((_, idx) => (
                     <button
                         key={idx}
                         onClick={() => setCard(idx)}

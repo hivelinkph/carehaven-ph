@@ -1,28 +1,23 @@
 "use client";
 
-import { useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search, Building2 } from "lucide-react";
 import FloatingNav from "@/components/layout/FloatingNav";
 
 export default function HeroSection() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   return (
     <section className="relative min-h-screen flex items-end overflow-hidden">
-      {/* Video Background - full, no overlay */}
+      {/* Image Background - full, no overlay */}
       <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/assets/images/hero-poster.jpg"
-          className="w-full h-full object-cover"
-        >
-          <source src="/assets/videos/herosection.mp4?v=3" type="video/mp4" />
-        </video>
+        <Image
+          src="/assets/images/hero.jpeg"
+          alt="Caring assisted living environment"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
       </div>
 
       {/* Floating Nav - buttons over video */}

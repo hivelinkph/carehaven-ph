@@ -122,6 +122,16 @@ export interface Testimonial {
   updated_at: string;
 }
 
+export interface GalleryImage {
+  id: string;
+  image_url: string;
+  alt_text: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface QuestionnaireConfig {
   id: string;
   step_id: string;

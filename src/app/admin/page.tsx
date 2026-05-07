@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility, Location, Testimonial, QuestionnaireConfig } from "@/lib/types";
+import type { Facility, Location, Testimonial, QuestionnaireConfig, GalleryImage } from "@/lib/types";
 import AdminSidebar, { type AdminTab } from "@/components/admin/AdminSidebar";
 import {
   Building2,
@@ -31,6 +31,7 @@ import {
   BarChart3,
   TrendingUp,
   Trophy,
+  Images,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -50,6 +51,8 @@ export default function AdminDashboard() {
   const [savingQuestion, setSavingQuestion] = useState(false);
   const [reportData, setReportData] = useState<{ facility_id: string; facility_name: string; impression_count: number; avg_score: number }[]>([]);
   const [reportTotal, setReportTotal] = useState(0);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -69,18 +72,20 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [facRes, locRes, testRes, qRes, impRes] = await Promise.all([
+      const [facRes, locRes, testRes, qRes, impRes, galRes] = await Promise.all([
         supabase.from("facilities").select("*").order("created_at", { ascending: false }),
         supabase.from("locations").select("*").order("name", { ascending: true }),
         supabase.from("testimonials").select("*").order("sort_order", { ascending: true }),
         supabase.from("questionnaire_config").select("*").order("sort_order", { ascending: true }),
         supabase.from("match_impressions").select("*"),
+        supabase.from("gallery_images").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true }),
       ]);
 
       setFacilities(facRes.data || []);
       setLocations(locRes.data || []);
       setTestimonials(testRes.data || []);
       setQuestions(qRes.data || []);
+      setGalleryImages(galRes.data || []);
 
       // Build report data from impressions
       const impressions = impRes.data || [];
@@ -270,6 +275,76 @@ export default function AdminDashboard() {
     if (!editingQuestion) return;
     const options = (editingQuestion.options || []).filter((_, i) => i !== index);
     setEditingQuestion({ ...editingQuestion, options });
+  };
+
+  // --- Gallery handlers ---
+  const handleGalleryUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingGallery(true);
+    try {
+      const newRows: GalleryImage[] = [];
+      let nextSort = galleryImages.length;
+      for (const file of Array.from(files)) {
+        const ext = file.name.split(".").pop();
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("gallery-images")
+          .upload(path, file, { upsert: false });
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from("gallery-images").getPublicUrl(path);
+        const { data, error } = await supabase
+          .from("gallery_images")
+          .insert({
+            image_url: publicUrl,
+            alt_text: file.name,
+            sort_order: nextSort,
+            is_active: true,
+          })
+          .select()
+          .single();
+        if (error) throw error;
+        if (data) newRows.push(data);
+        nextSort += 1;
+      }
+      if (newRows.length) setGalleryImages((prev) => [...prev, ...newRows]);
+    } catch (err) {
+      console.error("Gallery upload failed:", err);
+      alert("Failed to upload one or more images. Please try again.");
+    }
+    setUploadingGallery(false);
+  };
+
+  const handleToggleGalleryActive = async (img: GalleryImage) => {
+    const { error } = await supabase
+      .from("gallery_images")
+      .update({ is_active: !img.is_active })
+      .eq("id", img.id);
+    if (!error) {
+      setGalleryImages((prev) =>
+        prev.map((g) => (g.id === img.id ? { ...g, is_active: !img.is_active } : g))
+      );
+    }
+  };
+
+  const handleDeleteGalleryImage = async (img: GalleryImage) => {
+    if (!window.confirm("Delete this gallery image? This cannot be undone.")) return;
+    const { error } = await supabase.from("gallery_images").delete().eq("id", img.id);
+    if (error) {
+      alert("Failed to delete image.");
+      return;
+    }
+    try {
+      const url = new URL(img.image_url);
+      const marker = "/gallery-images/";
+      const idx = url.pathname.indexOf(marker);
+      if (idx !== -1) {
+        const path = decodeURIComponent(url.pathname.slice(idx + marker.length));
+        await supabase.storage.from("gallery-images").remove([path]);
+      }
+    } catch (e) {
+      console.warn("Could not remove gallery file from storage:", e);
+    }
+    setGalleryImages((prev) => prev.filter((g) => g.id !== img.id));
   };
 
   // --- Filter ---
@@ -976,6 +1051,89 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+          {/* ===== GALLERY TAB ===== */}
+          {activeTab === "gallery" && (
+            <div className="glass-card overflow-hidden">
+              <div className="p-6 border-b border-[#e8e6dc]/50 bg-white/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-[#2D3748] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+                    <Images className="w-5 h-5 text-[#2DD1AC]" />
+                    Home Page Gallery ({galleryImages.length})
+                  </h2>
+                  <p className="text-sm text-[#b0aea5] mt-1" style={{ fontFamily: "var(--font-body)" }}>
+                    Upload photos to feature on the home page gallery carousel. Inactive images are hidden from visitors.
+                  </p>
+                </div>
+                <label className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#2DD1AC] text-white font-semibold rounded-full hover:bg-[#1E957A] transition-colors shadow-sm hover:shadow-md cursor-pointer ${uploadingGallery ? "opacity-50 pointer-events-none" : ""}`} style={{ fontFamily: "var(--font-ui)" }}>
+                  {uploadingGallery ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+                  ) : (
+                    <><Upload className="w-4 h-4" /> Upload Images</>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      handleGalleryUpload(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+
+              {galleryImages.length === 0 ? (
+                <div className="text-center py-16 px-6">
+                  <Images className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
+                  <p className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                    No gallery images yet. Upload your first photos to populate the home page gallery.
+                  </p>
+                </div>
+              ) : (
+                <div className="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {galleryImages.map((img) => (
+                    <div key={img.id} className="relative group rounded-2xl overflow-hidden border border-[#e8e6dc] bg-[#faf9f5] aspect-square">
+                      <img
+                        src={img.image_url}
+                        alt={img.alt_text || "Gallery image"}
+                        className={`w-full h-full object-cover transition-opacity ${img.is_active ? "" : "opacity-40"}`}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute top-2 left-2">
+                        {img.is_active ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#788c5d] bg-white/95 px-2 py-1 rounded-full shadow-sm">
+                            <CheckCircle2 className="w-3 h-3" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#d97757] bg-white/95 px-2 py-1 rounded-full shadow-sm">
+                            <XCircle className="w-3 h-3" /> Hidden
+                          </span>
+                        )}
+                      </div>
+                      <div className="absolute bottom-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleToggleGalleryActive(img)}
+                          className="p-2 rounded-lg bg-white/95 text-[#2D3748] hover:bg-[#2DD1AC] hover:text-white transition-all shadow-md"
+                          title={img.is_active ? "Hide" : "Show"}
+                        >
+                          {img.is_active ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteGalleryImage(img)}
+                          className="p-2 rounded-lg bg-white/95 text-[#2D3748] hover:bg-red-500 hover:text-white transition-all shadow-md"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ===== REPORTS TAB ===== */}
           {activeTab === "reports" && (
             <>
