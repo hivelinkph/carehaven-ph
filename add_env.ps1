@@ -8,7 +8,7 @@ Write-Output "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 
 Write-Output "fc-a0afeab63a8843b29ba191de6260a1b1" | npx vercel env add FIRECRAWL_API_KEY production
 
-Write-Output "https://genuine-careph.vercel.app" | npx vercel env add NEXT_PUBLIC_APP_URL production
+Write-Output "https://sla.vercel.app" | npx vercel env add NEXT_PUBLIC_APP_URL production
 
 Write-Output "CareHaven PH" | npx vercel env add NEXT_PUBLIC_APP_NAME production
 
