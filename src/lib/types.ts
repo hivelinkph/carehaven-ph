@@ -153,6 +153,29 @@ export interface MatchImpression {
   created_at: string;
 }
 
+export interface Conversation {
+  id: string;
+  user_id: string;
+  provider_id: string;
+  facility_id: string;
+  last_message_at: string;
+  last_message_preview: string | null;
+  created_at: string;
+  facility?: Facility;
+  provider?: Profile;
+  user?: Profile;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  sender_role: 'user' | 'provider';
+  content: string;
+  read_at: string | null;
+  created_at: string;
+}
+
 export type VitalStatus = 'normal' | 'warning' | 'critical';
 
 export interface VitalReading {

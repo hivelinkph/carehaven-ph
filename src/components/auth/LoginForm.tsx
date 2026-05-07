@@ -70,18 +70,21 @@ export default function LoginForm() {
       }
     }
 
-    // Redirect based on actual user role
+    // Redirect based on actual user role (or honor an explicit ?redirect=)
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", (await supabase.auth.getUser()).data.user!.id)
       .single();
 
-    const destination = profile?.role === "admin"
-      ? "/admin"
-      : profile?.role === "provider"
-        ? "/dashboard/provider"
-        : "/dashboard";
+    const explicitRedirect = searchParams.get("redirect");
+    const destination = explicitRedirect
+      ? explicitRedirect
+      : profile?.role === "admin"
+        ? "/admin"
+        : profile?.role === "provider"
+          ? "/dashboard/provider"
+          : "/dashboard";
     router.push(destination);
     router.refresh();
   }

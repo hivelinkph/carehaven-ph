@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Facility } from "@/lib/types";
-import { MapPin, Star, Users, ChevronRight } from "lucide-react";
+import { MapPin, Star, Users } from "lucide-react";
 
 interface FacilityCardProps {
   facility: Facility;
@@ -80,24 +80,14 @@ export default function FacilityCard({ facility }: FacilityCardProps) {
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-3 border-t border-[#e8e6dc]/40" style={{ fontFamily: "var(--font-ui)" }}>
-          <div className="text-sm">
-            {facility.price_range_min && facility.price_range_max ? (
-              <span className="font-semibold text-[#2D3748]">
-                ₱{facility.price_range_min.toLocaleString()} - ₱{facility.price_range_max.toLocaleString()}
-                <span className="text-xs font-normal text-[#b0aea5]">/mo</span>
-              </span>
-            ) : (
-              <span className="text-[#b0aea5]">Contact for pricing</span>
-            )}
-          </div>
-          {facility.capacity && (
+        {facility.capacity && (
+          <div className="flex items-center justify-end pt-3 border-t border-[#e8e6dc]/40" style={{ fontFamily: "var(--font-ui)" }}>
             <div className="flex items-center gap-1 text-xs text-[#b0aea5]">
               <Users className="w-3.5 h-3.5" />
               {facility.capacity} beds
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Link>
   );

@@ -1,10 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility } from "@/lib/types";
+
+function ReachOutButton({ facilityId, ownerId }: { facilityId: string; ownerId: string | null }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+
+  async function handleClick() {
+    setBusy(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      const redirect = encodeURIComponent(`/dashboard?facility=${facilityId}`);
+      router.push(`/auth/login?redirect=${redirect}`);
+      return;
+    }
+    router.push(`/dashboard?facility=${facilityId}`);
+  }
+
+  if (!ownerId) {
+    return (
+      <button
+        disabled
+        className="block w-full text-center py-3 text-sm font-semibold text-[#b0aea5] bg-[#e8e6dc]/60 rounded-xl cursor-not-allowed"
+        style={{ fontFamily: "var(--font-ui)" }}
+      >
+        Messaging unavailable
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={busy}
+      className="block w-full text-center py-3 text-sm font-semibold text-white bg-[#2DD1AC] rounded-xl hover:bg-[#2DD1AC]/90 disabled:opacity-70 transition-all"
+      style={{ fontFamily: "var(--font-ui)" }}
+    >
+      {busy ? "Opening chat…" : "Reach Out"}
+    </button>
+  );
+}
 import {
   ArrowLeft,
   MapPin,
@@ -272,28 +312,15 @@ export default function FacilityDetailPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Pricing Card */}
+            {/* Inquire Card */}
             <div className="glass-card p-6">
-              <h3 className="text-lg font-bold text-[#2D3748] mb-4" style={{ fontFamily: "var(--font-heading)" }}>
-                Pricing
+              <h3 className="text-lg font-bold text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-heading)" }}>
+                Interested?
               </h3>
-              {facility.price_range_min && facility.price_range_max ? (
-                <div className="mb-4">
-                  <div className="text-2xl font-bold text-[#2DD1AC]" style={{ fontFamily: "var(--font-heading)" }}>
-                    ₱{facility.price_range_min.toLocaleString()} - ₱{facility.price_range_max.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>per month</div>
-                </div>
-              ) : (
-                <p className="text-[#b0aea5] mb-4" style={{ fontFamily: "var(--font-ui)" }}>Contact for pricing</p>
-              )}
-              <Link
-                href="/auth/signup"
-                className="block w-full text-center py-3 text-sm font-semibold text-white bg-[#2DD1AC] rounded-xl hover:bg-[#2DD1AC]/90 transition-all"
-                style={{ fontFamily: "var(--font-ui)" }}
-              >
-                Inquire Now
-              </Link>
+              <p className="text-sm text-[#b0aea5] mb-4" style={{ fontFamily: "var(--font-body)" }}>
+                Reach out directly to learn more about this facility and discuss care options.
+              </p>
+              <ReachOutButton facilityId={facility.id} ownerId={facility.owner_id} />
             </div>
 
             {/* Contact Card */}

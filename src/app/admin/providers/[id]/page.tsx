@@ -275,16 +275,6 @@ export default function AdminFacilityReviewPage() {
               </div>
             </div>
 
-            {/* Pricing */}
-            {(facility.price_range_min || facility.price_range_max) && (
-              <div className="glass-card p-6">
-                <h3 className="text-lg font-bold text-[#2D3748] mb-2" style={{ fontFamily: "var(--font-heading)" }}>Pricing</h3>
-                <div className="text-xl font-bold text-[#2DD1AC]" style={{ fontFamily: "var(--font-heading)" }}>
-                  ₱{(facility.price_range_min || 0).toLocaleString()} - ₱{(facility.price_range_max || 0).toLocaleString()}
-                </div>
-                <div className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>per month</div>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -624,16 +624,6 @@ export default function FindAHomePage() {
                               </div>
                             )}
 
-                            {/* Price Range */}
-                            {(match.facility.price_range_min || match.facility.price_range_max) && (
-                              <p className="text-sm font-semibold text-[#2D3748] mt-2" style={{ fontFamily: "var(--font-ui)" }}>
-                                {match.facility.price_range_min && match.facility.price_range_max
-                                  ? `₱${match.facility.price_range_min.toLocaleString()} – ₱${match.facility.price_range_max.toLocaleString()}/mo`
-                                  : match.facility.price_range_min
-                                  ? `From ₱${match.facility.price_range_min.toLocaleString()}/mo`
-                                  : `Up to ₱${match.facility.price_range_max!.toLocaleString()}/mo`}
-                              </p>
-                            )}
                           </div>
                         </div>
                       </div>

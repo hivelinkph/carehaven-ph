@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
@@ -8,6 +8,24 @@ import { ProviderDashboard } from "@/components/dashboard/ProviderDashboard";
 import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardInner />
+    </Suspense>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#faf9f5] pt-24 flex items-center justify-center">
+      <div className="animate-pulse text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+        Loading your dashboard...
+      </div>
+    </div>
+  );
+}
+
+function DashboardInner() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 

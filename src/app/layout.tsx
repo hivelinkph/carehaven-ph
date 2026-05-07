@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Lora, Poppins } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/layout/Footer";
+import BackToHomeButton from "@/components/layout/BackToHomeButton";
 
 const playfair = Playfair_Display({
   variable: "--font-heading",
@@ -48,6 +49,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${lora.variable} ${poppins.variable} antialiased`}
         style={{ fontFamily: "var(--font-body)" }}
       >
+        <BackToHomeButton />
         <main className="min-h-screen">{children}</main>
         <Footer />
       </body>
