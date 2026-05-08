@@ -23,31 +23,39 @@ export default function HeroSection() {
       {/* Floating Nav - buttons over video */}
       <FloatingNav />
 
+      {/* Soft warm gradient over the photo to keep type readable */}
+      <div
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(8,49,43,0.30) 0%, rgba(8,49,43,0.10) 35%, rgba(8,49,43,0.55) 100%)",
+        }}
+      />
+
       {/* Content - bottom left */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-16 sm:pb-20">
         <div className="max-w-2xl">
-          {/* Editorial eyebrow */}
+          {/* Soft pill eyebrow */}
           <div
-            className="inline-flex items-center gap-3 mb-6 animate-fade-in-up"
+            className="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 animate-fade-in-up"
             style={{ fontFamily: "var(--font-ui)" }}
           >
-            <span className="inline-block w-10 h-px bg-[#2DD1AC]" />
-            <span className="text-[11px] tracking-[0.32em] uppercase text-white/85" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>
-              Vol. 01 &nbsp;·&nbsp; Senior Living, Philippines
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="#9ee6d4">
+              <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
+            </svg>
+            <span className="text-[11.5px] tracking-[0.18em] uppercase text-white/95" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.45)" }}>
+              Senior Living Philippines
             </span>
           </div>
 
-          {/* Headline — editorial pairing */}
+          {/* Headline */}
           <h1
-            className="text-5xl sm:text-6xl lg:text-7xl font-medium text-white leading-[1.02] mb-6 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em" }}
+            className="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.02] mb-6 animate-fade-in-up"
+            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em", fontWeight: 600 }}
           >
             A home for the
             <br />
-            <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", fontWeight: 500, color: "#2DD1AC" }}>
-              ones you love
-            </span>
-            <span className="text-white">.</span>
+            <span style={{ color: "#9ee6d4" }}>ones you love.</span>
           </h1>
 
           {/* Subtitle */}
@@ -55,37 +63,42 @@ export default function HeroSection() {
             className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-xl animate-fade-in-up delay-100"
             style={{ fontFamily: "var(--font-body)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}
           >
-            Find trusted assisted living facilities across the Philippines.
-            Your loved ones deserve professional care in a warm, loving environment
-            — monitored daily, just a click away.
+            Browse vetted assisted living facilities across the Philippines, get
+            matched to ones that fit your needs, and connect with providers — all
+            in one place.
           </p>
 
           {/* CTA Buttons */}
           <div
-            className="flex flex-col sm:flex-row gap-4 mb-8 animate-fade-in-up delay-200"
+            className="flex flex-col sm:flex-row gap-3 mb-8 animate-fade-in-up delay-200"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <Link
               href="/find-a-home"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/85 rounded-full shadow-lg shadow-[#2DD1AC]/25 hover:shadow-xl hover:shadow-[#2DD1AC]/30 hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold text-white rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              style={{ background: "#1a8576" }}
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4" />
               Find a Home
             </Link>
             <Link
               href="/facilities"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-[#2D3748] bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold rounded-full border bg-white/90 backdrop-blur-sm hover:bg-white transition-all"
+              style={{ color: "#0c4039", borderColor: "rgba(255,255,255,0.4)" }}
             >
-              <Building2 className="w-5 h-5 text-[#d97757]" />
-              Search Facilities
+              <Building2 className="w-4 h-4" style={{ color: "#1a8576" }} />
+              Browse Facilities
             </Link>
           </div>
 
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#faf9f5] to-transparent z-10" />
+      {/* Bottom fade into cream canvas */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 z-[2]"
+        style={{ background: "linear-gradient(to top, var(--d-bg) 0%, transparent 100%)" }}
+      />
     </section>
   );
 }

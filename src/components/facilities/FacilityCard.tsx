@@ -10,7 +10,7 @@ export default function FacilityCard({ facility }: FacilityCardProps) {
   return (
     <Link
       href={`/facilities/${facility.id}`}
-      className="group editorial-card overflow-hidden hover:-translate-y-1 transition-all duration-300 block"
+      className="group care-card overflow-hidden block"
     >
       {/* Image */}
       <div className="aspect-[16/10] bg-gradient-to-br from-[#e8e6dc]/40 to-[#2DD1AC]/5 flex items-center justify-center relative overflow-hidden">

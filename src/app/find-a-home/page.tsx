@@ -349,15 +349,17 @@ export default function FindAHomePage() {
                 <ChevronLeft className="w-5 h-5 text-[#2D3748]" />
               </button>
             )}
-            <div className="hidden sm:flex items-center gap-2 text-[10px] tracking-[0.32em] uppercase text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-              <span className="italic-accent" style={{ color: "#d97757", textTransform: "none", letterSpacing: 0 }}>VI.</span>
-              <span>The Questionnaire</span>
+            <div className="hidden sm:flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase font-semibold" style={{ fontFamily: "var(--font-ui)", color: "var(--d-primary)" }}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor" aria-hidden>
+                <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
+              </svg>
+              <span>Find a Home</span>
             </div>
             <div className="flex-1">
-              <div className="h-1 bg-[#e8e6dc] rounded-full overflow-hidden">
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "var(--d-divider)" }}>
                 <div
-                  className="h-full bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${progressPercent}%` }}
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ background: "var(--d-primary)", width: `${progressPercent}%` }}
                 />
               </div>
             </div>
