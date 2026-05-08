@@ -4,20 +4,21 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import { Mail, Phone, Heart } from "lucide-react";
+import AuthLayout from "@/components/auth/AuthLayout";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Phone } from "lucide-react";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [mode, setMode] = useState<"email" | "phone">("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -27,10 +28,7 @@ export default function LoginForm() {
     const supabase = createClient();
 
     if (mode === "email") {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setError(error.message);
         setLoading(false);
@@ -47,7 +45,6 @@ export default function LoginForm() {
       }
     }
 
-    // Redirect based on actual user role (or honor an explicit ?redirect=)
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -67,125 +64,193 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
-      {/* Decorative editorial blobs */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
-        style={{
-          background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)",
-          filter: "blur(20px)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -right-40 w-[460px] h-[460px] rounded-full"
-        style={{
-          background: "radial-gradient(closest-side, rgba(217,119,87,0.12), transparent 70%)",
-          filter: "blur(20px)",
-        }}
-      />
-      <div className="w-full max-w-md relative">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2DD1AC] to-[#6a9bcc] flex items-center justify-center shadow-md">
-              <Heart className="w-6 h-6 text-white" fill="white" />
-            </div>
+    <AuthLayout
+      topRight={
+        <>
+          New here?{" "}
+          <Link href="/auth/signup" className="font-semibold" style={{ color: "#1a8576" }}>
+            Create an account
           </Link>
-          <div className="ornament my-6">
-            <span className="ornament-glyph">·  ·  ·</span>
-          </div>
-          <h1
-            className="text-4xl sm:text-5xl mt-2 mb-3"
-            style={{ fontFamily: "var(--font-heading)", color: "#2D3748", fontWeight: 500, letterSpacing: "-0.015em" }}
-          >
-            Welcome{" "}
-            <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#d97757", fontWeight: 600 }}>back</span>
-            <span style={{ color: "#2DD1AC" }}>.</span>
-          </h1>
-          <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
-            Sign in to your CareHaven account
-          </p>
-        </div>
-
-        {/* Mode Toggle */}
-        <div
-          className="flex rounded-xl bg-[#e8e6dc]/40 p-1 mb-8"
-          style={{ fontFamily: "var(--font-ui)" }}
+        </>
+      }
+      title={
+        <>
+          Welcome back to{" "}
+          <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>
+            CareHaven
+          </span>
+        </>
+      }
+      subtitle="Sign in to keep up with the people who matter."
+    >
+      {/* Mode toggle (email / phone) */}
+      <div
+        className="flex rounded-full bg-[#f3eee3] p-1 mb-5"
+        style={{ fontFamily: "var(--font-ui)" }}
+      >
+        <button
+          type="button"
+          onClick={() => setMode("email")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-medium transition-all ${
+            mode === "email" ? "bg-white shadow-sm" : "opacity-60"
+          }`}
+          style={{ color: "#0c4039" }}
         >
-          <button
-            onClick={() => setMode("email")}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "email"
-                ? "bg-white text-[#2D3748] shadow-sm"
-                : "text-[#b0aea5] hover:text-[#2D3748]"
-              }`}
-          >
-            <Mail className="w-4 h-4" />
-            Email
-          </button>
-          <button
-            onClick={() => setMode("phone")}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "phone"
-                ? "bg-white text-[#2D3748] shadow-sm"
-                : "text-[#b0aea5] hover:text-[#2D3748]"
-              }`}
-          >
-            <Phone className="w-4 h-4" />
-            Phone
-          </button>
-        </div>
+          <Mail className="w-3.5 h-3.5" />
+          Email
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("phone")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[13px] font-medium transition-all ${
+            mode === "phone" ? "bg-white shadow-sm" : "opacity-60"
+          }`}
+          style={{ color: "#0c4039" }}
+        >
+          <Phone className="w-3.5 h-3.5" />
+          Phone
+        </button>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-5">
-          {mode === "email" ? (
-            <>
-              <Input
-                label="Email Address"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </>
-          ) : (
-            <Input
-              label="Phone Number"
+      <form onSubmit={handleLogin} className="space-y-4">
+        {mode === "email" ? (
+          <FieldWithIcon icon={Mail}>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email address"
+              autoComplete="email"
+              className="w-full bg-transparent outline-none text-[14.5px] placeholder:opacity-60"
+              style={{ color: "#0c4039", fontFamily: "var(--font-body)" }}
+            />
+          </FieldWithIcon>
+        ) : (
+          <FieldWithIcon icon={Phone}>
+            <input
               type="tel"
-              placeholder="+63 9XX XXX XXXX"
+              required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              required
+              placeholder="+63 9XX XXX XXXX"
+              autoComplete="tel"
+              className="w-full bg-transparent outline-none text-[14.5px] placeholder:opacity-60"
+              style={{ color: "#0c4039", fontFamily: "var(--font-body)" }}
             />
-          )}
+          </FieldWithIcon>
+        )}
 
-          {error && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600" style={{ fontFamily: "var(--font-ui)" }}>
-              {error}
-            </div>
-          )}
+        {mode === "email" && (
+          <FieldWithIcon icon={Lock} trailing={
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="opacity-60 hover:opacity-100"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          }>
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              autoComplete="current-password"
+              className="w-full bg-transparent outline-none text-[14.5px] placeholder:opacity-60"
+              style={{ color: "#0c4039", fontFamily: "var(--font-body)" }}
+            />
+          </FieldWithIcon>
+        )}
 
-          <Button type="submit" className="w-full" size="lg" isLoading={loading}>
-            {mode === "email" ? "Sign In" : "Send OTP"}
-          </Button>
-        </form>
-
-        <p className="text-center mt-8 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-          Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-semibold text-[#2DD1AC] hover:underline">
-            Sign up
+        <div className="flex items-center justify-between text-[13px]" style={{ fontFamily: "var(--font-ui)" }}>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="w-4 h-4 rounded accent-[#1a8576]"
+            />
+            <span style={{ color: "#5b6f6b" }}>Remember me</span>
+          </label>
+          <Link href="#" className="font-medium" style={{ color: "#1a8576" }}>
+            Forgot password?
           </Link>
-        </p>
+        </div>
+
+        {error && (
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 text-sm text-rose-700" style={{ fontFamily: "var(--font-ui)" }}>
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full text-white text-[14.5px] font-semibold shadow-md hover:opacity-95 disabled:opacity-60 transition-all"
+          style={{ background: "#1a8576", fontFamily: "var(--font-ui)" }}
+        >
+          {loading ? "Signing in…" : (mode === "email" ? "Sign in" : "Send OTP")}
+          {!loading && <ArrowRight className="w-4 h-4" />}
+        </button>
+      </form>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-7" style={{ fontFamily: "var(--font-ui)" }}>
+        <span className="flex-1 h-px bg-[#ece4d2]" />
+        <span className="text-[12px]" style={{ color: "#8a9c97" }}>or sign in with</span>
+        <span className="flex-1 h-px bg-[#ece4d2]" />
       </div>
+
+      {/* Social */}
+      <div className="grid grid-cols-2 gap-3" style={{ fontFamily: "var(--font-ui)" }}>
+        <SocialButton label="Google" icon={
+          <svg viewBox="0 0 24 24" className="w-4 h-4">
+            <path fill="#EA4335" d="M12 11v3.6h5.1c-.2 1.4-1.6 4.1-5.1 4.1-3.1 0-5.6-2.5-5.6-5.7s2.5-5.7 5.6-5.7c1.7 0 2.9.7 3.6 1.4l2.5-2.4C16.6 4.6 14.5 3.7 12 3.7 6.9 3.7 2.8 7.8 2.8 12.9S6.9 22.1 12 22.1c6.9 0 9.5-4.8 9.5-7.3 0-.5 0-.9-.1-1.3H12z" />
+          </svg>
+        } />
+        <SocialButton label="Facebook" icon={
+          <svg viewBox="0 0 24 24" className="w-4 h-4">
+            <path fill="#1877F2" d="M22 12c0-5.5-4.5-10-10-10S2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7C18.3 21.1 22 17 22 12z" />
+          </svg>
+        } />
+      </div>
+    </AuthLayout>
+  );
+}
+
+function FieldWithIcon({
+  icon: Icon,
+  children,
+  trailing,
+}: {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  children: React.ReactNode;
+  trailing?: React.ReactNode;
+}) {
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-xl border bg-white transition-colors focus-within:border-[#1a8576]"
+      style={{ borderColor: "#ece4d2" }}
+    >
+      <Icon className="w-4 h-4" style={{ color: "#1a8576" }} />
+      <div className="flex-1">{children}</div>
+      {trailing}
     </div>
+  );
+}
+
+function SocialButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <button
+      type="button"
+      className="inline-flex items-center justify-center gap-2 py-2.5 rounded-full border bg-white text-[13.5px] font-medium hover:bg-[#fbf9f3] transition-all"
+      style={{ borderColor: "#ece4d2", color: "#0c4039" }}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }

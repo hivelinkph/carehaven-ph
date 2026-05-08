@@ -1,20 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { SERVICES_LIST } from "@/lib/constants";
-import { Mail, Heart, Building2, ChevronRight } from "lucide-react";
+import AuthLayout from "@/components/auth/AuthLayout";
+import { CheckCircle2, Building2, ChevronRight, ArrowRight } from "lucide-react";
 
 export default function ProviderSignupPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
 
   // Step 1: Account
   const [fullName, setFullName] = useState("");
@@ -116,105 +115,91 @@ export default function ProviderSignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
-          style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)", filter: "blur(20px)" }}
-        />
-        <div className="w-full max-w-md text-center relative">
-          <div className="w-16 h-16 rounded-2xl bg-[#2DD1AC]/10 flex items-center justify-center mx-auto mb-6">
-            <Mail className="w-8 h-8 text-[#2DD1AC]" />
-          </div>
-          <div className="ornament my-6">
-            <span className="ornament-glyph">·  ·  ·</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl text-[#2D3748] mb-4" style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}>
+      <AuthLayout
+        title={
+          <>
             Application{" "}
-            <span className="italic-accent" style={{ color: "#d97757" }}>submitted</span>.
-          </h2>
-          <p className="text-[#5b5851] mb-6" style={{ fontFamily: "var(--font-body)" }}>
-            Check your email at <strong className="text-[#2D3748]">{email}</strong> to verify your account.
+            <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>submitted</span>
+          </>
+        }
+        subtitle="We'll review your facility and get back to you soon."
+      >
+        <div className="rounded-2xl border bg-[#f5fbf9] p-5 flex items-start gap-3" style={{ borderColor: "#cfe9e0" }}>
+          <span className="w-9 h-9 rounded-full bg-[#1a8576]/10 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-5 h-5" style={{ color: "#1a8576" }} />
+          </span>
+          <div className="text-[14px] leading-relaxed" style={{ color: "#0c4039", fontFamily: "var(--font-body)" }}>
+            Check your email at <strong>{email}</strong> to verify your account.
             Your facility listing will be reviewed by our admin team and activated once approved.
-          </p>
-          <Link
-            href="/auth/login"
-            className="text-sm font-semibold text-[#2DD1AC] hover:underline"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            Go to login
-          </Link>
+          </div>
         </div>
-      </div>
+        <Link
+          href="/auth/login"
+          className="mt-6 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full text-white text-[14.5px] font-semibold shadow-md hover:opacity-95 transition-all"
+          style={{ background: "#1a8576", fontFamily: "var(--font-ui)" }}
+        >
+          Go to login
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12 px-4 relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 -right-40 w-[480px] h-[480px] rounded-full"
-        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.12), transparent 70%)", filter: "blur(20px)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-[30vh] -left-40 w-[420px] h-[420px] rounded-full"
-        style={{ background: "radial-gradient(closest-side, rgba(106,155,204,0.10), transparent 70%)", filter: "blur(20px)" }}
-      />
-      <div className="max-w-2xl mx-auto relative">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2DD1AC] to-[#6a9bcc] flex items-center justify-center shadow-md">
-              <Heart className="w-6 h-6 text-white" fill="white" />
-            </div>
+    <AuthLayout
+      wide
+      topRight={
+        <>
+          Already registered?{" "}
+          <Link href="/auth/login" className="font-semibold" style={{ color: "#1a8576" }}>
+            Sign in
           </Link>
-          <div className="ornament my-6">
-            <span className="ornament-glyph">·  ·  ·</span>
-          </div>
-          <h1
-            className="text-4xl sm:text-5xl text-[#2D3748] mt-2 mb-3"
-            style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.015em" }}
-          >
-            Register your{" "}
-            <span className="italic-accent" style={{ color: "#6a9bcc" }}>facility</span>.
-          </h1>
-          <p className="text-[#7a7770]" style={{ fontFamily: "var(--font-body)" }}>
-            Join CareHaven PH and reach families looking for quality care
-          </p>
+        </>
+      }
+      title={
+        <>
+          Register your{" "}
+          <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>facility</span>
+        </>
+      }
+      subtitle="Join CareHaven PH and reach families looking for quality care"
+    >
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-4 mb-7" style={{ fontFamily: "var(--font-ui)" }}>
+        <div
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12.5px] font-medium ${step >= 1 ? "text-white" : ""}`}
+          style={{
+            background: step >= 1 ? "#1a8576" : "#f3eee3",
+            color: step >= 1 ? "white" : "#7a8a86",
+          }}
+        >
+          <span className="w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">1</span>
+          Account
         </div>
-
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-4 mb-10" style={{ fontFamily: "var(--font-ui)" }}>
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${step >= 1 ? "bg-[#2DD1AC] text-white" : "bg-[#e8e6dc]/50 text-[#b0aea5]"}`}>
-            <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
-            Account
-          </div>
-          <ChevronRight className="w-4 h-4 text-[#b0aea5]" />
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${step >= 2 ? "bg-[#2DD1AC] text-white" : "bg-[#e8e6dc]/50 text-[#b0aea5]"}`}>
-            <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">2</span>
-            Facility Info
-          </div>
+        <ChevronRight className="w-4 h-4" style={{ color: "#b0aea5" }} />
+        <div
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12.5px] font-medium`}
+          style={{
+            background: step >= 2 ? "#1a8576" : "#f3eee3",
+            color: step >= 2 ? "white" : "#7a8a86",
+          }}
+        >
+          <span className="w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">2</span>
+          Facility
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Account Details */}
-          {step === 1 && (
-            <div className="glass-card p-8 space-y-5">
-              <div className="flex items-center gap-3 mb-6">
-                <Building2 className="w-5 h-5 text-[#2DD1AC]" />
-                <h2 className="text-xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
-                  Your Account
-                </h2>
-              </div>
-
+      <form onSubmit={handleSubmit}>
+        {/* Step 1: Account Details */}
+        {step === 1 && (
+          <div className="space-y-4">
               <Input label="Full Name" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
               <Input label="Email Address" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               <Input label="Phone Number" type="tel" placeholder="+63 9XX XXX XXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               <Input label="Password" type="password" placeholder="At least 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
               {error && (
-                <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600" style={{ fontFamily: "var(--font-ui)" }}>
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 text-sm text-rose-700" style={{ fontFamily: "var(--font-ui)" }}>
                   {error}
                 </div>
               )}
@@ -240,10 +225,10 @@ export default function ProviderSignupPage() {
 
           {/* Step 2: Facility Details */}
           {step === 2 && (
-            <div className="glass-card p-8 space-y-5">
-              <div className="flex items-center gap-3 mb-6">
-                <Building2 className="w-5 h-5 text-[#2DD1AC]" />
-                <h2 className="text-xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4" style={{ color: "#1a8576" }} />
+                <h2 className="text-[15px] font-semibold" style={{ color: "#0c4039", fontFamily: "var(--font-ui)" }}>
                   Facility Information
                 </h2>
               </div>
@@ -306,7 +291,7 @@ export default function ProviderSignupPage() {
               </div>
 
               {error && (
-                <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600" style={{ fontFamily: "var(--font-ui)" }}>
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 text-sm text-rose-700" style={{ fontFamily: "var(--font-ui)" }}>
                   {error}
                 </div>
               )}
@@ -321,15 +306,7 @@ export default function ProviderSignupPage() {
               </div>
             </div>
           )}
-        </form>
-
-        <p className="text-center mt-8 text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-          Already registered?{" "}
-          <Link href="/auth/login" className="font-semibold text-[#2DD1AC] hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+      </form>
+    </AuthLayout>
   );
 }
