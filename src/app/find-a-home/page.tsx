@@ -74,13 +74,7 @@ function buildStepsFromConfig(configs: QuestionnaireConfig[]): Step[] {
       result.push({
         id: "timeline-info",
         type: "info",
-        infoMessage: (a) => {
-          const timeline = a.timeline as string;
-          if (timeline === "immediately" || timeline === "30-days") {
-            return "Good news: We can help you find care upon very short notice. Our network of facilities across the Philippines is ready to assist.";
-          }
-          return "Great! Taking time to research is a smart move. We'll help you find the perfect fit at your own pace.";
-        },
+        infoMessage: () => "Great! Taking time to research is a smart move. We'll help you find the perfect fit at your own pace.",
       });
     }
   }
@@ -280,7 +274,16 @@ export default function FindAHomePage() {
 
   const goNext = useCallback(() => {
     if (currentStep < STEPS.length - 1) {
-      const nextStep = currentStep + 1;
+      let nextStep = currentStep + 1;
+
+      // Skip the timeline-info screen for urgent timelines
+      if (
+        STEPS[nextStep]?.id === "timeline-info" &&
+        (answers.timeline === "immediately" || answers.timeline === "30-days")
+      ) {
+        nextStep++;
+      }
+
       setCurrentStep(nextStep);
 
       // Auto-advance loading step after matching completes
@@ -293,13 +296,20 @@ export default function FindAHomePage() {
         });
       }
     }
-  }, [currentStep, runMatching]);
+  }, [currentStep, runMatching, answers]);
 
   const goBack = () => {
     if (currentStep > 0) {
       let prev = currentStep - 1;
       // Skip loading step when going back
       if (STEPS[prev].type === "loading") prev--;
+      // Skip timeline-info on back when it would have been skipped forward
+      if (
+        STEPS[prev]?.id === "timeline-info" &&
+        (answers.timeline === "immediately" || answers.timeline === "30-days")
+      ) {
+        prev--;
+      }
       setCurrentStep(prev);
     }
   };
