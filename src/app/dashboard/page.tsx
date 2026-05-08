@@ -17,9 +17,9 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--c-bg, #f6efe6)" }}>
-      <div className="animate-pulse" style={{ fontFamily: "var(--font-script)", fontSize: "1.6rem", color: "var(--c-clay, #c87355)" }}>
-        Welcoming you back…
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--d-bg, #f3eee3)" }}>
+      <div className="animate-pulse text-sm" style={{ fontFamily: "var(--font-ui)", color: "var(--d-ink-muted, #8a9c97)" }}>
+        Loading your dashboard…
       </div>
     </div>
   );

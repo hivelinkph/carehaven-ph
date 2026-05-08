@@ -40,12 +40,12 @@ export default function ProviderDashboardPage() {
 
     if (loading || !profile) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--p-bg, #0d1622)" }}>
+            <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--d-bg, #f3eee3)" }}>
                 <div
-                    className="text-[12px] tracking-[0.32em] uppercase animate-pulse"
-                    style={{ fontFamily: "var(--font-mono)", color: "var(--p-mint, #4cf2c4)" }}
+                    className="text-sm animate-pulse"
+                    style={{ fontFamily: "var(--font-ui)", color: "var(--d-ink-muted, #8a9c97)" }}
                 >
-                    Spinning up the station…
+                    Loading your provider studio…
                 </div>
             </div>
         );

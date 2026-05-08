@@ -367,236 +367,161 @@ html {
 }
 
 /* ===========================================================
-   CUSTOMER DASHBOARD — Sun-warmed Journal
-   Dusty terracotta, sage, cream. Calm + devotional.
+   UNIFIED DASHBOARD THEME
+   Forest-green sidebar, warm cream canvas, white rounded cards,
+   pastel stat tiles, vibrant teal-green primary.
+   Applied to admin, customer, and provider dashboards.
    =========================================================== */
-.theme-customer {
-  --c-bg: #f6efe6;
-  --c-bg-deep: #ebd9c6;
-  --c-paper: #fffaf2;
-  --c-ink: #3a2e26;
-  --c-ink-soft: #7a6a5c;
-  --c-clay: #c87355;
-  --c-clay-deep: #a85a3f;
-  --c-sage: #6b8a5e;
-  --c-sage-deep: #4f6b46;
-  --c-gold: #b89148;
-  --c-rose: #d49a8a;
-  background: var(--c-bg);
-  color: var(--c-ink);
-  font-family: var(--font-body);
+.theme-dashboard,
+.theme-customer,
+.theme-provider,
+.theme-admin {
+  --d-bg: #f3eee3;
+  --d-bg-warm: #f6f1e6;
+  --d-card: #ffffff;
+  --d-card-shadow: 0 1px 2px rgba(12,64,57,0.04), 0 12px 32px -16px rgba(12,64,57,0.18);
+  --d-sidebar: #0c4039;
+  --d-sidebar-deep: #08312b;
+  --d-sidebar-active: rgba(255,255,255,0.10);
+  --d-sidebar-text: rgba(245, 240, 230, 0.78);
+  --d-sidebar-text-active: #ffffff;
+  --d-primary: #1a8576;
+  --d-primary-deep: #0c5e54;
+  --d-primary-soft: #e6f3f0;
+  --d-ink: #0c4039;
+  --d-ink-soft: #4a6b66;
+  --d-ink-muted: #8a9c97;
+  --d-divider: #ece4d2;
+
+  /* Pastel stat-tile palette */
+  --d-stat-pink-bg: #fce8ec;
+  --d-stat-pink: #d8527a;
+  --d-stat-orange-bg: #fdeede;
+  --d-stat-orange: #db8a4a;
+  --d-stat-purple-bg: #efe7f4;
+  --d-stat-purple: #8e6cb0;
+  --d-stat-teal-bg: #e0f1ec;
+  --d-stat-teal: #1a8576;
+
+  background: var(--d-bg);
+  color: var(--d-ink);
+  font-family: var(--font-ui);
 }
+
+.theme-dashboard h1, .theme-dashboard h2, .theme-dashboard h3,
+.theme-dashboard h4, .theme-dashboard h5, .theme-dashboard h6,
 .theme-customer h1, .theme-customer h2, .theme-customer h3,
-.theme-customer h4, .theme-customer h5, .theme-customer h6 {
-  color: var(--c-ink);
-  font-family: var(--font-heading);
-  letter-spacing: -0.005em;
-}
-
-/* Watercolor blobs that sit behind content */
-.theme-customer .journal-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.theme-customer .surface-paper {
-  background: var(--c-paper);
-  border: 1px solid #ead9c2;
-  border-radius: 22px;
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.8) inset,
-    0 18px 40px -28px rgba(58, 46, 38, 0.25);
-}
-
-.theme-customer .ribbon-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0.9rem 0.4rem;
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--c-clay-deep);
-  background: #fff;
-  border: 1px solid #f0d9c4;
-  border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
-}
-
-.theme-customer .script {
-  font-family: var(--font-script);
-  font-weight: 600;
-  color: var(--c-clay);
-  line-height: 0.95;
-}
-
-.theme-customer .editorial-rule {
-  height: 1px;
-  background: linear-gradient(to right, transparent, #d8b896, transparent);
-}
-
-/* ===========================================================
-   PROVIDER DASHBOARD — Operations Atelier
-   Ink navy + ivory + electric mint + amber. Studio + control panel.
-   =========================================================== */
-.theme-provider {
-  --p-bg: #0d1622;
-  --p-bg-soft: #131f2f;
-  --p-bg-line: rgba(255,255,255,0.06);
-  --p-paper: #f3eee3;
-  --p-card: #182536;
-  --p-ink: #f3eee3;
-  --p-ink-mute: #8898ad;
-  --p-mint: #4cf2c4;
-  --p-amber: #f6c66e;
-  --p-coral: #ff8a6b;
-  background: var(--p-bg);
-  color: var(--p-ink);
-  font-family: var(--font-ui);
-}
+.theme-customer h4, .theme-customer h5, .theme-customer h6,
 .theme-provider h1, .theme-provider h2, .theme-provider h3,
-.theme-provider h4, .theme-provider h5, .theme-provider h6 {
-  color: var(--p-ink);
+.theme-provider h4, .theme-provider h5, .theme-provider h6,
+.theme-admin h1, .theme-admin h2, .theme-admin h3,
+.theme-admin h4, .theme-admin h5, .theme-admin h6 {
+  color: var(--d-ink);
   font-family: var(--font-heading);
-}
-
-.theme-provider .grid-overlay {
-  background-image:
-    linear-gradient(var(--p-bg-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--p-bg-line) 1px, transparent 1px);
-  background-size: 56px 56px;
-  pointer-events: none;
-}
-
-.theme-provider .station-card {
-  background: linear-gradient(180deg, var(--p-card), #131f2f);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.theme-provider .station-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(120% 60% at 20% 0%, rgba(76, 242, 196, 0.07), transparent 50%);
-  pointer-events: none;
-}
-
-.theme-provider .num {
-  font-family: var(--font-mono);
-  font-feature-settings: "tnum", "zero";
   letter-spacing: -0.01em;
 }
 
-.theme-provider .pill {
+/* Compatibility shims so older internal markup blends in */
+.theme-dashboard .surface-paper,
+.theme-customer .surface-paper,
+.theme-provider .surface-paper,
+.theme-admin .surface-paper,
+.theme-dashboard .station-card,
+.theme-customer .station-card,
+.theme-provider .station-card,
+.theme-admin .station-card,
+.theme-dashboard .raw-card,
+.theme-customer .raw-card,
+.theme-provider .raw-card,
+.theme-admin .raw-card {
+  background: var(--d-card);
+  border: 1px solid #ebe4d3;
+  border-radius: 18px;
+  box-shadow: var(--d-card-shadow);
+}
+
+.theme-dashboard .num, .theme-customer .num,
+.theme-provider .num, .theme-admin .num {
+  font-family: var(--font-ui);
+  font-feature-settings: "tnum";
+}
+
+/* Hero banner used inside dashboards (image + serif overlay) */
+.dash-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  isolation: isolate;
+  background: var(--d-primary-deep);
+}
+.dash-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.dash-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(8, 49, 43, 0.78) 0%, rgba(8, 49, 43, 0.45) 45%, rgba(8, 49, 43, 0.10) 75%);
+  z-index: 1;
+}
+.dash-hero > .dash-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Soft pill */
+.dash-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 0.72rem;
+  font-weight: 500;
   letter-spacing: 0.04em;
-  border: 1px solid rgba(76,242,196,0.35);
-  color: var(--p-mint);
-  background: rgba(76,242,196,0.07);
+  background: var(--d-primary-soft);
+  color: var(--d-primary-deep);
 }
 
-.theme-provider .live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--p-mint);
-  box-shadow: 0 0 0 0 rgba(76,242,196,0.6);
-  animation: live-pulse 2s ease-out infinite;
+/* Inputs */
+.theme-dashboard input[type="text"],
+.theme-dashboard input[type="email"],
+.theme-dashboard input[type="tel"],
+.theme-dashboard input[type="number"],
+.theme-dashboard input[type="search"],
+.theme-dashboard textarea,
+.theme-customer input[type="text"],
+.theme-customer input[type="email"],
+.theme-customer input[type="tel"],
+.theme-customer input[type="number"],
+.theme-customer input[type="search"],
+.theme-customer textarea,
+.theme-provider input[type="text"],
+.theme-provider input[type="email"],
+.theme-provider input[type="tel"],
+.theme-provider input[type="number"],
+.theme-provider input[type="search"],
+.theme-provider textarea,
+.theme-admin input[type="text"],
+.theme-admin input[type="email"],
+.theme-admin input[type="tel"],
+.theme-admin input[type="number"],
+.theme-admin input[type="search"],
+.theme-admin textarea {
+  background: #fbf9f3;
+  border: 1px solid #e0d8c4;
+  color: var(--d-ink);
 }
 
-@keyframes live-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(76,242,196,0.55); }
-  70% { box-shadow: 0 0 0 12px rgba(76,242,196,0); }
-  100% { box-shadow: 0 0 0 0 rgba(76,242,196,0); }
-}
-
-/* ===========================================================
-   ADMIN DASHBOARD — Brutalist Command
-   Obsidian + acid lime + electric magenta. Maximum authority.
-   =========================================================== */
-.theme-admin {
-  --a-bg: #0a0a0a;
-  --a-fg: #f3f3f0;
-  --a-muted: #8a8a85;
-  --a-line: #1c1c1c;
-  --a-line-strong: #2a2a2a;
-  --a-acid: #c8ff2b;
-  --a-magenta: #ff2bd6;
-  --a-amber: #ffb43c;
-  --a-card: #111111;
-  background: var(--a-bg);
-  color: var(--a-fg);
-  font-family: var(--font-mono);
-}
-.theme-admin h1, .theme-admin h2, .theme-admin h3,
-.theme-admin h4, .theme-admin h5, .theme-admin h6 {
-  color: var(--a-fg);
-  font-family: var(--font-grotesk);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.theme-admin .raw-card {
-  background: var(--a-card);
-  border: 1px solid var(--a-line-strong);
-  border-radius: 0;
-}
-
-.theme-admin .scan-lines {
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.025) 1px,
-    transparent 1px
-  );
-  background-size: 100% 3px;
-  pointer-events: none;
-}
-
-.theme-admin .tag-mono {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.15rem 0.55rem 0.2rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  border: 1px solid var(--a-line-strong);
-  background: #0d0d0d;
-  color: var(--a-fg);
-}
-.theme-admin .tag-mono.acid { color: var(--a-acid); border-color: rgba(200,255,43,0.4); }
-.theme-admin .tag-mono.magenta { color: var(--a-magenta); border-color: rgba(255,43,214,0.45); }
-
-.theme-admin .hard-rule {
-  height: 1px;
-  background: var(--a-line-strong);
-  margin: 1rem 0;
-}
-
-.theme-admin .num {
-  font-family: var(--font-mono);
-  font-feature-settings: "tnum", "zero";
-}
-
-.theme-admin .blink {
-  animation: admin-blink 1.6s steps(2, end) infinite;
-}
-@keyframes admin-blink {
-  50% { opacity: 0.15; }
+/* Soft pulse (ex live-dot/blink) */
+.live-dot, .blink {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--d-primary);
+  display: inline-block;
 }

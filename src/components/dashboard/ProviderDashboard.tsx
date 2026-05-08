@@ -108,18 +108,16 @@ export function ProviderDashboard({ profile }: { profile: Profile }) {
 
     return (
         <>
-            <div className="mb-8 flex items-center justify-between gap-4">
-                <div className="text-[11px] tracking-[0.32em] uppercase" style={{ fontFamily: "var(--font-mono)", color: "var(--p-mint, #4cf2c4)" }}>
-                    01 / Facility roster
-                </div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+                <h2 className="text-xl" style={{ fontFamily: "var(--font-heading)", color: "var(--d-ink, #0c4039)", fontWeight: 600 }}>
+                    Your facilities
+                </h2>
                 <Link
                     href="/dashboard/provider/facilities/new"
-                    className="inline-flex items-center gap-2 px-4 py-2 text-[12px] font-semibold tracking-[0.18em] uppercase rounded-full border transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-semibold rounded-full text-white transition-all hover:opacity-90"
                     style={{
-                        fontFamily: "var(--font-mono)",
-                        color: "var(--p-mint, #4cf2c4)",
-                        borderColor: "rgba(76,242,196,0.4)",
-                        background: "rgba(76,242,196,0.06)",
+                        fontFamily: "var(--font-ui)",
+                        background: "var(--d-primary, #1a8576)",
                     }}
                 >
                     <Plus className="w-3.5 h-3.5" />
@@ -129,9 +127,6 @@ export function ProviderDashboard({ profile }: { profile: Profile }) {
 
             {/* Your Facilities */}
             <div className="mb-10">
-                <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "var(--font-heading)", color: "var(--p-paper, #f3eee3)" }}>
-                    Your Facilities
-                </h2>
 
                 {facilities.length === 0 ? (
                     <div className="glass-card p-12 text-center">

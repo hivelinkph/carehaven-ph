@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility, Location, Testimonial, QuestionnaireConfig, GalleryImage } from "@/lib/types";
-import AdminSidebar, { type AdminTab } from "@/components/admin/AdminSidebar";
+import type { Profile, Facility, Location, Testimonial, QuestionnaireConfig, GalleryImage } from "@/lib/types";
+import DashboardChrome, { type NavItem, type StatTile } from "@/components/dashboard/DashboardChrome";
 import {
   Building2,
   MapPin,
@@ -14,7 +14,6 @@ import {
   XCircle,
   Eye,
   Search,
-  ShieldCheck,
   Plus,
   Trash2,
   Edit2,
@@ -32,7 +31,18 @@ import {
   TrendingUp,
   Trophy,
   Images,
+  LayoutDashboard,
 } from "lucide-react";
+
+type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports";
+
+const ADMIN_NAV: NavItem[] = [
+  { key: "facilities", label: "Facilities", icon: Building2 },
+  { key: "questionnaire", label: "Questionnaire", icon: ClipboardList },
+  { key: "testimonials", label: "Testimonials", icon: MessageSquareQuote },
+  { key: "gallery", label: "Gallery", icon: Images },
+  { key: "reports", label: "Reports", icon: BarChart3 },
+];
 
 export default function AdminDashboard() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -46,7 +56,7 @@ export default function AdminDashboard() {
   const [savingTestimonial, setSavingTestimonial] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>("facilities");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<Partial<QuestionnaireConfig> | null>(null);
   const [savingQuestion, setSavingQuestion] = useState(false);
   const [reportData, setReportData] = useState<{ facility_id: string; facility_name: string; impression_count: number; avg_score: number }[]>([]);
@@ -61,16 +71,17 @@ export default function AdminDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
 
-      const { data: profile } = await supabase
+      const { data: profileData } = await supabase
         .from("profiles")
-        .select("role")
+        .select("*")
         .eq("id", user.id)
         .single();
 
-      if (profile?.role !== "admin") {
+      if (profileData?.role !== "admin") {
         router.push("/dashboard");
         return;
       }
+      setProfile(profileData as Profile);
 
       const [facRes, locRes, testRes, qRes, impRes, galRes] = await Promise.all([
         supabase.from("facilities").select("*").order("created_at", { ascending: false }),
@@ -363,93 +374,43 @@ export default function AdminDashboard() {
   const activeCount = facilities.filter((f) => f.is_active).length;
   const pendingCount = facilities.filter((f) => !f.is_active).length;
 
-  if (loading) {
+  if (loading || !profile) {
     return (
-      <div className="min-h-screen bg-[#faf9f5] pt-24 flex items-center justify-center">
-        <div className="animate-pulse text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--d-bg, #f3eee3)" }}>
+        <div className="animate-pulse" style={{ fontFamily: "var(--font-ui)", color: "var(--d-ink-muted, #8a9c97)" }}>Loading admin control…</div>
       </div>
     );
   }
 
+  const adminStats: StatTile[] = [
+    { label: "Facilities", value: facilities.length, sublabel: `${activeCount} active`, icon: Building2, tone: "teal" },
+    { label: "Testimonials", value: testimonials.length, icon: MessageSquareQuote, tone: "pink" },
+    { label: "Questionnaires", value: questions.length, sublabel: "Steps configured", icon: ClipboardList, tone: "orange" },
+    { label: "Gallery items", value: galleryImages.length, sublabel: `${galleryImages.filter(g=>g.is_active).length} published`, icon: Images, tone: "purple" },
+  ];
+
   return (
-    <div className="min-h-screen">
-      {/* Sidebar */}
-      <AdminSidebar
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-        onSignOut={handleSignOut}
-      />
-
-      {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : ""}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
-          {/* Brutalist command header */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-6 ml-12 lg:ml-0">
-              <span className="tag-mono acid">
-                <span className="blink" style={{ width: 6, height: 6, background: "currentColor", display: "inline-block" }} />
-                ROOT.SESSION
-              </span>
-              <span className="tag-mono">SYS / 24×7</span>
-              <span className="tag-mono magenta">PRIV: ALL</span>
-            </div>
-
-            <div className="ml-12 lg:ml-0 grid grid-cols-12 gap-6 items-end">
-              <div className="col-span-12 lg:col-span-9">
-                <div
-                  className="text-[11px] tracking-[0.32em] uppercase mb-3"
-                  style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
-                >
-                  CAREHAVEN_PH &nbsp;//&nbsp; ADMIN.CONTROL
-                </div>
-                <h1
-                  className="text-6xl sm:text-7xl lg:text-[7.5rem] leading-[0.9] font-bold"
-                  style={{
-                    fontFamily: "var(--font-grotesk)",
-                    color: "var(--a-fg)",
-                    letterSpacing: "-0.04em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Command<span style={{ color: "var(--a-acid)" }}>.</span>
-                </h1>
-                <p
-                  className="mt-5 text-[13px] tracking-[0.18em] uppercase max-w-xl"
-                  style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
-                >
-                  Facility listings, provider profiles, questionnaire engine,
-                  testimonials, gallery, match-impression telemetry — all wired
-                  through one console.
-                </p>
-              </div>
-              <div className="col-span-12 lg:col-span-3 grid grid-cols-3 gap-2">
-                {[
-                  { k: "FCL", v: facilities.length },
-                  { k: "ACT", v: activeCount },
-                  { k: "Q+", v: questions.length },
-                ].map((m) => (
-                  <div
-                    key={m.k}
-                    className="raw-card p-3"
-                  >
-                    <div
-                      className="text-[10px] tracking-[0.22em] uppercase mb-1"
-                      style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
-                    >
-                      {m.k}
-                    </div>
-                    <div className="num text-2xl" style={{ color: "var(--a-acid)" }}>
-                      {m.v}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="hard-rule mt-8" />
-          </div>
+    <DashboardChrome
+      profile={profile}
+      panelTitle="Admin Console"
+      panelSubtitle="Every detail matters."
+      badge="Admin"
+      navItems={ADMIN_NAV}
+      activeKey={activeTab}
+      onNavSelect={(k) => setActiveTab(k as AdminTab)}
+      pageTitle="Admin Control"
+      pageEyebrow="Active"
+      stats={adminStats}
+      hero={{
+        image: "/assets/images/hero.jpeg",
+        eyebrow: "Today's note",
+        title: <>Compassion in <em style={{ fontFamily: "var(--font-accent)", fontStyle: "italic" }}>every detail.</em></>,
+        body: "Each entry below shapes a family's first impression — keep listings vetted, respected, and at home.",
+      }}
+    >
+      {/* Page content begins here */}
+      <div>
+        <div className="hidden">{/* spacer to keep diff stable */}</div>
 
           {/* ===== FACILITIES TAB ===== */}
           {activeTab === "facilities" && (
@@ -1303,8 +1264,7 @@ export default function AdminDashboard() {
               </div>
             </>
           )}
-        </div>
       </div>
-    </div>
+    </DashboardChrome>
   );
 }
