@@ -188,7 +188,7 @@ export default function Navbar() {
                 {/* Sign Up Dropdown */}
                 <div className="relative" ref={signupRef}>
                   <button
-                    onClick={() => { setSignupOpen(!signupOpen); setLoginOpen(false); }}
+                    onClick={() => setSignupOpen(!signupOpen)}
                     className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 hover:from-[#2DD1AC]/90 hover:to-[#2DD1AC]/70 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all"
                   >
                     <User className="w-4 h-4" />
