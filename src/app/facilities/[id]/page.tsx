@@ -51,7 +51,6 @@ import {
   Phone,
   Mail,
   Globe,
-  Star,
   Users,
   CheckCircle2,
   Building2,
@@ -213,12 +212,6 @@ export default function FacilityDetailPage() {
                       <MapPin className="w-4 h-4" />
                       {facility.city}
                     </span>
-                    {facility.rating && (
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-[#d97757]" fill="#d97757" />
-                        {facility.rating}
-                      </span>
-                    )}
                     {facility.capacity && (
                       <span className="flex items-center gap-1">
                         <Users className="w-4 h-4" />

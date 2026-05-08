@@ -10,7 +10,6 @@ import {
   MessageCircle,
   Search,
   ArrowLeft,
-  Star,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Conversation, Facility, Profile } from "@/lib/types";
@@ -308,15 +307,6 @@ function FacilityOverview({ conversations }: { conversations: Conversation[] }) 
                       <MapPin className="w-3 h-3" />
                       {f.city}
                     </span>
-                    {f.rating && (
-                      <span className="flex items-center gap-1">
-                        <Star
-                          className="w-3 h-3 text-[#d97757]"
-                          fill="#d97757"
-                        />
-                        {f.rating}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>

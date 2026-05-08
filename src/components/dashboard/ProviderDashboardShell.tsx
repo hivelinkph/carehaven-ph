@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Building2, MessageSquareQuote, BarChart3, ClipboardList, Settings as SettingsIcon, Star, Users, Eye } from "lucide-react";
+import { LayoutDashboard, Building2, MessageSquareQuote, BarChart3, ClipboardList, Settings as SettingsIcon, Users, Eye, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import DashboardChrome, { type NavItem, type StatTile } from "./DashboardChrome";
@@ -22,18 +22,16 @@ const NAV: NavItem[] = [
 
 export default function ProviderDashboardShell({ profile, children }: Props) {
   const [activeKey, setActiveKey] = useState("dashboard");
-  const [counts, setCounts] = useState({ facilities: 0, active: 0, impressions: 0, rating: 0 });
+  const [counts, setCounts] = useState({ facilities: 0, active: 0, impressions: 0, pending: 0 });
 
   useEffect(() => {
     async function loadCounts() {
       const supabase = createClient();
       const { data: facilities } = await supabase
         .from("facilities")
-        .select("id, is_active, rating")
+        .select("id, is_active")
         .eq("owner_id", profile.id);
       const arr = facilities || [];
-      const ratings = arr.map((f) => Number(f.rating)).filter((r) => !isNaN(r) && r > 0);
-      const avg = ratings.length ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : 0;
 
       let impressions = 0;
       if (arr.length) {
@@ -49,7 +47,7 @@ export default function ProviderDashboardShell({ profile, children }: Props) {
         facilities: arr.length,
         active: arr.filter((f) => f.is_active).length,
         impressions,
-        rating: avg,
+        pending: arr.filter((f) => !f.is_active).length,
       });
     }
     loadCounts();
@@ -57,7 +55,7 @@ export default function ProviderDashboardShell({ profile, children }: Props) {
 
   const stats: StatTile[] = [
     { label: "My Facilities", value: counts.facilities, sublabel: `${counts.active} active`, icon: Building2, tone: "teal" },
-    { label: "Avg. rating", value: counts.rating || "—", sublabel: "Across listings", icon: Star, tone: "pink" },
+    { label: "Active listings", value: counts.active, sublabel: counts.pending ? `${counts.pending} pending review` : "All approved", icon: CheckCircle2, tone: "pink" },
     { label: "Match appearances", value: counts.impressions, sublabel: "Shown to families", icon: Eye, tone: "orange" },
     { label: "Profile visitors", value: 0, sublabel: "This month", icon: Users, tone: "purple" },
   ];

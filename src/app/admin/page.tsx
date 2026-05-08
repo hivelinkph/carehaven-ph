@@ -9,7 +9,6 @@ import DashboardChrome, { type NavItem, type StatTile } from "@/components/dashb
 import {
   Building2,
   MapPin,
-  Star,
   CheckCircle2,
   XCircle,
   Eye,
@@ -465,7 +464,6 @@ export default function AdminDashboard() {
                       <tr className="border-b border-[#e8e6dc]">
                         <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Facility</th>
                         <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Location</th>
-                        <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Rating</th>
                         <th className="text-left text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Status</th>
                         <th className="text-right text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-6 py-4">Actions</th>
                       </tr>
@@ -473,7 +471,7 @@ export default function AdminDashboard() {
                     <tbody>
                       {filtered.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="text-center py-12">
+                          <td colSpan={4} className="text-center py-12">
                             <Building2 className="w-10 h-10 text-[#b0aea5] mx-auto mb-3" />
                             <p className="text-sm text-[#b0aea5]">No facilities found</p>
                           </td>
@@ -501,16 +499,6 @@ export default function AdminDashboard() {
                                 <MapPin className="w-3.5 h-3.5 text-[#b0aea5]" />
                                 {facility.city}
                               </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              {facility.rating ? (
-                                <div className="flex items-center gap-1">
-                                  <Star className="w-3.5 h-3.5 text-[#d97757]" fill="#d97757" />
-                                  <span className="text-sm font-semibold text-[#2D3748]">{facility.rating}</span>
-                                </div>
-                              ) : (
-                                <span className="text-xs text-[#b0aea5]">No rating</span>
-                              )}
                             </td>
                             <td className="px-6 py-4">
                               {facility.is_active ? (

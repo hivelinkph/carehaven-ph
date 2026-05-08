@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Check, Loader2, Heart, MapPin, Star, Building2, Lock, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, Heart, MapPin, Building2, Lock, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { QuestionnaireConfig, Facility, ProviderCareProfile } from "@/lib/types";
@@ -604,12 +604,6 @@ export default function FindAHomePage() {
                                 <MapPin className="w-3.5 h-3.5" />
                                 {match.facility.city}
                               </span>
-                              {match.facility.rating && (
-                                <span className="flex items-center gap-1">
-                                  <Star className="w-3.5 h-3.5 text-[#d97757]" fill="#d97757" />
-                                  {match.facility.rating}
-                                </span>
-                              )}
                             </div>
 
                             {match.facility.description && (

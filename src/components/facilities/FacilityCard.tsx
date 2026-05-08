@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Facility } from "@/lib/types";
-import { MapPin, Star, Users } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 
 interface FacilityCardProps {
   facility: Facility;
@@ -36,15 +36,6 @@ export default function FacilityCard({ facility }: FacilityCardProps) {
           </div>
           <p className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>Facility Image</p>
         </div>
-        {facility.rating && (
-          <div
-            className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-sm shadow-sm"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            <Star className="w-3.5 h-3.5 text-[#d97757]" fill="#d97757" />
-            <span className="text-xs font-semibold text-[#2D3748] tabular-nums">{facility.rating}</span>
-          </div>
-        )}
         <div
           className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[10px] tracking-[0.22em] uppercase"
           style={{ fontFamily: "var(--font-ui)", color: "#2D3748" }}
