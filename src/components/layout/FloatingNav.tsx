@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown, Menu, X, UserCircle2 } from "lucide-react";
+import { User, LogIn, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown, Menu, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 
@@ -133,21 +133,13 @@ export default function FloatingNav() {
             </>
           ) : (
             <>
-              {/* Customer Login */}
+              {/* Login (one button for all roles — routed by profile) */}
               <Link
                 href="/auth/login"
                 className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
               >
-                <UserCircle2 className="w-4 h-4" />
-                Customer Login
-              </Link>
-              {/* Provider Login */}
-              <Link
-                href="/auth/login"
-                className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
-              >
-                <Building2 className="w-4 h-4" />
-                Provider Login
+                <LogIn className="w-4 h-4" />
+                Log In
               </Link>
               {/* Sign Up Dropdown */}
               <div className="relative" ref={signupRef}>
@@ -250,12 +242,8 @@ export default function FloatingNav() {
                 </>
               ) : (
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-3 pt-1">Log In</p>
                   <Link href="/auth/login" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
-                    <UserCircle2 className="w-4 h-4 text-[#2DD1AC]" /> Customer Login
-                  </Link>
-                  <Link href="/auth/login" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
-                    <Building2 className="w-4 h-4 text-[#2DD1AC]" /> Provider Login
+                    <LogIn className="w-4 h-4 text-[#2DD1AC]" /> Log In
                   </Link>
                   <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-3 pt-3">Sign Up As</p>
                   <Link href="/auth/signup" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>

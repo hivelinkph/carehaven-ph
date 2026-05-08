@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Heart, User, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown, UserCircle2 } from "lucide-react";
+import { Menu, X, Heart, User, LogIn, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 
@@ -166,24 +166,13 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                {/* Customer Login */}
+                {/* Login (one button for all roles — routed by profile) */}
                 <Link
                   href="/auth/login"
                   className={`flex items-center gap-2 text-sm font-medium hover:text-[#2DD1AC] transition-colors px-4 py-2 ${isScrolled ? "text-[#2D3748]" : "text-white"}`}
                 >
-                  <UserCircle2 className="w-4 h-4" />
-                  Customer Login
-                </Link>
-                {/* Provider Login */}
-                <Link
-                  href="/auth/login"
-                  className={`flex items-center gap-2 text-sm font-medium border rounded-full px-4 py-2 transition-all ${isScrolled
-                      ? "text-[#2D3748] border-[#e8e6dc] hover:border-[#2DD1AC] hover:text-[#2DD1AC]"
-                      : "text-white border-white/30 hover:bg-white/10"
-                    }`}
-                >
-                  <Building2 className="w-4 h-4" />
-                  Provider Login
+                  <LogIn className="w-4 h-4" />
+                  Log In
                 </Link>
                 {/* Sign Up Dropdown */}
                 <div className="relative" ref={signupRef}>
@@ -296,22 +285,13 @@ export default function Navbar() {
                   </>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-2">Log In</p>
                     <Link
                       href="/auth/login"
                       className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
                       onClick={() => setIsOpen(false)}
                     >
-                      <UserCircle2 className="w-4 h-4 text-[#2DD1AC]" />
-                      Customer Login
-                    </Link>
-                    <Link
-                      href="/auth/login"
-                      className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Building2 className="w-4 h-4 text-[#2DD1AC]" />
-                      Provider Login
+                      <LogIn className="w-4 h-4 text-[#2DD1AC]" />
+                      Log In
                     </Link>
                     <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-2 mt-4">Sign Up As</p>
                     <Link
