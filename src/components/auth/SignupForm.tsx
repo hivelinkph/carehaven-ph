@@ -72,7 +72,7 @@ export default function SignupForm() {
           </span>
           <div className="text-[14px] leading-relaxed" style={{ color: "#0c4039", fontFamily: "var(--font-body)" }}>
             Confirmation sent to <strong>{email}</strong>. Click the link in the
-            email to activate your CareHaven account.
+            email to activate your SeniorLiving PH account.
           </div>
         </div>
         <Link
@@ -101,8 +101,8 @@ export default function SignupForm() {
       title={
         <>
           Welcome to{" "}
-          <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>
-            CareHaven
+          <span style={{ color: "#1a8576" }}>
+            SeniorLiving PH
           </span>
         </>
       }

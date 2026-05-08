@@ -162,7 +162,7 @@ export default function ProviderSignupPage() {
           <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>facility</span>
         </>
       }
-      subtitle="Join CareHaven PH and reach families looking for quality care"
+      subtitle="Join SeniorLiving PH and reach families looking for quality care"
     >
       {/* Step Indicator */}
       <div className="flex items-center justify-center gap-4 mb-7" style={{ fontFamily: "var(--font-ui)" }}>

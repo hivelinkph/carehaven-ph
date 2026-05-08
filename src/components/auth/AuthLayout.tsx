@@ -45,10 +45,10 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
           </span>
           <span className="leading-tight">
             <span className="block text-white text-[16px]" style={{ fontFamily: "var(--font-heading)", fontWeight: 600, textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
-              CareHaven
+              SeniorLiving
             </span>
             <span className="block text-[10px] tracking-[0.18em] uppercase -mt-0.5 text-white/85" style={{ fontFamily: "var(--font-ui)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
-              Senior Living PH
+              Philippines
             </span>
           </span>
         </Link>
@@ -103,10 +103,10 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
           </span>
           <span className="leading-tight">
             <span className="block text-[15px]" style={{ fontFamily: "var(--font-heading)", color: "#0c4039", fontWeight: 600 }}>
-              CareHaven
+              SeniorLiving
             </span>
             <span className="block text-[10px] tracking-[0.18em] uppercase -mt-0.5" style={{ fontFamily: "var(--font-ui)", color: "#1a8576" }}>
-              Senior Living PH
+              Philippines
             </span>
           </span>
         </div>

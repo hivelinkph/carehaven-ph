@@ -10,6 +10,6 @@ Write-Output "fc-a0afeab63a8843b29ba191de6260a1b1" | npx vercel env add FIRECRAW
 
 Write-Output "https://genuine-careph.vercel.app" | npx vercel env add NEXT_PUBLIC_APP_URL production
 
-Write-Output "CareHaven PH" | npx vercel env add NEXT_PUBLIC_APP_NAME production
+Write-Output "SeniorLiving PH" | npx vercel env add NEXT_PUBLIC_APP_NAME production
 
 npx vercel --prod --yes

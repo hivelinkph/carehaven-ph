@@ -8,7 +8,19 @@
       "Bash(npx next *)",
       "Bash(npm run *)",
       "Bash(grep -E \"\\(\\\\.tsx|\\\\.ts\\)$\")",
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "PowerShell(npm run *)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
+      "Bash(vercel --version)",
+      "Bash(vercel *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(npx eslint *)",
+      "Bash(npm i *)",
+      "Bash(curl -sI https://yssase88.com)",
+      "Bash(curl -s https://yssase88.com)",
+      "Bash(curl -s https://genuine-careph.vercel.app)"
     ]
   }
 }

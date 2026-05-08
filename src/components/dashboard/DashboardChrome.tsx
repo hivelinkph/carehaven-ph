@@ -121,7 +121,7 @@ export default function DashboardChrome({
             </div>
             <div className="leading-tight">
               <div className="text-white text-[15px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
-                CareHaven
+                SeniorLiving
               </div>
               <div className="text-[10px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.55)" }}>
                 Senior Living PH

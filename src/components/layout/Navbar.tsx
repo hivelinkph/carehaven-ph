@@ -100,7 +100,7 @@ export default function Navbar() {
                 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled ? "text-[#2D3748]" : "text-white"}`}
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                CareHaven
+                SeniorLiving
               </span>
               <span className="text-xs font-semibold text-[#2DD1AC] ml-1" style={{ fontFamily: "var(--font-ui)" }}>
                 PH

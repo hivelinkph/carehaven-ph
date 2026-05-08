@@ -1,7 +1,7 @@
-# CareHaven PH - Project Guide
+# SeniorLiving PH - Project Guide
 
 ## Overview
-CareHaven PH is an assisted living facility marketplace for the Philippines. Families can browse facilities via an interactive Philippine map, manage patient profiles, and track daily health monitoring results.
+SeniorLiving PH is an assisted living facility marketplace for the Philippines. The platform vets facilities, matches families with options that fit their loved one's needs, and connects them directly with providers — it does not itself provide medical care.
 
 ## Tech Stack
 - **Framework**: Next.js 14 (App Router) + TypeScript

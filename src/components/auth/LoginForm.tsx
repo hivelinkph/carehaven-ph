@@ -76,8 +76,8 @@ export default function LoginForm() {
       title={
         <>
           Welcome back to{" "}
-          <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#1a8576" }}>
-            CareHaven
+          <span style={{ color: "#1a8576" }}>
+            SeniorLiving PH
           </span>
         </>
       }
