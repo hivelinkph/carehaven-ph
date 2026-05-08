@@ -313,10 +313,22 @@ export default function FindAHomePage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] flex flex-col">
+    <div className="min-h-screen bg-[#faf9f5] flex flex-col relative overflow-x-clip">
+      {/* Editorial backdrop */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.10), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-[40vh] -left-32 w-[420px] h-[420px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(217,119,87,0.08), transparent 70%)", filter: "blur(20px)" }}
+      />
+
       {/* Progress Bar */}
       {step.type !== "confirmation" && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#e8e6dc]/50">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#faf9f5]/85 backdrop-blur-md border-b border-[#e8e6dc]/50">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
             {currentStep > 0 && step.type !== "loading" && (
               <button
@@ -327,8 +339,12 @@ export default function FindAHomePage() {
                 <ChevronLeft className="w-5 h-5 text-[#2D3748]" />
               </button>
             )}
+            <div className="hidden sm:flex items-center gap-2 text-[10px] tracking-[0.32em] uppercase text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+              <span className="italic-accent" style={{ color: "#d97757", textTransform: "none", letterSpacing: 0 }}>VI.</span>
+              <span>The Questionnaire</span>
+            </div>
             <div className="flex-1">
-              <div className="h-2 bg-[#e8e6dc] rounded-full overflow-hidden">
+              <div className="h-1 bg-[#e8e6dc] rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-[#2DD1AC] to-[#2DD1AC]/80 rounded-full transition-all duration-500 ease-out"
                   style={{ width: `${progressPercent}%` }}
@@ -336,7 +352,7 @@ export default function FindAHomePage() {
               </div>
             </div>
             <span
-              className="text-xs text-[#b0aea5] font-medium min-w-[3rem] text-right"
+              className="text-[11px] text-[#b0aea5] font-medium min-w-[3rem] text-right tabular-nums"
               style={{ fontFamily: "var(--font-ui)" }}
             >
               {progressPercent}%
@@ -352,13 +368,13 @@ export default function FindAHomePage() {
           {step.type === "single" && (
             <div className="animate-fade-in-up">
               <h1
-                className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-3 leading-tight"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="text-4xl sm:text-5xl text-[#2D3748] mb-4 leading-[1.1]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
               >
                 {getTitle(step)}
               </h1>
               <p
-                className="text-lg text-[#b0aea5] mb-10"
+                className="text-lg text-[#5b5851] mb-10"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {getSubtitle(step)}
@@ -401,13 +417,13 @@ export default function FindAHomePage() {
           {step.type === "multi" && (
             <div className="animate-fade-in-up">
               <h1
-                className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-3 leading-tight"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="text-4xl sm:text-5xl text-[#2D3748] mb-4 leading-[1.1]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
               >
                 {getTitle(step)}
               </h1>
               <p
-                className="text-lg text-[#b0aea5] mb-10"
+                className="text-lg text-[#5b5851] mb-10"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {getSubtitle(step)}

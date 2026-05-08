@@ -73,55 +73,67 @@ export default function Home() {
       <GalleryCarousel />
 
       {/* Services */}
-      <section id="services" className="py-20 lg:py-28 bg-white relative">
+      <section id="services" className="py-24 lg:py-32 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="ornament mb-8">
-              <span className="ornament-glyph">§ &nbsp; · &nbsp; §</span>
+          <div className="grid grid-cols-12 gap-8 mb-20">
+            <div className="col-span-12 lg:col-span-4">
+              <div className="chapter-mark mb-6">
+                <span className="roman">I.</span>
+                <span className="rule" />
+                <span className="eyebrow">What we offer</span>
+              </div>
             </div>
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d97757]/10 border border-[#d97757]/20 mb-6"
-              style={{ fontFamily: "var(--font-ui)" }}
-            >
-              <Stethoscope className="w-4 h-4 text-[#d97757]" />
-              <span className="text-sm font-medium text-[#2D3748]">What We Offer</span>
+            <div className="col-span-12 lg:col-span-8">
+              <h2
+                className="text-4xl sm:text-5xl lg:text-6xl text-[#2D3748] leading-[1.05]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
+              >
+                Care that{" "}
+                <span className="italic-accent" style={{ color: "#d97757" }}>goes beyond</span>{" "}
+                a checklist.
+              </h2>
+              <p
+                className="mt-5 text-lg text-[#5b5851] max-w-2xl"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Comprehensive healthcare services designed around the unique
+                needs of Filipino seniors and their families — built on trust,
+                tested in practice.
+              </p>
             </div>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3748] mb-4"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Care that goes{" "}
-              <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#d97757", fontWeight: 600 }}>beyond</span>
-            </h2>
-            <p className="text-lg text-[#b0aea5] max-w-2xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
-              Comprehensive healthcare services designed around the unique needs of
-              Filipino seniors and their families
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {SERVICES.map((service, i) => (
-              <div
+              <article
                 key={service.title}
-                className="group p-8 rounded-2xl border border-[#e8e6dc]/50 bg-[#faf9f5]/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-                style={{ animationDelay: `${i * 100}ms` }}
+                className="group editorial-card p-7 hover:-translate-y-1 transition-all duration-300"
+                style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: `${service.color}15` }}
-                >
-                  <service.icon className="w-7 h-7" style={{ color: service.color }} />
+                <div className="flex items-start justify-between mb-6">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${service.color}15` }}
+                  >
+                    <service.icon className="w-6 h-6" style={{ color: service.color }} />
+                  </div>
+                  <span
+                    className="text-xs tracking-[0.32em] uppercase text-[#b0aea5]"
+                    style={{ fontFamily: "var(--font-ui)" }}
+                  >
+                    {String(i + 1).padStart(2, "0")} / 06
+                  </span>
                 </div>
                 <h3
-                  className="text-xl font-bold text-[#2D3748] mb-3"
-                  style={{ fontFamily: "var(--font-heading)" }}
+                  className="text-2xl text-[#2D3748] mb-3 leading-tight"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
                 >
                   {service.title}
                 </h3>
-                <p className="text-[#b0aea5] leading-relaxed text-base" style={{ fontFamily: "var(--font-body)" }}>
+                <p className="text-[#6b6862] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
                   {service.description}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -131,103 +143,150 @@ export default function Home() {
       <PhilippineMap />
 
       {/* About SeniorLiving PH */}
-      <section id="about" className="py-20 lg:py-28 bg-white">
+      <section id="about" className="py-24 lg:py-32 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="ornament mb-8" style={{ color: "#6a9bcc" }}>
-              <span className="ornament-glyph">❦</span>
+          <div className="grid grid-cols-12 gap-8 mb-16">
+            <div className="col-span-12 lg:col-span-4">
+              <div className="chapter-mark mb-6" style={{ color: "#6a9bcc" }}>
+                <span className="roman">II.</span>
+                <span className="rule" />
+                <span className="eyebrow">About</span>
+              </div>
             </div>
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6a9bcc]/10 border border-[#6a9bcc]/20 mb-6"
-              style={{ fontFamily: "var(--font-ui)" }}
-            >
-              <Heart className="w-4 h-4 text-[#6a9bcc]" fill="#6a9bcc" />
-              <span className="text-sm font-medium text-[#2D3748]">About Us</span>
+            <div className="col-span-12 lg:col-span-8">
+              <h2
+                className="text-4xl sm:text-5xl lg:text-6xl text-[#2D3748] leading-[1.04]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
+              >
+                A quiet promise to{" "}
+                <span className="italic-accent" style={{ color: "#6a9bcc" }}>Filipino families</span>.
+              </h2>
+              <p
+                className="drop-cap mt-8 text-lg text-[#3d3a35] leading-[1.75]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                SeniorLiving PH is a trusted platform that helps Filipino families find the right assisted living and senior care options for their loved ones. Our mission is simple: make the search for quality senior care easier, more transparent, and less stressful for families.
+              </p>
             </div>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3748] mb-6"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              About <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#6a9bcc", fontWeight: 600 }}>SeniorLiving PH</span>
-            </h2>
-            <p className="text-lg text-[#b0aea5] leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
-              SeniorLiving PH is a trusted platform that helps Filipino families find the right assisted living and senior care options for their loved ones. Our mission is simple: make the search for quality senior care easier, more transparent, and less stressful for families.
-            </p>
           </div>
 
           {/* Main Content */}
-          <div className="space-y-16">
+          <div className="space-y-12">
             {/* Challenge & Solution */}
-            <div className="bg-[#faf9f5] rounded-3xl p-8 sm:p-10 lg:p-12 border border-[#e8e6dc]/50">
-              <p className="text-lg text-[#2D3748] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
+            <div className="grid grid-cols-12 gap-8 items-start">
+              <div className="col-span-12 sm:col-span-3">
+                <div className="text-[11px] tracking-[0.32em] uppercase text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                  ¶ The challenge
+                </div>
+              </div>
+              <p className="col-span-12 sm:col-span-9 text-[1.05rem] text-[#3d3a35] leading-[1.8]" style={{ fontFamily: "var(--font-body)" }}>
                 Finding the right care environment can be overwhelming. Families often struggle to compare facilities, understand pricing, or determine which services best meet their loved one&apos;s needs. SeniorLiving PH was created to simplify this process by connecting families with reputable assisted living communities and senior care providers across the Philippines.
               </p>
             </div>
 
+            <div className="editorial-rule" />
+
             {/* How Matching Works */}
-            <div>
-              <h3
-                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                How Our Matching Process{" "}
-                <span className="text-[#2DD1AC]">Works</span>
-              </h3>
-              <p className="text-lg text-[#b0aea5] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
-                Our platform uses a neutral matching process designed to prioritize the needs of seniors and their families. When families reach out, we learn about their situation — such as care needs, location preferences, budget, and lifestyle considerations. Based on this information, we present suitable assisted living and senior care options from our network of trusted facility partners.
-              </p>
-              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
-                Families can then review, compare, and connect directly with these providers to explore the best fit for their loved ones.
-              </p>
+            <div className="grid grid-cols-12 gap-8 items-start">
+              <div className="col-span-12 sm:col-span-3">
+                <div className="text-[11px] tracking-[0.32em] uppercase text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                  ¶ The matching
+                </div>
+              </div>
+              <div className="col-span-12 sm:col-span-9">
+                <h3
+                  className="text-2xl sm:text-3xl text-[#2D3748] mb-5 leading-tight"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
+                >
+                  How our matching process{" "}
+                  <span className="italic-accent" style={{ color: "#2DD1AC" }}>actually works</span>.
+                </h3>
+                <p className="text-[1.05rem] text-[#3d3a35] leading-[1.8] mb-4" style={{ fontFamily: "var(--font-body)" }}>
+                  Our platform uses a neutral matching process designed to prioritize the needs of seniors and their families. When families reach out, we learn about their situation — care needs, location preferences, budget, and lifestyle considerations. From that, we present suitable assisted living options from our network of trusted facility partners.
+                </p>
+                <p className="text-[1.05rem] text-[#6b6862] leading-[1.8]" style={{ fontFamily: "var(--font-body)" }}>
+                  Families can then review, compare, and connect directly with these providers to explore the best fit.
+                </p>
+              </div>
             </div>
+
+            <div className="editorial-rule" />
 
             {/* Always Free */}
-            <div className="bg-gradient-to-br from-[#2DD1AC]/5 to-[#6a9bcc]/5 rounded-3xl p-8 sm:p-10 lg:p-12 border border-[#2DD1AC]/15">
-              <h3
-                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Always <span className="text-[#2DD1AC]">Free</span> for Families
-              </h3>
-              <p className="text-lg text-[#b0aea5] leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
-                SeniorLiving PH is completely free for families seeking assisted living options. There are no consultation fees, no referral fees, and no hidden charges for using our service.
-              </p>
-              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
-                Our platform is supported by our partner assisted living communities and care providers, who pay a referral or marketing fee when families choose their facilities. This allows us to maintain our service without adding financial burden to families during an already challenging decision-making process.
-              </p>
+            <div className="grid grid-cols-12 gap-8 items-start bg-gradient-to-br from-[#2DD1AC]/4 to-[#6a9bcc]/4 rounded-3xl p-8 sm:p-10 border border-[#2DD1AC]/15">
+              <div className="col-span-12 sm:col-span-3">
+                <div className="text-[11px] tracking-[0.32em] uppercase" style={{ fontFamily: "var(--font-ui)", color: "#2DD1AC" }}>
+                  ¶ The price
+                </div>
+              </div>
+              <div className="col-span-12 sm:col-span-9">
+                <h3
+                  className="text-2xl sm:text-3xl text-[#2D3748] mb-5 leading-tight"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
+                >
+                  Always <span className="italic-accent" style={{ color: "#2DD1AC" }}>free</span> for families.
+                </h3>
+                <p className="text-[1.05rem] text-[#3d3a35] leading-[1.8] mb-4" style={{ fontFamily: "var(--font-body)" }}>
+                  SeniorLiving PH is completely free for families seeking assisted living options. No consultation fees. No referral fees. No hidden charges.
+                </p>
+                <p className="text-[1.05rem] text-[#6b6862] leading-[1.8]" style={{ fontFamily: "var(--font-body)" }}>
+                  Our platform is supported by partner communities and care providers, who pay a referral fee when families choose their facilities — so the financial burden never falls on the family during an already-difficult decision.
+                </p>
+              </div>
             </div>
 
+            <div className="editorial-rule" />
+
             {/* Our Commitment */}
-            <div>
-              <h3
-                className="text-2xl sm:text-3xl font-bold text-[#2D3748] mb-6"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Our <span className="text-[#d97757]">Commitment</span>
-              </h3>
-              <p className="text-lg text-[#b0aea5] leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
-                We are committed to helping Filipino families make informed and confident decisions about senior care. By providing clear information, trusted facility connections, and a supportive matching process, SeniorLiving PH aims to make the journey to finding the right assisted living community simpler and more reassuring.
-              </p>
+            <div className="grid grid-cols-12 gap-8 items-start">
+              <div className="col-span-12 sm:col-span-3">
+                <div className="text-[11px] tracking-[0.32em] uppercase text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
+                  ¶ The promise
+                </div>
+              </div>
+              <div className="col-span-12 sm:col-span-9">
+                <h3
+                  className="text-2xl sm:text-3xl text-[#2D3748] mb-5 leading-tight"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
+                >
+                  Our <span className="italic-accent" style={{ color: "#d97757" }}>commitment</span>.
+                </h3>
+                <p className="text-[1.05rem] text-[#3d3a35] leading-[1.8]" style={{ fontFamily: "var(--font-body)" }}>
+                  We are committed to helping Filipino families make informed and confident decisions about senior care. By providing clear information, trusted facility connections, and a supportive matching process, SeniorLiving PH aims to make the journey to finding the right assisted living community simpler and more reassuring.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 lg:py-28 bg-[#faf9f5] overflow-hidden">
+      <section className="py-24 lg:py-32 bg-[#faf9f5] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-4"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Loved by Filipino{" "}
-              <span className="text-[#2DD1AC]">Families</span>
-            </h2>
-            <p className="text-lg text-[#b0aea5] max-w-2xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
-              Real stories from families who found the perfect care for their loved ones
-            </p>
+          <div className="grid grid-cols-12 gap-8 mb-14">
+            <div className="col-span-12 lg:col-span-4">
+              <div className="chapter-mark mb-6" style={{ color: "#2DD1AC" }}>
+                <span className="roman">III.</span>
+                <span className="rule" />
+                <span className="eyebrow">Voices</span>
+              </div>
+            </div>
+            <div className="col-span-12 lg:col-span-8">
+              <h2
+                className="text-4xl sm:text-5xl lg:text-6xl text-[#2D3748] leading-[1.04]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
+              >
+                Loved by{" "}
+                <span className="italic-accent" style={{ color: "#2DD1AC" }}>Filipino families</span>.
+              </h2>
+              <p
+                className="mt-5 text-lg text-[#5b5851] max-w-2xl"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Real stories from families who found the perfect care for their loved ones — in their own words.
+              </p>
+            </div>
           </div>
 
           <ShuffleCards />
@@ -235,20 +294,26 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-28 bg-gradient-to-br from-[#2D3748] to-[#2D3748]/95 relative overflow-hidden">
+      <section className="py-24 lg:py-32 bg-gradient-to-br from-[#2D3748] to-[#1a2030] relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#2DD1AC]/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#d97757]/10 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-[28rem] h-[28rem] bg-[#2DD1AC]/12 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#d97757]/12 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="chapter-mark justify-center mb-8" style={{ color: "rgba(255,255,255,0.65)" }}>
+            <span className="roman" style={{ color: "#2DD1AC" }}>IV.</span>
+            <span className="rule" style={{ background: "rgba(255,255,255,0.4)" }} />
+            <span className="eyebrow" style={{ color: "rgba(255,255,255,0.7)" }}>Begin</span>
+          </div>
           <h2
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-4xl sm:text-5xl lg:text-6xl text-white mb-6 leading-[1.05]"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.02em" }}
           >
-            Ready to Find the Right Care?
+            Ready to find the{" "}
+            <span className="italic-accent" style={{ color: "#2DD1AC" }}>right care</span>?
           </h2>
           <p
-            className="text-lg text-white/60 max-w-2xl mx-auto mb-10"
+            className="text-lg text-white/65 max-w-2xl mx-auto mb-10"
             style={{ fontFamily: "var(--font-body)" }}
           >
             Join thousands of Filipino families who trust SeniorLiving PH to help

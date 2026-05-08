@@ -3,26 +3,42 @@ import { Heart, Phone, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#2D3748] text-white/80">
+    <footer className="bg-[#2D3748] text-white/80 relative overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 right-0 w-[420px] h-[420px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.10), transparent 70%)", filter: "blur(40px)" }}
+      />
+      {/* Editorial colophon */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 border-b border-white/10 relative">
+        <div className="flex items-baseline gap-4 text-[#2DD1AC]">
+          <span className="italic-accent text-3xl">Vol. 01</span>
+          <span className="flex-1 h-px bg-white/15" />
+          <span className="text-[11px] tracking-[0.32em] uppercase text-white/55" style={{ fontFamily: "var(--font-ui)" }}>
+            Senior Living, Philippines
+          </span>
+        </div>
+      </div>
+
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-5">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2DD1AC] to-[#6a9bcc] flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" fill="white" />
               </div>
               <span
-                className="text-xl font-bold text-white tracking-tight"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="text-2xl tracking-tight text-white"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
               >
-                SeniorLiving <span className="text-[#2DD1AC]">PH</span>
+                SeniorLiving{" "}
+                <span className="italic-accent" style={{ color: "#2DD1AC" }}>PH</span>
               </span>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed mb-6" style={{ fontFamily: "var(--font-body)" }}>
-              Connecting Filipino families with compassionate assisted living facilities across the Philippines.
-              Because your loved ones deserve the best care.
+            <p className="text-[15px] text-white/60 leading-[1.7] mb-6" style={{ fontFamily: "var(--font-body)" }}>
+              Connecting Filipino families with compassionate assisted living facilities across the archipelago. Because your loved ones deserve the best care.
             </p>
             <div className="flex gap-3 text-sm text-white/50" style={{ fontFamily: "var(--font-ui)" }}>
               <div className="flex items-center gap-1.5">

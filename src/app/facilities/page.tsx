@@ -104,17 +104,52 @@ export default function FacilitiesPage() {
   }, [categoryFiltered, selectedLocation, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#faf9f5] pt-16 pb-12 relative overflow-x-clip">
+      {/* Soft editorial backdrop */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.12), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Back to Home */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2DD1AC] transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-[12px] tracking-[0.18em] uppercase font-medium text-[#2D3748]/70 hover:text-[#2DD1AC] transition-colors mb-10"
           style={{ fontFamily: "var(--font-ui)" }}
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Return home
         </Link>
+
+        {/* Editorial chapter masthead */}
+        <header className="grid grid-cols-12 gap-8 mb-12">
+          <div className="col-span-12 lg:col-span-4">
+            <div className="chapter-mark mb-4">
+              <span className="roman">V.</span>
+              <span className="rule" />
+              <span className="eyebrow">The Directory</span>
+            </div>
+            <p className="text-sm text-[#7a7770]" style={{ fontFamily: "var(--font-body)", fontStyle: "italic" }}>
+              An always-evolving register of vetted assisted-living facilities across the Philippine archipelago.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-8">
+            <h1
+              className="text-5xl sm:text-6xl lg:text-7xl text-[#2D3748] leading-[1.02]"
+              style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.025em" }}
+            >
+              Every home,{" "}
+              <span className="italic-accent" style={{ color: "#d97757" }}>indexed</span>{" "}
+              with care.
+            </h1>
+            <p className="mt-5 text-lg text-[#5b5851] max-w-2xl" style={{ fontFamily: "var(--font-body)" }}>
+              Browse by region, filter by level of care, or search by name. Every listing is reviewed before it appears here.
+            </p>
+          </div>
+        </header>
+
+        <div className="editorial-rule mb-10" />
 
         {/* Category Tabs */}
         <div className="flex items-center gap-1.5 mb-5 overflow-x-auto pb-1">

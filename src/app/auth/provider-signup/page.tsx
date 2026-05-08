@@ -116,15 +116,24 @@ export default function ProviderSignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4">
-        <div className="w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
+          style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)", filter: "blur(20px)" }}
+        />
+        <div className="w-full max-w-md text-center relative">
           <div className="w-16 h-16 rounded-2xl bg-[#2DD1AC]/10 flex items-center justify-center mx-auto mb-6">
             <Mail className="w-8 h-8 text-[#2DD1AC]" />
           </div>
-          <h2 className="text-2xl font-bold text-[#2D3748] mb-3" style={{ fontFamily: "var(--font-heading)" }}>
-            Application Submitted!
+          <div className="ornament my-6">
+            <span className="ornament-glyph">·  ·  ·</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl text-[#2D3748] mb-4" style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}>
+            Application{" "}
+            <span className="italic-accent" style={{ color: "#d97757" }}>submitted</span>.
           </h2>
-          <p className="text-[#b0aea5] mb-6" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#5b5851] mb-6" style={{ fontFamily: "var(--font-body)" }}>
             Check your email at <strong className="text-[#2D3748]">{email}</strong> to verify your account.
             Your facility listing will be reviewed by our admin team and activated once approved.
           </p>
@@ -141,19 +150,36 @@ export default function ProviderSignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12 px-4 relative overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -right-40 w-[480px] h-[480px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.12), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-[30vh] -left-40 w-[420px] h-[420px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(106,155,204,0.10), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div className="max-w-2xl mx-auto relative">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2DD1AC] to-[#6a9bcc] flex items-center justify-center shadow-md">
               <Heart className="w-6 h-6 text-white" fill="white" />
             </div>
           </Link>
-          <h1 className="text-3xl font-bold text-[#2D3748] mt-6 mb-2" style={{ fontFamily: "var(--font-heading)" }}>
-            Register Your Facility
+          <div className="ornament my-6">
+            <span className="ornament-glyph">·  ·  ·</span>
+          </div>
+          <h1
+            className="text-4xl sm:text-5xl text-[#2D3748] mt-2 mb-3"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.015em" }}
+          >
+            Register your{" "}
+            <span className="italic-accent" style={{ color: "#6a9bcc" }}>facility</span>.
           </h1>
-          <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#7a7770]" style={{ fontFamily: "var(--font-body)" }}>
             Join CareHaven PH and reach families looking for quality care
           </p>
         </div>

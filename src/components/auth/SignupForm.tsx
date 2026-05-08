@@ -63,20 +63,29 @@ export default function SignupForm() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4">
-        <div className="w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
+          style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)", filter: "blur(20px)" }}
+        />
+        <div className="w-full max-w-md text-center relative">
           <div className="w-16 h-16 rounded-2xl bg-[#2DD1AC]/10 flex items-center justify-center mx-auto mb-6">
             <Mail className="w-8 h-8 text-[#2DD1AC]" />
           </div>
+          <div className="ornament my-6">
+            <span className="ornament-glyph">·  ·  ·</span>
+          </div>
           <h2
-            className="text-2xl font-bold text-[#2D3748] mb-3"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-3xl sm:text-4xl text-[#2D3748] mb-4"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 500 }}
           >
-            Check Your Email
+            Check your{" "}
+            <span className="italic-accent" style={{ color: "#d97757" }}>inbox</span>.
           </h2>
-          <p className="text-[#b0aea5] mb-6" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#5b5851] mb-6" style={{ fontFamily: "var(--font-body)" }}>
             We&apos;ve sent a confirmation link to <strong className="text-[#2D3748]">{email}</strong>.
-            Click the link to activate your account.
+            Click it to activate your account.
           </p>
           <Link
             href="/auth/login"
@@ -91,8 +100,19 @@ export default function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
+      {/* Editorial backdrop */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 -right-40 w-[460px] h-[460px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(217,119,87,0.12), transparent 70%)", filter: "blur(20px)" }}
+      />
+      <div className="w-full max-w-md relative">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
@@ -100,13 +120,18 @@ export default function SignupForm() {
               <Heart className="w-6 h-6 text-white" fill="white" />
             </div>
           </Link>
+          <div className="ornament my-6">
+            <span className="ornament-glyph">·  ·  ·</span>
+          </div>
           <h1
-            className="text-3xl font-bold text-[#2D3748] mt-6 mb-2"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-4xl sm:text-5xl text-[#2D3748] mt-2 mb-3"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 500, letterSpacing: "-0.015em" }}
           >
-            Create Your Account
+            Begin{" "}
+            <span className="italic-accent" style={{ color: "#d97757" }}>here</span>
+            <span style={{ color: "#2DD1AC" }}>.</span>
           </h1>
-          <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#7a7770]" style={{ fontFamily: "var(--font-body)" }}>
             Start caring for your loved ones today
           </p>
         </div>

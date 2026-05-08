@@ -309,6 +309,63 @@ html {
   opacity: 0.7;
 }
 
+/* Editorial chapter marker — Roman numeral + rule + eyebrow */
+.chapter-mark {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  color: var(--accent-orange);
+}
+.chapter-mark .roman {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 2.6rem;
+  line-height: 0.9;
+  letter-spacing: 0;
+  color: var(--accent-orange);
+}
+.chapter-mark .rule {
+  flex: 0 0 4rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  align-self: center;
+  transform: translateY(-0.4rem);
+}
+.chapter-mark .eyebrow {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--primary);
+  opacity: 0.78;
+}
+
+/* Italic accent helper */
+.italic-accent {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* Editorial card — refined frame */
+.editorial-card {
+  background: #ffffff;
+  border: 1px solid rgba(176, 174, 165, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 14px 38px -28px rgba(45, 55, 72, 0.22);
+  position: relative;
+}
+.editorial-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border-top: 1px solid rgba(217, 119, 87, 0.18);
+}
+
 /* ===========================================================
    CUSTOMER DASHBOARD — Sun-warmed Journal
    Dusty terracotta, sage, cream. Calm + devotional.
