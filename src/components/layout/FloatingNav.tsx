@@ -3,24 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LogIn, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown, Menu, X } from "lucide-react";
+import { User, LogOut, LayoutDashboard, Building2, ShieldCheck, ChevronDown, Menu, X, UserCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 
 export default function FloatingNav() {
-  const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (loginRef.current && !loginRef.current.contains(e.target as Node)) {
-        setLoginOpen(false);
-      }
       if (signupRef.current && !signupRef.current.contains(e.target as Node)) {
         setSignupOpen(false);
       }
@@ -138,45 +133,22 @@ export default function FloatingNav() {
             </>
           ) : (
             <>
-              {/* Login Dropdown */}
-              <div className="relative" ref={loginRef}>
-                <button
-                  onClick={() => { setLoginOpen(!loginOpen); setSignupOpen(false); }}
-                  className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Log In
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${loginOpen ? "rotate-180" : ""}`} />
-                </button>
-                {loginOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-[#e8e6dc] shadow-lg overflow-hidden animate-fade-in z-50">
-                    <Link
-                      href="/auth/login?role=client"
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
-                      onClick={() => setLoginOpen(false)}
-                    >
-                      <User className="w-4 h-4" />
-                      Client Login
-                    </Link>
-                    <Link
-                      href="/auth/login?role=provider"
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#2D3748] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
-                      onClick={() => setLoginOpen(false)}
-                    >
-                      <Building2 className="w-4 h-4" />
-                      Provider Login
-                    </Link>
-                    <Link
-                      href="/auth/login?role=admin"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-[#b0aea5] hover:bg-[#2DD1AC]/5 hover:text-[#2DD1AC] transition-all border-l-3 border-transparent hover:border-[#2DD1AC]"
-                      onClick={() => setLoginOpen(false)}
-                    >
-                      <ShieldCheck className="w-4 h-4" />
-                      Admin Login
-                    </Link>
-                  </div>
-                )}
-              </div>
+              {/* Customer Login */}
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
+              >
+                <UserCircle2 className="w-4 h-4" />
+                Customer Login
+              </Link>
+              {/* Provider Login */}
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-2 text-sm font-medium text-[#2D3748] hover:text-[#2D3748] bg-white/85 backdrop-blur-md border border-white/40 px-5 py-2.5 rounded-full hover:bg-white transition-all shadow-sm"
+              >
+                <Building2 className="w-4 h-4" />
+                Provider Login
+              </Link>
               {/* Sign Up Dropdown */}
               <div className="relative" ref={signupRef}>
                 <button
@@ -278,11 +250,11 @@ export default function FloatingNav() {
                 </>
               ) : (
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-3 pt-1">Log In As</p>
-                  <Link href="/auth/login?role=client" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
-                    <User className="w-4 h-4 text-[#2DD1AC]" /> Client Login
+                  <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-3 pt-1">Log In</p>
+                  <Link href="/auth/login" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
+                    <UserCircle2 className="w-4 h-4 text-[#2DD1AC]" /> Customer Login
                   </Link>
-                  <Link href="/auth/login?role=provider" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
+                  <Link href="/auth/login" className="flex items-center gap-3 text-sm font-medium text-[#2D3748] py-2.5 px-3 rounded-lg hover:bg-[#e8e6dc]/30 transition-all" onClick={() => setMobileOpen(false)}>
                     <Building2 className="w-4 h-4 text-[#2DD1AC]" /> Provider Login
                   </Link>
                   <p className="text-xs font-semibold text-[#b0aea5] uppercase tracking-wider px-3 pt-3">Sign Up As</p>

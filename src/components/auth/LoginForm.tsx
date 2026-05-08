@@ -6,33 +6,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { Mail, Phone, Heart, Building2, ShieldCheck, User } from "lucide-react";
-
-const ROLE_CONFIG = {
-  client: {
-    title: "Client Login",
-    subtitle: "Sign in to check on your loved ones",
-    icon: User,
-    redirect: "/dashboard",
-  },
-  provider: {
-    title: "Provider Login",
-    subtitle: "Sign in to manage your facility",
-    icon: Building2,
-    redirect: "/dashboard/provider",
-  },
-  admin: {
-    title: "Admin Login",
-    subtitle: "Sign in to the admin dashboard",
-    icon: ShieldCheck,
-    redirect: "/admin",
-  },
-} as const;
+import { Mail, Phone, Heart } from "lucide-react";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const roleParam = searchParams.get("role") as keyof typeof ROLE_CONFIG | null;
-  const roleConfig = roleParam && ROLE_CONFIG[roleParam] ? ROLE_CONFIG[roleParam] : ROLE_CONFIG.client;
 
   const [mode, setMode] = useState<"email" | "phone">("email");
   const [email, setEmail] = useState("");
@@ -103,10 +80,10 @@ export default function LoginForm() {
             className="text-3xl font-bold text-[#2D3748] mt-6 mb-2"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            {roleConfig.title}
+            Welcome Back
           </h1>
           <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
-            {roleConfig.subtitle}
+            Sign in to your CareHaven account
           </p>
         </div>
 
