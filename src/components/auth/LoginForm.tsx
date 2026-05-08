@@ -67,8 +67,25 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#faf9f5] pt-20 pb-12 px-4 relative overflow-hidden">
+      {/* Decorative editorial blobs */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-40 w-[420px] h-[420px] rounded-full"
+        style={{
+          background: "radial-gradient(closest-side, rgba(45,209,172,0.16), transparent 70%)",
+          filter: "blur(20px)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 -right-40 w-[460px] h-[460px] rounded-full"
+        style={{
+          background: "radial-gradient(closest-side, rgba(217,119,87,0.12), transparent 70%)",
+          filter: "blur(20px)",
+        }}
+      />
+      <div className="w-full max-w-md relative">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
@@ -76,11 +93,16 @@ export default function LoginForm() {
               <Heart className="w-6 h-6 text-white" fill="white" />
             </div>
           </Link>
+          <div className="ornament my-6">
+            <span className="ornament-glyph">·  ·  ·</span>
+          </div>
           <h1
-            className="text-3xl font-bold text-[#2D3748] mt-6 mb-2"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-4xl sm:text-5xl mt-2 mb-3"
+            style={{ fontFamily: "var(--font-heading)", color: "#2D3748", fontWeight: 500, letterSpacing: "-0.015em" }}
           >
-            Welcome Back
+            Welcome{" "}
+            <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#d97757", fontWeight: 600 }}>back</span>
+            <span style={{ color: "#2DD1AC" }}>.</span>
           </h1>
           <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
             Sign in to your CareHaven account

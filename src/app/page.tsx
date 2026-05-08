@@ -73,9 +73,12 @@ export default function Home() {
       <GalleryCarousel />
 
       {/* Services */}
-      <section id="services" className="py-20 lg:py-28 bg-white">
+      <section id="services" className="py-20 lg:py-28 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <div className="ornament mb-8">
+              <span className="ornament-glyph">§ &nbsp; · &nbsp; §</span>
+            </div>
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d97757]/10 border border-[#d97757]/20 mb-6"
               style={{ fontFamily: "var(--font-ui)" }}
@@ -87,8 +90,8 @@ export default function Home() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3748] mb-4"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              Care That Goes{" "}
-              <span className="text-[#d97757]">Beyond</span>
+              Care that goes{" "}
+              <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#d97757", fontWeight: 600 }}>beyond</span>
             </h2>
             <p className="text-lg text-[#b0aea5] max-w-2xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
               Comprehensive healthcare services designed around the unique needs of
@@ -132,6 +135,9 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
+            <div className="ornament mb-8" style={{ color: "#6a9bcc" }}>
+              <span className="ornament-glyph">❦</span>
+            </div>
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6a9bcc]/10 border border-[#6a9bcc]/20 mb-6"
               style={{ fontFamily: "var(--font-ui)" }}
@@ -143,7 +149,7 @@ export default function Home() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D3748] mb-6"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              About <span className="text-[#6a9bcc]">SeniorLiving PH</span>
+              About <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", color: "#6a9bcc", fontWeight: 600 }}>SeniorLiving PH</span>
             </h2>
             <p className="text-lg text-[#b0aea5] leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-body)" }}>
               SeniorLiving PH is a trusted platform that helps Filipino families find the right assisted living and senior care options for their loved ones. Our mission is simple: make the search for quality senior care easier, more transparent, and less stressful for families.

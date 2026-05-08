@@ -164,25 +164,8 @@ export function UserDashboard({ profile }: { profile: Profile }) {
 
   return (
     <>
-      {/* Welcome */}
-      <div className="mb-6">
-        <h1
-          className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-1"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Welcome back
-          {profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
-        </h1>
-        <p
-          className="text-[#b0aea5]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
-          Your conversations with assisted living facilities
-        </p>
-      </div>
-
       {/* Messenger layout */}
-      <div className="bg-white rounded-3xl border border-[#e8e6dc]/60 shadow-sm overflow-hidden">
+      <div className="surface-paper overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] lg:grid-cols-[360px_1fr] h-[calc(100vh-220px)] min-h-[560px]">
           {/* Sidebar */}
           <div

@@ -1,11 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
-import { ProviderDashboard } from "@/components/dashboard/ProviderDashboard";
-import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
+import CustomerDashboardShell from "@/components/dashboard/CustomerDashboardShell";
 
 export default function DashboardPage() {
   return (
@@ -17,15 +17,16 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-[#faf9f5] pt-24 flex items-center justify-center">
-      <div className="animate-pulse text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-        Loading your dashboard...
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--c-bg, #f6efe6)" }}>
+      <div className="animate-pulse" style={{ fontFamily: "var(--font-script)", fontSize: "1.6rem", color: "var(--c-clay, #c87355)" }}>
+        Welcoming you back…
       </div>
     </div>
   );
 }
 
 function DashboardInner() {
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,48 +35,38 @@ function DashboardInner() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        setProfile(profileData);
+      if (!user) {
+        router.replace("/auth/login");
+        return;
       }
+
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profileData?.role === "admin") {
+        router.replace("/admin");
+        return;
+      }
+      if (profileData?.role === "provider") {
+        router.replace("/dashboard/provider");
+        return;
+      }
+
+      setProfile(profileData);
       setLoading(false);
     }
 
     loadData();
-  }, []);
+  }, [router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#faf9f5] pt-24 flex items-center justify-center">
-        <div className="animate-pulse text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-          Loading your dashboard...
-        </div>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-screen bg-[#faf9f5] pt-24 flex items-center justify-center">
-        <div className="text-xl text-[#d97757]" style={{ fontFamily: "var(--font-heading)" }}>
-          Error: Profile not found. Please log in again.
-        </div>
-      </div>
-    );
-  }
+  if (loading || !profile) return <DashboardSkeleton />;
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {profile.role === 'admin' && <AdminDashboard profile={profile} />}
-        {profile.role === 'provider' && <ProviderDashboard profile={profile} />}
-        {(!profile.role || profile.role === 'user') && <UserDashboard profile={profile} />}
-      </div>
-    </div>
+    <CustomerDashboardShell profile={profile}>
+      <UserDashboard profile={profile} />
+    </CustomerDashboardShell>
   );
 }

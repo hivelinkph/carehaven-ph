@@ -372,7 +372,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f5]">
+    <div className="min-h-screen">
       {/* Sidebar */}
       <AdminSidebar
         activeTab={activeTab}
@@ -384,20 +384,71 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className={`transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : ""}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          {/* Header */}
-          <div className="mb-8 flex items-center gap-4">
-            <div className="ml-12">
-              <div className="flex items-center gap-3 mb-2">
-                <ShieldCheck className="w-7 h-7 text-[#2DD1AC]" />
-                <h1 className="text-3xl font-bold text-[#2D3748]" style={{ fontFamily: "var(--font-heading)" }}>
-                  Admin Dashboard
-                </h1>
-              </div>
-              <p className="text-[#b0aea5]" style={{ fontFamily: "var(--font-body)" }}>
-                Manage all facility listings and provider profiles
-              </p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
+          {/* Brutalist command header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-6 ml-12 lg:ml-0">
+              <span className="tag-mono acid">
+                <span className="blink" style={{ width: 6, height: 6, background: "currentColor", display: "inline-block" }} />
+                ROOT.SESSION
+              </span>
+              <span className="tag-mono">SYS / 24×7</span>
+              <span className="tag-mono magenta">PRIV: ALL</span>
             </div>
+
+            <div className="ml-12 lg:ml-0 grid grid-cols-12 gap-6 items-end">
+              <div className="col-span-12 lg:col-span-9">
+                <div
+                  className="text-[11px] tracking-[0.32em] uppercase mb-3"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
+                >
+                  CAREHAVEN_PH &nbsp;//&nbsp; ADMIN.CONTROL
+                </div>
+                <h1
+                  className="text-6xl sm:text-7xl lg:text-[7.5rem] leading-[0.9] font-bold"
+                  style={{
+                    fontFamily: "var(--font-grotesk)",
+                    color: "var(--a-fg)",
+                    letterSpacing: "-0.04em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Command<span style={{ color: "var(--a-acid)" }}>.</span>
+                </h1>
+                <p
+                  className="mt-5 text-[13px] tracking-[0.18em] uppercase max-w-xl"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
+                >
+                  Facility listings, provider profiles, questionnaire engine,
+                  testimonials, gallery, match-impression telemetry — all wired
+                  through one console.
+                </p>
+              </div>
+              <div className="col-span-12 lg:col-span-3 grid grid-cols-3 gap-2">
+                {[
+                  { k: "FCL", v: facilities.length },
+                  { k: "ACT", v: activeCount },
+                  { k: "Q+", v: questions.length },
+                ].map((m) => (
+                  <div
+                    key={m.k}
+                    className="raw-card p-3"
+                  >
+                    <div
+                      className="text-[10px] tracking-[0.22em] uppercase mb-1"
+                      style={{ fontFamily: "var(--font-mono)", color: "var(--a-muted)" }}
+                    >
+                      {m.k}
+                    </div>
+                    <div className="num text-2xl" style={{ color: "var(--a-acid)" }}>
+                      {m.v}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hard-rule mt-8" />
           </div>
 
           {/* ===== FACILITIES TAB ===== */}

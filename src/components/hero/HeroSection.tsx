@@ -26,13 +26,28 @@ export default function HeroSection() {
       {/* Content - bottom left */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-16 sm:pb-20">
         <div className="max-w-2xl">
-          {/* Headline */}
-          <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+          {/* Editorial eyebrow */}
+          <div
+            className="inline-flex items-center gap-3 mb-6 animate-fade-in-up"
+            style={{ fontFamily: "var(--font-ui)" }}
           >
-            Find the Perfect Home for{" "}
-            <span className="text-[#2DD1AC]">Your Loved One</span>
+            <span className="inline-block w-10 h-px bg-[#2DD1AC]" />
+            <span className="text-[11px] tracking-[0.32em] uppercase text-white/85" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>
+              Vol. 01 &nbsp;·&nbsp; Senior Living, Philippines
+            </span>
+          </div>
+
+          {/* Headline — editorial pairing */}
+          <h1
+            className="text-5xl sm:text-6xl lg:text-7xl font-medium text-white leading-[1.02] mb-6 animate-fade-in-up"
+            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em" }}
+          >
+            A home for the
+            <br />
+            <span style={{ fontFamily: "var(--font-accent)", fontStyle: "italic", fontWeight: 500, color: "#2DD1AC" }}>
+              ones you love
+            </span>
+            <span className="text-white">.</span>
           </h1>
 
           {/* Subtitle */}

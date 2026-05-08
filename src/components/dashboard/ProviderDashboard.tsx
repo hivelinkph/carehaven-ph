@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Facility, QuestionnaireConfig, ProviderCareProfile } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import { Plus, Edit2, Building2, Eye, LogOut, ClipboardList, Check, Save, Loader2 } from "lucide-react";
+import { Plus, Edit2, Building2, Eye, ClipboardList, Check, Save, Loader2 } from "lucide-react";
 
 export function ProviderDashboard({ profile }: { profile: Profile }) {
-    const router = useRouter();
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [loading, setLoading] = useState(true);
     const [questions, setQuestions] = useState<QuestionnaireConfig[]>([]);
@@ -110,46 +108,28 @@ export function ProviderDashboard({ profile }: { profile: Profile }) {
 
     return (
         <>
-            <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1
-                        className="text-3xl sm:text-4xl font-bold text-[#2D3748] mb-2"
-                        style={{ fontFamily: "var(--font-heading)" }}
-                    >
-                        Provider Dashboard
-                    </h1>
-                    <p className="text-[#b0aea5] text-lg" style={{ fontFamily: "var(--font-body)" }}>
-                        Manage your Assisted Living Facilities
-                    </p>
+            <div className="mb-8 flex items-center justify-between gap-4">
+                <div className="text-[11px] tracking-[0.32em] uppercase" style={{ fontFamily: "var(--font-mono)", color: "var(--p-mint, #4cf2c4)" }}>
+                    01 / Facility roster
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                    <Link
-                        href="/dashboard/provider/facilities/new"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#2DD1AC] rounded-full hover:bg-[#2DD1AC]/90 transition-all shadow-md"
-                        style={{ fontFamily: "var(--font-ui)" }}
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add Facility
-                    </Link>
-                    <button
-                        onClick={async () => {
-                            const supabase = createClient();
-                            await supabase.auth.signOut();
-                            router.push("/");
-                            router.refresh();
-                        }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-full hover:bg-red-600 transition-all shadow-md"
-                        style={{ fontFamily: "var(--font-ui)" }}
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                    </button>
-                </div>
+                <Link
+                    href="/dashboard/provider/facilities/new"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-[12px] font-semibold tracking-[0.18em] uppercase rounded-full border transition-all"
+                    style={{
+                        fontFamily: "var(--font-mono)",
+                        color: "var(--p-mint, #4cf2c4)",
+                        borderColor: "rgba(76,242,196,0.4)",
+                        background: "rgba(76,242,196,0.06)",
+                    }}
+                >
+                    <Plus className="w-3.5 h-3.5" />
+                    New facility
+                </Link>
             </div>
 
             {/* Your Facilities */}
             <div className="mb-10">
-                <h2 className="text-2xl font-bold text-[#2D3748] mb-6" style={{ fontFamily: "var(--font-heading)" }}>
+                <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "var(--font-heading)", color: "var(--p-paper, #f3eee3)" }}>
                     Your Facilities
                 </h2>
 
