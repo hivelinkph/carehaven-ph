@@ -8,7 +8,8 @@ const envs = {
     "FIRECRAWL_API_KEY": "fc-a0afeab63a8843b29ba191de6260a1b1",
     "NEXT_PUBLIC_APP_URL": "https://genuine-careph.vercel.app",
     "NEXT_PUBLIC_APP_NAME": "SeniorLiving PH",
-    "GEMINI_API_KEY": "AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM"
+    // Set GEMINI_API_KEY from your local .env.local (never commit the value).
+    "GEMINI_API_KEY": process.env.GEMINI_API_KEY || ""
 };
 
 for (const [key, value] of Object.entries(envs)) {

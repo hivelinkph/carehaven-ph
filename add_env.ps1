@@ -12,6 +12,8 @@ Write-Output "https://genuine-careph.vercel.app" | npx vercel env add NEXT_PUBLI
 
 Write-Output "SeniorLiving PH" | npx vercel env add NEXT_PUBLIC_APP_NAME production
 
-Write-Output "AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM" | npx vercel env add GEMINI_API_KEY production
+# Read GEMINI_API_KEY from $env or prompt — never hard-code.
+if (-not $env:GEMINI_API_KEY) { $env:GEMINI_API_KEY = Read-Host "Paste your GEMINI_API_KEY" }
+Write-Output $env:GEMINI_API_KEY | npx vercel env add GEMINI_API_KEY production
 
 npx vercel --prod --yes

@@ -79,6 +79,9 @@ export async function GET() {
     ? config.voice_name
     : "Kore";
 
+  // Note: Gemini Live's setup schema is strict. Match AIResto's working shape
+  // — do NOT include `temperature` inside generation_config; the live API
+  // silently closes the socket on unknown fields.
   const setup = {
     model: `models/${config.model || "gemini-3.1-flash-live-preview"}`,
     generation_config: {
@@ -88,9 +91,6 @@ export async function GET() {
           prebuilt_voice_config: { voice_name: voice },
         },
       },
-      ...(config.temperature != null
-        ? { temperature: Number(config.temperature) }
-        : {}),
     },
     system_instruction: { parts: [{ text: systemInstruction }] },
     input_audio_transcription: {},

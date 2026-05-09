@@ -91,17 +91,44 @@ export default function VoiceWidget({ onClose }: Props) {
       // 3. WebSocket
       const ws = new WebSocket(cfg.wsUrl);
       wsRef.current = ws;
+      let setupAcked = false;
       ws.onopen = () => {
         ws.send(JSON.stringify({ setup: cfg.setup }));
       };
       ws.onerror = () => {
-        setError("Connection lost.");
-        endSession("error");
+        if (!setupAcked) {
+          setError("Could not reach the voice service. Please try again in a moment.");
+        }
       };
-      ws.onclose = () => {
-        if (stage === "live") endSession("expired");
+      ws.onclose = (ev) => {
+        // Surface close reason instead of silently transitioning.
+        if (!setupAcked) {
+          // Gemini closes 1007 / 1008 / 1011 on bad setup or quota issues.
+          const reason = ev.reason || "unknown";
+          setError(
+            `Voice service closed the connection (code ${ev.code}). ${reason && reason !== "unknown" ? reason : "This usually means the live model is over quota or temporarily unavailable. Please try again in a minute."}`,
+          );
+          endSession("error");
+          return;
+        }
+        // Mark expired only if we'd been live.
+        endSession("expired");
       };
-      ws.onmessage = (ev) => handleIncoming(ev.data);
+      ws.onmessage = (ev) => {
+        // The first server message after our setup is `setupComplete` — that's our ack.
+        if (!setupAcked) {
+          setupAcked = true;
+          try {
+            const parsed = typeof ev.data === "string" ? JSON.parse(ev.data) : null;
+            if (parsed && "setupComplete" in parsed) {
+              // Setup confirmed; nothing else to do.
+            }
+          } catch {
+            // Non-JSON ack — ignore.
+          }
+        }
+        handleIncoming(ev.data);
+      };
 
       // 4. Capture pipeline
       const captureCtx = new AudioContext({ sampleRate: CAPTURE_RATE });

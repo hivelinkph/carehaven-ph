@@ -26,7 +26,11 @@
       "Bash(Get-ChildItem -Path \"C:\\\\AntiGravity\\\\SeniorLiving_Aggregator\" -Recurse -Filter \"*.tsx\" -o Name)",
       "Bash(Select-String \"admin|dashboard\")",
       "Bash(npx supabase *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM\")",
+      "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM&pageSize=200\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -i \"https://genuine-careph.vercel.app/api/voice/connect\")"
     ]
   }
 }
