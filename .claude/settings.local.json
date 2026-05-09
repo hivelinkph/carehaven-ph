@@ -30,7 +30,9 @@
       "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM\")",
       "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM&pageSize=200\")",
       "Read(//tmp/**)",
-      "Bash(curl -s -i \"https://genuine-careph.vercel.app/api/voice/connect\")"
+      "Bash(curl -s -i \"https://genuine-careph.vercel.app/api/voice/connect\")",
+      "Bash(curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyBSsMdVgcJHsmFiNHc-yv5CwPfBskbqcrc\")",
+      "Bash(curl -s \"https://genuine-careph.vercel.app/api/voice/connect\")"
     ]
   }
 }

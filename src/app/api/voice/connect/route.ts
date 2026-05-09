@@ -57,8 +57,20 @@ export async function GET() {
     .limit(15);
   const docsList = (docs || []).map((d) => `- ${d.title}`).join("\n");
 
+  const openingSpiel =
+    config.opening_spiel ||
+    "Hello, I'm the SeniorLiving PH voice assistant. How can I help today?";
+
   const systemInstruction = [
-    config.opening_spiel || "You are the SeniorLiving PH voice assistant.",
+    "You are the SeniorLiving PH voice assistant.",
+    "",
+    "IMPORTANT — When the session begins (the user's first kickstart turn),",
+    "your VERY FIRST spoken response MUST be exactly this opening greeting,",
+    "delivered warmly and naturally:",
+    "",
+    `"${openingSpiel}"`,
+    "",
+    "After delivering the opening, wait for the user to speak before continuing.",
     config.system_prompt_extra || "",
     "",
     "You are speaking out loud, so answer concisely (2-4 sentences typical).",
@@ -68,9 +80,7 @@ export async function GET() {
     "Be warm, patient, and respectful — many callers are stressed family",
     "members. If asked about specific facilities, encourage browsing",
     "/facilities or completing the quick questionnaire at /find-a-home.",
-    docsList
-      ? `\n\nReference material available:\n${docsList}`
-      : "",
+    docsList ? `\n\nReference material available:\n${docsList}` : "",
   ]
     .filter(Boolean)
     .join("\n");

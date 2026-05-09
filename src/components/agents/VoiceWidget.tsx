@@ -114,17 +114,35 @@ export default function VoiceWidget({ onClose }: Props) {
         // Mark expired only if we'd been live.
         endSession("expired");
       };
-      ws.onmessage = (ev) => {
+      ws.onmessage = async (ev) => {
         // The first server message after our setup is `setupComplete` — that's our ack.
         if (!setupAcked) {
-          setupAcked = true;
+          let parsed: Record<string, unknown> | null = null;
           try {
-            const parsed = typeof ev.data === "string" ? JSON.parse(ev.data) : null;
-            if (parsed && "setupComplete" in parsed) {
-              // Setup confirmed; nothing else to do.
-            }
+            const raw = typeof ev.data === "string" ? ev.data : await (ev.data as Blob).text();
+            parsed = JSON.parse(raw);
           } catch {
-            // Non-JSON ack — ignore.
+            // ignore
+          }
+          if (parsed && "setupComplete" in parsed) {
+            setupAcked = true;
+            // Kickstart: nudge the agent to deliver its opening spiel without
+            // waiting for the user to speak first. The system instruction
+            // tells the model to lead with the configured greeting verbatim.
+            ws.send(
+              JSON.stringify({
+                clientContent: {
+                  turns: [
+                    {
+                      role: "user",
+                      parts: [{ text: "Please begin now with your opening greeting." }],
+                    },
+                  ],
+                  turnComplete: true,
+                },
+              }),
+            );
+            return; // setupComplete carries no audio/transcript content to render
           }
         }
         handleIncoming(ev.data);
