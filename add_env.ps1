@@ -12,4 +12,6 @@ Write-Output "https://genuine-careph.vercel.app" | npx vercel env add NEXT_PUBLI
 
 Write-Output "SeniorLiving PH" | npx vercel env add NEXT_PUBLIC_APP_NAME production
 
+Write-Output "AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM" | npx vercel env add GEMINI_API_KEY production
+
 npx vercel --prod --yes

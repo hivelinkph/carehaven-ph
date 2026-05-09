@@ -1,3 +1,16 @@
+// Re-exports of agent types for convenience
+export type {
+  AgentType,
+  AgentConfig,
+  KBStatus,
+  KBDocument,
+  Citation,
+  ChatbotSession,
+  ChatbotMessage,
+  VoiceName,
+} from "./agents/types";
+export { VOICE_OPTIONS } from "./agents/types";
+
 export interface Profile {
   id: string;
   full_name: string | null;

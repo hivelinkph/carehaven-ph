@@ -31,9 +31,14 @@ import {
   Trophy,
   Images,
   LayoutDashboard,
+  MessageCircle,
+  Mic,
+  BookOpen,
 } from "lucide-react";
+import AgentConfigTab from "@/components/admin/AgentConfigTab";
+import KnowledgeBaseTab from "@/components/admin/KnowledgeBaseTab";
 
-type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports";
+type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports" | "chat-agent" | "voice-agent" | "knowledge-base";
 
 const ADMIN_NAV: NavItem[] = [
   { key: "facilities", label: "Facilities", icon: Building2 },
@@ -41,6 +46,9 @@ const ADMIN_NAV: NavItem[] = [
   { key: "testimonials", label: "Testimonials", icon: MessageSquareQuote },
   { key: "gallery", label: "Gallery", icon: Images },
   { key: "reports", label: "Reports", icon: BarChart3 },
+  { key: "chat-agent", label: "Chat Agent", icon: MessageCircle },
+  { key: "voice-agent", label: "Voice Agent", icon: Mic },
+  { key: "knowledge-base", label: "Knowledge Base", icon: BookOpen },
 ];
 
 export default function AdminDashboard() {
@@ -1252,6 +1260,15 @@ export default function AdminDashboard() {
               </div>
             </>
           )}
+
+          {/* ===== CHAT AGENT TAB ===== */}
+          {activeTab === "chat-agent" && <AgentConfigTab agentType="chat" />}
+
+          {/* ===== VOICE AGENT TAB ===== */}
+          {activeTab === "voice-agent" && <AgentConfigTab agentType="voice" />}
+
+          {/* ===== KNOWLEDGE BASE TAB ===== */}
+          {activeTab === "knowledge-base" && <KnowledgeBaseTab />}
       </div>
     </DashboardChrome>
   );

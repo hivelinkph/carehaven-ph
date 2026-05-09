@@ -7,7 +7,8 @@ const envs = {
     "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1c3RsZWVxa3d4ZmZidGNvaGlsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzE2NzQ2NiwiZXhwIjoyMDg4NzQzNDY2fQ.9wf-R6uDw6_4nTuTwNZF7oSh4ldXCXcAJNp9Ovvx7bo",
     "FIRECRAWL_API_KEY": "fc-a0afeab63a8843b29ba191de6260a1b1",
     "NEXT_PUBLIC_APP_URL": "https://genuine-careph.vercel.app",
-    "NEXT_PUBLIC_APP_NAME": "SeniorLiving PH"
+    "NEXT_PUBLIC_APP_NAME": "SeniorLiving PH",
+    "GEMINI_API_KEY": "AIzaSyDKnox38_8QFrFDAQBlnDnnDurkZk9dxQM"
 };
 
 for (const [key, value] of Object.entries(envs)) {

@@ -20,7 +20,13 @@
       "Bash(npm i *)",
       "Bash(curl -sI https://yssase88.com)",
       "Bash(curl -s https://yssase88.com)",
-      "Bash(curl -s https://genuine-careph.vercel.app)"
+      "Bash(curl -s https://genuine-careph.vercel.app)",
+      "Bash(Get-ChildItem -Path \"C:\\\\AntiGravity\\\\AIResto\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\AntiGravity\\\\SeniorLiving_Aggregator\" -Recurse -Filter \"*.tsx\" -o Name)",
+      "Bash(Select-String \"admin|dashboard\")",
+      "Bash(npx supabase *)",
+      "Bash(npm install *)"
     ]
   }
 }

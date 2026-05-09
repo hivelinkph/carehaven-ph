@@ -3,6 +3,7 @@ import { Playfair_Display, Lora, Poppins, Cormorant_Garamond, Caveat, IBM_Plex_M
 import "./globals.css";
 import Footer from "@/components/layout/Footer";
 import BackToHomeButton from "@/components/layout/BackToHomeButton";
+import FloatingAgents from "@/components/agents/FloatingAgents";
 
 const playfair = Playfair_Display({
   variable: "--font-heading",
@@ -85,6 +86,7 @@ export default function RootLayout({
         <BackToHomeButton />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <FloatingAgents />
       </body>
     </html>
   );
