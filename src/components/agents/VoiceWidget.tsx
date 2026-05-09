@@ -305,7 +305,7 @@ export default function VoiceWidget({ onClose }: Props) {
           <div className="flex items-center gap-3 mb-3">
             {/* Avatar (bobblehead) — left */}
             <span
-              className={`relative w-14 h-14 rounded-full overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center shrink-0 ${speaking ? "ring-4 ring-[#9ee6d4]/40 animate-pulse" : ""}`}
+              className={`relative w-20 h-20 rounded-full overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center shrink-0 ${speaking ? "ring-4 ring-[#9ee6d4]/40 animate-pulse" : ""}`}
             >
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -315,7 +315,7 @@ export default function VoiceWidget({ onClose }: Props) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-[20px]" style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
+                <span className="text-[28px]" style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
                   {(assistantName || "?").charAt(0).toUpperCase()}
                 </span>
               )}
