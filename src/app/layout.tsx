@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora, Poppins, Cormorant_Garamond, Caveat, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { Playfair_Display, Lora, Poppins, Cormorant_Garamond, Caveat, IBM_Plex_Mono, Space_Grotesk, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/layout/Footer";
 import BackToHomeButton from "@/components/layout/BackToHomeButton";
@@ -43,6 +43,14 @@ const caveat = Caveat({
   display: "swap",
 });
 
+// Hero cursive accent
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 // Provider + Admin technical mono numerals
 const plexMono = IBM_Plex_Mono({
   variable: "--font-mono",
@@ -80,7 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${playfair.variable} ${lora.variable} ${poppins.variable} ${cormorant.variable} ${caveat.variable} ${plexMono.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${playfair.variable} ${lora.variable} ${poppins.variable} ${cormorant.variable} ${caveat.variable} ${dancingScript.variable} ${plexMono.variable} ${spaceGrotesk.variable} antialiased`}
         style={{ fontFamily: "var(--font-body)" }}
       >
         <BackToHomeButton />

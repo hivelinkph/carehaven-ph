@@ -35,27 +35,40 @@ export default function HeroSection() {
       {/* Content - bottom left */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-16 sm:pb-20">
         <div className="max-w-2xl">
-          {/* Soft pill eyebrow */}
-          <div
-            className="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="#9ee6d4">
-              <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
-            </svg>
-            <span className="text-[11.5px] tracking-[0.18em] uppercase text-white/95" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.45)" }}>
-              Senior Living Philippines
-            </span>
-          </div>
+
 
           {/* Headline */}
           <h1
-            className="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.02] mb-6 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em", fontWeight: 600 }}
+            className="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.06] mb-6 animate-fade-in-up"
+            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em", fontWeight: 700 }}
           >
-            A home for the
+            A place where care feels like
             <br />
-            <span style={{ color: "#9ee6d4" }}>ones you love.</span>
+            <span
+              style={{
+                fontFamily: "var(--font-dancing), cursive",
+                color: "#2ec4a9",
+                fontWeight: 700,
+                fontStyle: "italic",
+                fontSize: "1.15em",
+                letterSpacing: "0em",
+              }}
+            >
+              family.
+            </span>
+            {" "}
+            <svg
+              viewBox="0 0 28 26"
+              className="inline-block align-middle"
+              style={{ width: "0.7em", height: "0.65em", marginLeft: "0.15em", marginBottom: "0.1em" }}
+              fill="none"
+              stroke="#2ec4a9"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 23S2 15 2 8a6 6 0 0 1 12 0 6 6 0 0 1 12 0c0 7-12 15-12 15z" />
+            </svg>
           </h1>
 
           {/* Subtitle */}
