@@ -34,6 +34,10 @@ export interface AgentConfig {
   max_output_tokens: number | null;
   is_active: boolean;
   updated_at: string;
+  /** Voice agent only — display name shown in the voice modal. */
+  assistant_name: string | null;
+  /** Voice agent only — bobblehead avatar shown in the voice modal. */
+  avatar_url: string | null;
 }
 
 export type KBStatus = "pending" | "processing" | "ready" | "failed";

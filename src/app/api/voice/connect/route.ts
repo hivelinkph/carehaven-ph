@@ -57,12 +57,16 @@ export async function GET() {
     .limit(15);
   const docsList = (docs || []).map((d) => `- ${d.title}`).join("\n");
 
+  const assistantName =
+    (config.assistant_name && String(config.assistant_name).trim()) || "Maya";
+  const avatarUrl = config.avatar_url || null;
+
   const openingSpiel =
     config.opening_spiel ||
-    "Hello, I'm the SeniorLiving PH voice assistant. How can I help today?";
+    `Hello, I'm ${assistantName}, the SeniorLiving PH voice assistant. How can I help today?`;
 
   const systemInstruction = [
-    "You are the SeniorLiving PH voice assistant.",
+    `You are ${assistantName}, the SeniorLiving PH voice assistant.`,
     "",
     "IMPORTANT — When the session begins (the user's first kickstart turn),",
     "your VERY FIRST spoken response MUST be exactly this opening greeting,",
@@ -115,6 +119,8 @@ export async function GET() {
     setup,
     maxDurationSeconds,
     isAuthenticated: !!user,
-    openingSpiel: config.opening_spiel,
+    openingSpiel,
+    assistantName,
+    avatarUrl,
   });
 }

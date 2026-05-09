@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Save, Loader2, MessageCircle, Mic } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { Save, Loader2, MessageCircle, Mic, Upload, X, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { AgentConfig, AgentType } from "@/lib/agents/types";
 import { VOICE_OPTIONS } from "@/lib/agents/types";
@@ -21,6 +22,8 @@ export default function AgentConfigTab({ agentType }: Props) {
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -54,6 +57,8 @@ export default function AgentConfigTab({ agentType }: Props) {
         temperature: config.temperature,
         max_output_tokens: config.max_output_tokens,
         is_active: config.is_active,
+        assistant_name: config.assistant_name,
+        avatar_url: config.avatar_url,
       })
       .eq("agent_type", agentType)
       .select()
@@ -64,6 +69,70 @@ export default function AgentConfigTab({ agentType }: Props) {
       setSavedAt(new Date());
     }
     setSaving(false);
+  }
+
+  async function uploadAvatar(file: File) {
+    if (!config) return;
+    setUploadingAvatar(true);
+    setError(null);
+    const supabase = createClient();
+    try {
+      const ext = (file.name.split(".").pop() || "png").toLowerCase();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("voice-agent-avatars")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage
+        .from("voice-agent-avatars")
+        .getPublicUrl(path);
+
+      const { data, error: saveErr } = await supabase
+        .from("agent_configs")
+        .update({ avatar_url: publicUrl })
+        .eq("agent_type", agentType)
+        .select()
+        .single();
+      if (saveErr) throw saveErr;
+      if (data) setConfig(data as AgentConfig);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
+  async function removeAvatar() {
+    if (!config) return;
+    setUploadingAvatar(true);
+    setError(null);
+    const supabase = createClient();
+    try {
+      // Best effort: try to delete the storage object too
+      if (config.avatar_url) {
+        try {
+          const url = new URL(config.avatar_url);
+          const marker = "/voice-agent-avatars/";
+          const idx = url.pathname.indexOf(marker);
+          if (idx !== -1) {
+            const path = decodeURIComponent(url.pathname.slice(idx + marker.length));
+            await supabase.storage.from("voice-agent-avatars").remove([path]);
+          }
+        } catch { /* ignore */ }
+      }
+      const { data, error: clearErr } = await supabase
+        .from("agent_configs")
+        .update({ avatar_url: null })
+        .eq("agent_type", agentType)
+        .select()
+        .single();
+      if (clearErr) throw clearErr;
+      if (data) setConfig(data as AgentConfig);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Remove failed");
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   if (loading) {
@@ -92,6 +161,82 @@ export default function AgentConfigTab({ agentType }: Props) {
       </div>
 
       <div className="p-7 space-y-5" style={{ fontFamily: "var(--font-ui)" }}>
+        {agentType === "voice" && (
+          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-5 items-start">
+            <Field label="Avatar" hint="Bobblehead photo of the assistant.">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-24 h-24 rounded-2xl overflow-hidden border flex items-center justify-center bg-white relative"
+                  style={{ borderColor: "var(--d-border)" }}
+                >
+                  {config.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <Image
+                      src={config.avatar_url}
+                      alt={config.assistant_name || "Assistant"}
+                      width={96}
+                      height={96}
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-9 h-9" style={{ color: "var(--d-ink-muted)" }} />
+                  )}
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+                      <Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--d-primary)" }} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-[12.5px] font-semibold border bg-white hover:border-[var(--d-primary)] disabled:opacity-50 transition-colors"
+                    style={{ borderColor: "var(--d-border)", color: "var(--d-ink)" }}
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    Upload image
+                  </button>
+                  {config.avatar_url && (
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      disabled={uploadingAvatar}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-[12.5px] text-rose-600 hover:bg-rose-50 disabled:opacity-50 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      Remove
+                    </button>
+                  )}
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadAvatar(f);
+                      e.target.value = "";
+                    }}
+                  />
+                </div>
+              </div>
+            </Field>
+            <Field label="Assistant name" hint="Shown in the voice modal header. Also used in the system prompt.">
+              <input
+                type="text"
+                value={config.assistant_name ?? ""}
+                onChange={(e) => setConfig({ ...config, assistant_name: e.target.value })}
+                placeholder="e.g. Maya"
+                className="w-full px-4 py-2.5 rounded-xl border outline-none focus:border-[#1a8576] transition-colors text-[14px]"
+                style={{ borderColor: "var(--d-border)", background: "#fbf9f3", color: "var(--d-ink)" }}
+              />
+            </Field>
+          </div>
+        )}
+
         <Field label="Opening spiel" hint="The first line / greeting the user sees or hears.">
           <textarea
             value={config.opening_spiel}

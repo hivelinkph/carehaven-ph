@@ -15,6 +15,8 @@ interface ConnectResponse {
   maxDurationSeconds: number;
   isAuthenticated: boolean;
   openingSpiel: string;
+  assistantName: string;
+  avatarUrl: string | null;
 }
 
 const CAPTURE_RATE = 16000;
@@ -29,6 +31,8 @@ export default function VoiceWidget({ onClose }: Props) {
   const [remaining, setRemaining] = useState(60);
   const [transcript, setTranscript] = useState<{ role: "you" | "agent"; text: string }[]>([]);
   const [speaking, setSpeaking] = useState(false);
+  const [assistantName, setAssistantName] = useState("Maya");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
   const captureCtxRef = useRef<AudioContext | null>(null);
@@ -78,6 +82,8 @@ export default function VoiceWidget({ onClose }: Props) {
       const cfg = (await res.json()) as ConnectResponse;
       setMaxSeconds(cfg.maxDurationSeconds);
       setRemaining(cfg.maxDurationSeconds);
+      setAssistantName(cfg.assistantName || "Maya");
+      setAvatarUrl(cfg.avatarUrl);
       setAuthMsg(
         cfg.isAuthenticated
           ? "Logged in — you have 3 minutes for this voice call."
@@ -297,19 +303,54 @@ export default function VoiceWidget({ onClose }: Props) {
         {/* Header */}
         <div className="px-7 pt-7 pb-5 text-white" style={{ background: "linear-gradient(135deg, #0c4039 0%, #08312b 100%)" }}>
           <div className="flex items-center gap-3 mb-3">
-            <span className={`w-10 h-10 rounded-full flex items-center justify-center ${speaking ? "animate-pulse" : ""}`} style={{ background: "#1a8576" }}>
-              <Mic className="w-5 h-5" />
+            {/* Avatar (bobblehead) — left */}
+            <span
+              className={`relative w-14 h-14 rounded-full overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center shrink-0 ${speaking ? "ring-4 ring-[#9ee6d4]/40 animate-pulse" : ""}`}
+            >
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarUrl}
+                  alt={assistantName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-[20px]" style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
+                  {(assistantName || "?").charAt(0).toUpperCase()}
+                </span>
+              )}
             </span>
-            <div>
-              <div className="text-[14px] font-semibold">SeniorLiving Voice</div>
-              <div className="text-[11.5px] text-white/70">Live conversation</div>
+
+            {/* Name + live indicator — middle */}
+            <div className="flex-1 min-w-0">
+              <div className="text-[15px] font-semibold leading-tight truncate">{assistantName}</div>
+              {stage === "live" ? (
+                <div className="mt-1 flex items-center gap-1.5 text-[11.5px] font-semibold uppercase tracking-[0.18em]" style={{ color: "#ef4444" }}>
+                  <span className="dot-recording" />
+                  Live conversation
+                </div>
+              ) : (
+                <div className="text-[11.5px] text-white/65 mt-0.5">
+                  {stage === "permission" && "Voice assistant"}
+                  {stage === "connecting" && "Connecting…"}
+                  {stage === "ended" && "Session ended"}
+                  {stage === "error" && "Connection issue"}
+                </div>
+              )}
             </div>
-            {stage === "live" && (
-              <div className="ml-auto text-right">
-                <div className="text-[12px] font-mono">{mins}:{secs}</div>
-                <div className="text-[10px] text-white/55">remaining</div>
-              </div>
-            )}
+
+            {/* Mic + countdown — right */}
+            <div className="flex items-center gap-3 shrink-0">
+              {stage === "live" && (
+                <div className="text-right">
+                  <div className="text-[12px] font-mono tabular-nums">{mins}:{secs}</div>
+                  <div className="text-[10px] text-white/55">remaining</div>
+                </div>
+              )}
+              <span className={`w-10 h-10 rounded-full flex items-center justify-center ${speaking ? "animate-pulse" : ""}`} style={{ background: "#1a8576" }}>
+                <Mic className="w-5 h-5" />
+              </span>
+            </div>
           </div>
 
           {stage === "live" && (
