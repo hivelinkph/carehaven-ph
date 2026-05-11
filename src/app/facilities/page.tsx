@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Facility } from "@/lib/types";
+import type { Facility, Location } from "@/lib/types";
 import FacilityCard from "@/components/facilities/FacilityCard";
 import Link from "next/link";
 import {
@@ -26,21 +26,22 @@ const CATEGORIES = [
 
 export default function FacilitiesPage() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [selectedRegion, setSelectedRegion] = useState<string>("");
-  const [regionOpen, setRegionOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
       const supabase = createClient();
-      const { data } = await supabase
-        .from("facilities")
-        .select("*")
-        .eq("is_active", true)
-        .order("rating", { ascending: false });
-      setFacilities(data || []);
+      const [{ data: facilityData }, { data: locationData }] = await Promise.all([
+        supabase.from("facilities").select("*").eq("is_active", true).order("rating", { ascending: false }),
+        supabase.from("locations").select("*").eq("is_active", true).order("name", { ascending: true }),
+      ]);
+      setFacilities(facilityData || []);
+      setLocations(locationData || []);
       setLoading(false);
     }
     load();
@@ -52,16 +53,13 @@ export default function FacilitiesPage() {
     return facilities.filter((f) => f.facility_types?.includes(activeCategory));
   }, [facilities, activeCategory]);
 
-  // Unique sorted regions from actual data
-  const availableRegions = useMemo(() => {
-    const set = new Set<string>();
-    categoryFiltered.forEach((f) => {
-      if (f.region) set.add(f.region);
-    });
-    return Array.from(set).sort();
-  }, [categoryFiltered]);
+  // Cities that have at least one facility in the current category filter
+  const citiesWithFacilities = useMemo(() => {
+    const citiesInData = new Set(categoryFiltered.map((f) => f.city.toLowerCase()));
+    return locations.filter((loc) => citiesInData.has(loc.name.toLowerCase()));
+  }, [locations, categoryFiltered]);
 
-  // Final displayed facilities: search by name/city/region OR filter by region
+  // Final displayed facilities: search by name/city OR filter by selected city
   const displayedFacilities = useMemo(() => {
     let result = categoryFiltered;
 
@@ -73,14 +71,14 @@ export default function FacilitiesPage() {
           f.city.toLowerCase().includes(q) ||
           (f.region && f.region.toLowerCase().includes(q))
       );
-    } else if (selectedRegion) {
-      result = result.filter((f) => f.region === selectedRegion);
+    } else if (selectedCity) {
+      result = result.filter((f) => f.city.toLowerCase() === selectedCity.toLowerCase());
     }
 
     return result;
-  }, [categoryFiltered, searchQuery, selectedRegion]);
+  }, [categoryFiltered, searchQuery, selectedCity]);
 
-  const hasFilter = !!searchQuery.trim() || !!selectedRegion;
+  const hasFilter = !!searchQuery.trim() || !!selectedCity;
 
   return (
     <div className="min-h-screen pt-16 pb-12 relative" style={{ background: "var(--d-bg)" }}>
@@ -125,7 +123,7 @@ export default function FacilitiesPage() {
               key={cat.key}
               onClick={() => {
                 setActiveCategory(cat.key);
-                setSelectedRegion("");
+                setSelectedCity("");
               }}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 activeCategory === cat.key
@@ -150,7 +148,7 @@ export default function FacilitiesPage() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setSelectedRegion(""); // clear region filter when typing
+                setSelectedCity(""); // clear city filter when typing
               }}
               className="flex-1 text-base text-[#2D3748] placeholder-[#b0aea5] outline-none bg-transparent"
               style={{ fontFamily: "var(--font-body)", fontSize: "16px" }}
@@ -166,42 +164,42 @@ export default function FacilitiesPage() {
           </div>
         </div>
 
-        {/* Region Dropdown */}
+        {/* City / Location Dropdown */}
         {!searchQuery && (
           <div className="mb-8">
             <p className="text-base mb-3" style={{ fontFamily: "var(--font-ui)" }}>
               <span className="font-bold text-[#2D3748]">Browse</span>{" "}
-              <span className="text-[#b0aea5] text-sm">facilities by region</span>
+              <span className="text-[#b0aea5] text-sm">facilities by location</span>
             </p>
 
             <div className="relative max-w-sm">
               <button
-                onClick={() => setRegionOpen((prev) => !prev)}
+                onClick={() => setCityDropdownOpen((prev) => !prev)}
                 className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 transition-all text-left ${
-                  selectedRegion
+                  selectedCity
                     ? "border-[#2DD1AC] bg-[#2DD1AC]/5"
                     : "border-[#e8e6dc] bg-white hover:border-[#2DD1AC]/50"
                 }`}
                 style={{ fontFamily: "var(--font-ui)" }}
               >
-                <span className={selectedRegion ? "text-[#2D3748] font-medium" : "text-[#b0aea5]"}>
-                  {selectedRegion || "Select a region…"}
+                <span className={selectedCity ? "text-[#2D3748] font-medium" : "text-[#b0aea5]"}>
+                  {selectedCity || "Select a location…"}
                 </span>
                 <ChevronDown
                   className={`w-4 h-4 text-[#b0aea5] transition-transform ${
-                    regionOpen ? "rotate-180" : ""
+                    cityDropdownOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
-              {regionOpen && (
+              {cityDropdownOpen && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#e8e6dc] rounded-xl shadow-xl z-20 overflow-hidden max-h-72 overflow-y-auto">
                   {/* Clear option */}
-                  {selectedRegion && (
+                  {selectedCity && (
                     <button
                       onClick={() => {
-                        setSelectedRegion("");
-                        setRegionOpen(false);
+                        setSelectedCity("");
+                        setCityDropdownOpen(false);
                       }}
                       className="w-full flex items-center gap-2 px-4 py-3 text-left text-sm text-[#b0aea5] hover:bg-[#faf9f5] border-b border-[#e8e6dc]/50 italic"
                       style={{ fontFamily: "var(--font-ui)" }}
@@ -209,22 +207,24 @@ export default function FacilitiesPage() {
                       <X className="w-3.5 h-3.5" /> Clear selection
                     </button>
                   )}
-                  {availableRegions.length === 0 ? (
+                  {citiesWithFacilities.length === 0 ? (
                     <p className="px-4 py-3 text-sm text-[#b0aea5] italic" style={{ fontFamily: "var(--font-body)" }}>
-                      No regions available.
+                      No locations available.
                     </p>
                   ) : (
-                    availableRegions.map((region) => {
-                      const count = categoryFiltered.filter((f) => f.region === region).length;
+                    citiesWithFacilities.map((loc) => {
+                      const count = categoryFiltered.filter(
+                        (f) => f.city.toLowerCase() === loc.name.toLowerCase()
+                      ).length;
                       return (
                         <button
-                          key={region}
+                          key={loc.id}
                           onClick={() => {
-                            setSelectedRegion(region);
-                            setRegionOpen(false);
+                            setSelectedCity(loc.name);
+                            setCityDropdownOpen(false);
                           }}
                           className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#faf9f5] transition-colors border-b border-[#e8e6dc]/50 last:border-0 ${
-                            selectedRegion === region
+                            selectedCity === loc.name
                               ? "bg-[#2DD1AC]/10 text-[#2DD1AC] font-semibold"
                               : "text-[#2D3748]"
                           }`}
@@ -232,7 +232,7 @@ export default function FacilitiesPage() {
                         >
                           <span className="flex items-center gap-2">
                             <MapPin className="w-3.5 h-3.5 text-[#2DD1AC] shrink-0" />
-                            {region}
+                            {loc.name}
                           </span>
                           <span className="text-xs text-[#b0aea5]">
                             {count} {count === 1 ? "facility" : "facilities"}
@@ -262,14 +262,14 @@ export default function FacilitiesPage() {
                   {hasFilter
                     ? searchQuery
                       ? `Results for "${searchQuery}"`
-                      : `Facilities in ${selectedRegion}`
+                      : `Facilities in ${selectedCity}`
                     : "All Facilities"}
                 </span>{" "}
                 <span className="text-[#b0aea5] text-sm">({displayedFacilities.length})</span>
               </p>
-              {(selectedRegion) && (
+              {selectedCity && (
                 <button
-                  onClick={() => setSelectedRegion("")}
+                  onClick={() => setSelectedCity("")}
                   className="text-sm text-[#2DD1AC] hover:text-[#1E957A] font-medium transition-colors flex items-center gap-1"
                   style={{ fontFamily: "var(--font-ui)" }}
                 >
