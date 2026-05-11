@@ -79,7 +79,7 @@ export default function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle,
                     // Close on mobile
                     if (window.innerWidth < 1024) onToggle();
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  className={`cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     isActive
                       ? "bg-[#2DD1AC]/10 text-[#2DD1AC] border border-[#2DD1AC]/20"
                       : "text-[#2D3748]/70 hover:bg-[#faf9f5] hover:text-[#2D3748]"
@@ -96,7 +96,7 @@ export default function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle,
           {/* Sign Out */}
           <button
             onClick={onSignOut}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all"
+            className="cursor-pointer flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all"
             style={{ fontFamily: "var(--font-ui)" }}
           >
             <LogOut className="w-5 h-5" />

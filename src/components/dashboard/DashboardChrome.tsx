@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Bell,
-  Search,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -113,7 +111,7 @@ export default function DashboardChrome({
       >
         <div className="flex flex-col h-full px-4 py-6">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5 mb-9 px-2">
+          <div className="flex items-center gap-2.5 mb-9 px-2">
             <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--d-primary)" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="currentColor">
                 <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
@@ -127,7 +125,7 @@ export default function DashboardChrome({
                 Senior Living PH
               </div>
             </div>
-          </Link>
+          </div>
 
           {/* Nav */}
           <nav className="flex-1 space-y-1">
@@ -141,7 +139,7 @@ export default function DashboardChrome({
                     onNavSelect(item.key);
                     setMobileNavOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all ${
+                  className={`cursor-pointer w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-all ${
                     isActive ? "font-medium" : "font-normal"
                   }`}
                   style={{
@@ -175,7 +173,7 @@ export default function DashboardChrome({
           {/* Sign out */}
           <button
             onClick={handleSignOut}
-            className="mt-4 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-colors hover:bg-white/5"
+            className="cursor-pointer mt-4 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] transition-colors hover:bg-white/5"
             style={{ color: "rgba(255,200,180,0.85)" }}
           >
             <LogOut className="w-[17px] h-[17px]" />
@@ -212,18 +210,7 @@ export default function DashboardChrome({
               </div>
             </div>
 
-            {/* Search */}
-            <div
-              className="hidden md:flex items-center gap-2 px-3.5 py-2 bg-white rounded-full border border-[#ebe4d3] min-w-[260px]"
-            >
-              <Search className="w-4 h-4" style={{ color: "var(--d-ink-muted)" }} />
-              <input
-                type="search"
-                placeholder="Search anything..."
-                className="bg-transparent outline-none text-sm flex-1 placeholder:opacity-60"
-                style={{ color: "var(--d-ink)" }}
-              />
-            </div>
+
 
             {/* Notification */}
             <button
