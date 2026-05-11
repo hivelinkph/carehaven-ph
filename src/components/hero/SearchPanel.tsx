@@ -2,7 +2,16 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Search, X, Building2, Home, Brain, LayoutGrid } from "lucide-react";
+import {
+  Search,
+  X,
+  Building2,
+  Home,
+  Brain,
+  LayoutGrid,
+  ChevronDown,
+  MapPin,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Facility } from "@/lib/types";
 
@@ -13,21 +22,6 @@ const CATEGORIES = [
   { key: "Memory Care Facility", label: "Memory Care Facility", icon: Brain },
 ];
 
-// Fallback images for top Philippine locations
-const LOCATION_IMAGES: Record<string, string> = {
-  "manila": "https://images.unsplash.com/photo-1573455494060-c5595004fb6c?w=80&h=80&fit=crop",
-  "cebu": "https://images.unsplash.com/photo-1568890020845-4e9bf1a1a7be?w=80&h=80&fit=crop",
-  "davao city": "https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=80&h=80&fit=crop",
-  "baguio": "https://images.unsplash.com/photo-1583430999185-7d47e8c1e0e2?w=80&h=80&fit=crop",
-  "palawan": "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=80&h=80&fit=crop",
-  "boracay island": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=80&h=80&fit=crop",
-  "quezon city": "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop",
-  "makati": "https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=80&h=80&fit=crop",
-  "iloilo": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=80&h=80&fit=crop",
-};
-
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=80&h=80&fit=crop";
-
 interface SearchPanelProps {
   onClose: () => void;
 }
@@ -36,7 +30,8 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [facilities, setFacilities] = useState<Facility[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
+  const [regionOpen, setRegionOpen] = useState(false);
 
   useEffect(() => {
     async function fetchFacilities() {
@@ -51,46 +46,44 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
     fetchFacilities();
   }, []);
 
-  // Filter facilities by active category
-  const categoryFilteredFacilities = useMemo(() => {
+  // Filter by category
+  const categoryFiltered = useMemo(() => {
     if (activeCategory === "all") return facilities;
-    return facilities.filter((f) =>
-      f.facility_types?.includes(activeCategory)
-    );
+    return facilities.filter((f) => f.facility_types?.includes(activeCategory));
   }, [facilities, activeCategory]);
 
-  // Count facilities per location (respecting category filter)
-  const locationsWithCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    categoryFilteredFacilities.forEach((f) => {
-      counts[f.city] = (counts[f.city] || 0) + 1;
+  // Unique sorted regions derived from actual data
+  const availableRegions = useMemo(() => {
+    const set = new Set<string>();
+    categoryFiltered.forEach((f) => {
+      if (f.region) set.add(f.region);
     });
+    return Array.from(set).sort();
+  }, [categoryFiltered]);
 
-    return Object.entries(counts)
-      .map(([name, count]) => ({
-        name,
-        count,
-        image: LOCATION_IMAGES[name.toLowerCase()] || DEFAULT_IMAGE,
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 9);
-  }, [categoryFilteredFacilities]);
+  // Results: text search over names OR region filter
+  const results = useMemo(() => {
+    let list = categoryFiltered;
 
-  // Sponsored facilities for the selected location
-  const sponsoredFacilities = useMemo(() => {
-    if (!selectedLocation) return [];
-    return categoryFilteredFacilities
-      .filter((f) => f.city.toLowerCase() === selectedLocation.toLowerCase())
-      .slice(0, 3);
-  }, [selectedLocation, categoryFilteredFacilities]);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (f) =>
+          f.name.toLowerCase().includes(q) ||
+          f.city.toLowerCase().includes(q) ||
+          (f.region && f.region.toLowerCase().includes(q))
+      );
+    } else if (selectedRegion) {
+      list = list.filter((f) => f.region === selectedRegion);
+    } else {
+      // Nothing typed, no region selected → show nothing yet
+      return null;
+    }
 
-  // Filter locations by search query
-  const filteredLocations = useMemo(() => {
-    if (!searchQuery) return locationsWithCounts;
-    return locationsWithCounts.filter((loc) =>
-      loc.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery, locationsWithCounts]);
+    return list;
+  }, [categoryFiltered, searchQuery, selectedRegion]);
+
+  const showResults = results !== null;
 
   return (
     <div className="absolute right-0 top-0 bottom-0 w-full md:w-[55%] lg:w-[50%] z-30 flex flex-col animate-slide-in-right">
@@ -105,7 +98,7 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
                 key={cat.key}
                 onClick={() => {
                   setActiveCategory(cat.key);
-                  setSelectedLocation(null);
+                  setSelectedRegion("");
                 }}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat.key
@@ -133,110 +126,223 @@ export default function SearchPanel({ onClose }: SearchPanelProps) {
               <Search className="w-5 h-5 text-[#b0aea5] shrink-0" />
               <input
                 type="text"
-                placeholder="Enter a location or property"
+                placeholder="Search facilities by name or location…"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  setSelectedLocation(null);
+                  setSelectedRegion(""); // clear region when typing
                 }}
                 className="flex-1 text-base text-[#2D3748] placeholder-[#b0aea5] outline-none bg-transparent"
                 style={{ fontFamily: "var(--font-body)" }}
                 autoFocus
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-[#b0aea5] hover:text-[#2D3748] transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-6 lg:px-8 py-5">
-          {/* Sponsored Section - shows when a location is selected */}
-          {selectedLocation && (
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-                  Well-known <span className="font-semibold text-[#2D3748]">facilities</span> in {selectedLocation}
-                </p>
-                <span className="text-xs text-[#b0aea5] border border-[#e8e6dc] px-2.5 py-1 rounded-full" style={{ fontFamily: "var(--font-ui)" }}>
-                  Sponsored
+        <div className="px-6 lg:px-8 py-5 space-y-6">
+          {/* Region Dropdown */}
+          {!searchQuery && (
+            <div>
+              <p
+                className="text-base mb-3"
+                style={{ fontFamily: "var(--font-ui)" }}
+              >
+                <span className="font-bold text-[#2D3748]">Browse</span>{" "}
+                <span className="text-[#b0aea5] text-sm">
+                  facilities by region
                 </span>
+              </p>
+
+              {/* Custom dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setRegionOpen((prev) => !prev)}
+                  className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 transition-all text-left ${
+                    selectedRegion
+                      ? "border-[#2DD1AC] bg-[#2DD1AC]/5"
+                      : "border-[#e8e6dc] bg-white hover:border-[#2DD1AC]/50"
+                  }`}
+                  style={{ fontFamily: "var(--font-ui)" }}
+                >
+                  <span
+                    className={
+                      selectedRegion ? "text-[#2D3748] font-medium" : "text-[#b0aea5]"
+                    }
+                  >
+                    {selectedRegion || "Select a region…"}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-[#b0aea5] transition-transform ${
+                      regionOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {regionOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#e8e6dc] rounded-xl shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
+                    {availableRegions.length === 0 ? (
+                      <p
+                        className="px-4 py-3 text-sm text-[#b0aea5] italic"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        No regions available.
+                      </p>
+                    ) : (
+                      availableRegions.map((region) => {
+                        const count = categoryFiltered.filter(
+                          (f) => f.region === region
+                        ).length;
+                        return (
+                          <button
+                            key={region}
+                            onClick={() => {
+                              setSelectedRegion(region);
+                              setRegionOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#faf9f5] transition-colors border-b border-[#e8e6dc]/50 last:border-0 ${
+                              selectedRegion === region
+                                ? "bg-[#2DD1AC]/10 text-[#2DD1AC] font-semibold"
+                                : "text-[#2D3748]"
+                            }`}
+                            style={{ fontFamily: "var(--font-ui)" }}
+                          >
+                            <span className="flex items-center gap-2">
+                              <MapPin className="w-3.5 h-3.5 text-[#2DD1AC] shrink-0" />
+                              {region}
+                            </span>
+                            <span className="text-xs text-[#b0aea5]">
+                              {count} {count === 1 ? "facility" : "facilities"}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
               </div>
-              {sponsoredFacilities.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {sponsoredFacilities.map((facility) => (
-                    <Link
-                      key={facility.id}
-                      href={`/facilities/${facility.id}`}
-                      className="flex items-center gap-3 px-4 py-3 border border-[#e8e6dc] rounded-xl hover:border-[#2DD1AC]/30 hover:bg-[#2DD1AC]/5 transition-all min-w-[200px]"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-[#e8e6dc]/50 flex items-center justify-center shrink-0 overflow-hidden">
-                        {facility.image_urls?.[0] ? (
-                          <img src={facility.image_urls[0]} alt={facility.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Building2 className="w-5 h-5 text-[#6a9bcc]" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[#2D3748] leading-tight" style={{ fontFamily: "var(--font-ui)" }}>
-                          {facility.name}
-                        </p>
-                        <p className="text-xs text-[#2DD1AC]" style={{ fontFamily: "var(--font-ui)" }}>
-                          View Details
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-[#b0aea5] italic" style={{ fontFamily: "var(--font-body)" }}>
-                  No sponsored facilities in this location yet.
-                </p>
-              )}
             </div>
           )}
 
-          {/* Facilities in Philippines */}
-          <div>
-            <p className="text-base mb-4" style={{ fontFamily: "var(--font-ui)" }}>
-              <span className="font-bold text-[#2D3748]">Facilities</span>{" "}
-              <span className="text-[#b0aea5] text-sm">in Philippines</span>
-            </p>
-            {filteredLocations.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {filteredLocations.map((loc) => (
-                  <button
-                    key={loc.name}
-                    onClick={() => setSelectedLocation(loc.name)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all ${
-                      selectedLocation === loc.name
-                        ? "bg-[#2DD1AC]/10 border border-[#2DD1AC]/30"
-                        : "hover:bg-[#faf9f5] border border-transparent"
-                    }`}
+          {/* Results */}
+          {showResults && (
+            <div>
+              <p
+                className="text-sm text-[#b0aea5] mb-3"
+                style={{ fontFamily: "var(--font-ui)" }}
+              >
+                {results!.length > 0 ? (
+                  <>
+                    <span className="font-semibold text-[#2D3748]">
+                      {results!.length}
+                    </span>{" "}
+                    {results!.length === 1 ? "facility" : "facilities"} found
+                    {searchQuery
+                      ? ` matching "${searchQuery}"`
+                      : selectedRegion
+                      ? ` in ${selectedRegion}`
+                      : ""}
+                  </>
+                ) : (
+                  <span className="italic">
+                    No facilities found
+                    {searchQuery
+                      ? ` matching "${searchQuery}"`
+                      : selectedRegion
+                      ? ` in ${selectedRegion}`
+                      : ""}
+                    .
+                  </span>
+                )}
+              </p>
+
+              <div className="space-y-3">
+                {results!.map((facility) => (
+                  <Link
+                    key={facility.id}
+                    href={`/facilities/${facility.id}`}
+                    onClick={onClose}
+                    className="flex items-center gap-4 p-3 rounded-xl border border-[#e8e6dc] hover:border-[#2DD1AC]/40 hover:bg-[#2DD1AC]/5 transition-all group"
                   >
-                    <img
-                      src={loc.image}
-                      alt={loc.name}
-                      className="w-11 h-11 rounded-lg object-cover shrink-0"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = DEFAULT_IMAGE;
-                      }}
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-[#2D3748] leading-tight" style={{ fontFamily: "var(--font-ui)" }}>
-                        {loc.name}
-                      </p>
-                      <p className="text-xs text-[#b0aea5]" style={{ fontFamily: "var(--font-ui)" }}>
-                        ({loc.count.toLocaleString()})
-                      </p>
+                    {/* Thumbnail */}
+                    <div className="w-14 h-14 rounded-lg bg-[#e8e6dc]/50 flex items-center justify-center shrink-0 overflow-hidden">
+                      {facility.image_urls?.[0] ? (
+                        <img
+                          src={facility.image_urls[0]}
+                          alt={facility.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Building2 className="w-6 h-6 text-[#6a9bcc]" />
+                      )}
                     </div>
-                  </button>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-sm font-semibold text-[#2D3748] leading-tight truncate group-hover:text-[#2DD1AC] transition-colors"
+                        style={{ fontFamily: "var(--font-ui)" }}
+                      >
+                        {facility.name}
+                      </p>
+                      <p
+                        className="text-xs text-[#b0aea5] mt-0.5 flex items-center gap-1"
+                        style={{ fontFamily: "var(--font-ui)" }}
+                      >
+                        <MapPin className="w-3 h-3 shrink-0" />
+                        {facility.city}
+                        {facility.region ? `, ${facility.region}` : ""}
+                      </p>
+                      {facility.facility_types?.length > 0 && (
+                        <div className="flex gap-1 mt-1.5 flex-wrap">
+                          {facility.facility_types.slice(0, 2).map((t) => (
+                            <span
+                              key={t}
+                              className="text-[10px] px-2 py-0.5 bg-[#2DD1AC]/10 text-[#2DD1AC] rounded-full font-medium"
+                              style={{ fontFamily: "var(--font-ui)" }}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Rating */}
+                    {facility.rating && (
+                      <div className="shrink-0 text-right">
+                        <p
+                          className="text-sm font-bold text-[#2D3748]"
+                          style={{ fontFamily: "var(--font-ui)" }}
+                        >
+                          ★ {facility.rating.toFixed(1)}
+                        </p>
+                      </div>
+                    )}
+                  </Link>
                 ))}
               </div>
-            ) : (
-              <p className="text-sm text-[#b0aea5] italic py-4" style={{ fontFamily: "var(--font-body)" }}>
-                No facilities found{searchQuery ? ` matching "${searchQuery}"` : ""}{activeCategory !== "all" ? ` for ${activeCategory}` : ""}.
-              </p>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Empty state before any interaction */}
+          {!showResults && !searchQuery && !selectedRegion && (
+            <p
+              className="text-sm text-[#b0aea5] italic py-2"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Select a region above or type a facility name to search.
+            </p>
+          )}
         </div>
       </div>
     </div>
