@@ -6,7 +6,12 @@ import { Home } from "lucide-react";
 
 export default function BackToHomeButton() {
   const pathname = usePathname();
-  if (pathname === "/" || pathname.startsWith("/admin")) return null;
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/provider")
+  ) return null;
 
   return (
     <Link
