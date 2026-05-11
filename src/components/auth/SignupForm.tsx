@@ -92,6 +92,10 @@ export default function SignupForm() {
       wide
       topRight={
         <>
+          <Link href="/" className="font-semibold" style={{ color: "#1a8576" }}>
+            ← Back to Home
+          </Link>
+          <span className="mx-3" style={{ color: "#cfd8d5" }}>|</span>
           Already have an account?{" "}
           <Link href="/auth/login" className="font-semibold" style={{ color: "#1a8576" }}>
             Sign in

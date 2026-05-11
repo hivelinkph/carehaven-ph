@@ -10,7 +10,8 @@ export default function BackToHomeButton() {
     pathname === "/" ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/provider")
+    pathname.startsWith("/provider") ||
+    pathname.startsWith("/auth")
   ) return null;
 
   return (
