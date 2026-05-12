@@ -87,9 +87,9 @@ export default function FloatingNav() {
           <Image
             src="/logo.png"
             alt="SeniorLiving PH"
-            width={200}
-            height={80}
-            className="h-12 sm:h-14 w-auto drop-shadow-lg"
+            width={360}
+            height={144}
+            className="h-[86px] sm:h-[101px] w-auto drop-shadow-lg"
             priority
           />
         </Link>
