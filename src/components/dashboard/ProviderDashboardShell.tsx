@@ -1,27 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Building2, MessageSquareQuote, BarChart3, ClipboardList, Settings as SettingsIcon, Users, Eye, CheckCircle2 } from "lucide-react";
+import { Building2, MessageSquareQuote, BarChart3, ClipboardList, Settings as SettingsIcon, Eye, CheckCircle2, Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import DashboardChrome, { type NavItem, type StatTile } from "./DashboardChrome";
+import { ProviderDashboard } from "./ProviderDashboard";
 
 interface Props {
   profile: Profile;
-  children: React.ReactNode;
 }
 
 const NAV: NavItem[] = [
-  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "facilities", label: "My Facilities", icon: Building2 },
-  { key: "inquiries", label: "Inquiries", icon: MessageSquareQuote },
-  { key: "care-profile", label: "Care Profile", icon: ClipboardList },
-  { key: "insights", label: "Insights", icon: BarChart3 },
-  { key: "settings", label: "Settings", icon: SettingsIcon },
+  { key: "facilities",   label: "My Facilities", icon: Building2 },
+  { key: "inquiries",    label: "Inquiries",      icon: MessageSquareQuote },
+  { key: "questionnaire",label: "Questionnaire",  icon: ClipboardList },
+  { key: "care-profile", label: "Care Profile",   icon: Heart },
+  { key: "insights",     label: "Insights",       icon: BarChart3 },
+  { key: "settings",     label: "Settings",       icon: SettingsIcon },
 ];
 
-export default function ProviderDashboardShell({ profile, children }: Props) {
-  const [activeKey, setActiveKey] = useState("dashboard");
+export default function ProviderDashboardShell({ profile }: Props) {
+  const [activeKey, setActiveKey] = useState("facilities");
   const [counts, setCounts] = useState({ facilities: 0, active: 0, impressions: 0, pending: 0 });
 
   useEffect(() => {
@@ -54,10 +54,10 @@ export default function ProviderDashboardShell({ profile, children }: Props) {
   }, [profile.id]);
 
   const stats: StatTile[] = [
-    { label: "My Facilities", value: counts.facilities, sublabel: `${counts.active} active`, icon: Building2, tone: "teal" },
-    { label: "Active listings", value: counts.active, sublabel: counts.pending ? `${counts.pending} pending review` : "All approved", icon: CheckCircle2, tone: "pink" },
-    { label: "Match appearances", value: counts.impressions, sublabel: "Shown to families", icon: Eye, tone: "orange" },
-    { label: "Profile visitors", value: 0, sublabel: "This month", icon: Users, tone: "purple" },
+    { label: "My Facilities",      value: counts.facilities,  sublabel: `${counts.active} active`,                                    icon: Building2,   tone: "teal"   },
+    { label: "Active Listings",    value: counts.active,      sublabel: counts.pending ? `${counts.pending} pending review` : "All approved", icon: CheckCircle2, tone: "pink"   },
+    { label: "Match Appearances",  value: counts.impressions, sublabel: "Shown to families",                                          icon: Eye,         tone: "orange" },
+    { label: "Profile Visitors",   value: 0,                  sublabel: "This month",                                                 icon: Eye,         tone: "purple" },
   ];
 
   return (
@@ -79,7 +79,8 @@ export default function ProviderDashboardShell({ profile, children }: Props) {
         body: "Manage your facility listings, monitor inquiries from families, and keep your care profile tuned. Everything in one quiet, focused place.",
       }}
     >
-      {children}
+      {/* activeKey is passed directly — tab switching now works */}
+      <ProviderDashboard profile={profile} activeTab={activeKey} />
     </DashboardChrome>
   );
 }
