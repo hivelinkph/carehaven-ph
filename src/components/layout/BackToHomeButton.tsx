@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home } from "lucide-react";
 
 export default function BackToHomeButton() {
   const pathname = usePathname();
@@ -18,11 +18,17 @@ export default function BackToHomeButton() {
     <Link
       href="/"
       aria-label="Back to homepage"
-      className="fixed top-4 right-4 z-[60] inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-[#e8e6dc] shadow-md hover:shadow-lg hover:border-[#2DD1AC]/40 hover:bg-white text-sm font-semibold text-[#2D3748] transition-all"
-      style={{ fontFamily: "var(--font-ui)" }}
+      className="fixed top-4 left-4 z-[60]"
     >
-      <Home className="w-4 h-4 text-[#2DD1AC]" />
-      <span className="hidden sm:inline">Home</span>
+      <Image
+        src="/logo.png"
+        alt="SeniorLiving PH"
+        width={216}
+        height={87}
+        /* Main page logo: h-[86px] sm:h-[101px] — 40% smaller = h-[52px] sm:h-[61px] */
+        className="h-[52px] sm:h-[61px] w-auto drop-shadow-lg"
+        priority
+      />
     </Link>
   );
 }
