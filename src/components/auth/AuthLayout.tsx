@@ -39,11 +39,11 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
         {/* Logo top-left */}
         <Link href="/" className="absolute top-7 left-7 z-10">
           <Image
-            src="/logo.png"
+            src="/logo_whiteteal.png"
             alt="SeniorLiving PH"
             width={216}
             height={87}
-            className="h-[52px] w-auto drop-shadow-lg"
+            className="h-[62px] w-auto drop-shadow-lg"
             priority
           />
         </Link>
@@ -93,11 +93,11 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
         <div className="lg:hidden flex items-center px-6 pt-7">
           <Link href="/">
             <Image
-              src="/logo2.png"
+              src="/logo_whiteteal.png"
               alt="SeniorLiving PH"
               width={160}
               height={64}
-              className="h-[40px] w-auto"
+              className="h-[48px] w-auto"
               priority
             />
           </Link>

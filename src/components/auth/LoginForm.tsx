@@ -67,10 +67,6 @@ export default function LoginForm() {
     <AuthLayout
       topRight={
         <>
-          <Link href="/" className="font-semibold" style={{ color: "#1a8576" }}>
-            ← Back to Home
-          </Link>
-          <span className="mx-3" style={{ color: "#cfd8d5" }}>|</span>
           New here?{" "}
           <Link href="/auth/signup" className="font-semibold" style={{ color: "#1a8576" }}>
             Create an account
