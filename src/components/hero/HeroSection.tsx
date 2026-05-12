@@ -39,8 +39,8 @@ export default function HeroSection() {
 
           {/* Headline */}
           <h1
-            className="text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.06] mb-6 animate-fade-in-up"
-            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em", fontWeight: 700 }}
+            className="text-[1.8rem] sm:text-[2.25rem] lg:text-[2.7rem] text-white leading-[1.06] mb-6 animate-fade-in-up"
+            style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 12px rgba(0,0,0,0.55)", letterSpacing: "-0.015em", fontWeight: 700, color: "#ffffff" }}
           >
             A place where care feels like
             <br />
