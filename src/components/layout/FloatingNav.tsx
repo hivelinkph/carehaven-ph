@@ -85,7 +85,7 @@ export default function FloatingNav() {
         {/* Brand Logo */}
         <Link href="/" className="group">
           <Image
-            src="/logo.png"
+            src="/logo2.png"
             alt="SeniorLiving PH"
             width={360}
             height={144}
