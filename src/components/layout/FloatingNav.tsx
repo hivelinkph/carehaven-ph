@@ -81,19 +81,26 @@ export default function FloatingNav() {
   return (
     <div className="absolute top-0 left-0 right-0 z-20 px-4 sm:px-6 lg:px-10 xl:px-16 pt-6">
       <div className="flex items-center justify-between">
-        {/* Brand */}
-        <Link href="/" className="group">
+        {/* Brand Logo */}
+        <Link href="/" className="group flex items-center gap-2.5">
+          {/* Teal outline heart */}
+          <svg
+            viewBox="0 0 56 52"
+            className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+            fill="none"
+            stroke="#2DD1AC"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M28 46S4 30 4 15a13 13 0 0 1 24-7 13 13 0 0 1 24 7c0 15-24 31-24 31z" />
+          </svg>
+          {/* SeniorLiving white text */}
           <span
             className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-lg"
             style={{ fontFamily: "var(--font-heading)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
           >
             SeniorLiving
-          </span>
-          <span
-            className="text-sm sm:text-base font-semibold text-[#2DD1AC] ml-1.5 drop-shadow-lg"
-            style={{ fontFamily: "var(--font-ui)" }}
-          >
-            PH
           </span>
         </Link>
 
