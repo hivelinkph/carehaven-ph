@@ -37,20 +37,15 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
         />
 
         {/* Logo top-left */}
-        <Link href="/" className="absolute top-7 left-7 flex items-center gap-2.5 z-10">
-          <span className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#1a8576" }}>
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
-              <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
-            </svg>
-          </span>
-          <span className="leading-tight">
-            <span className="block text-white text-[16px]" style={{ fontFamily: "var(--font-heading)", fontWeight: 600, textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
-              SeniorLiving
-            </span>
-            <span className="block text-[10px] tracking-[0.18em] uppercase -mt-0.5 text-white/85" style={{ fontFamily: "var(--font-ui)", textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
-              Philippines
-            </span>
-          </span>
+        <Link href="/" className="absolute top-7 left-7 z-10">
+          <Image
+            src="/logo.png"
+            alt="SeniorLiving PH"
+            width={216}
+            height={87}
+            className="h-[52px] w-auto drop-shadow-lg"
+            priority
+          />
         </Link>
 
         {/* Italic quote bottom-left */}
@@ -94,21 +89,18 @@ export default function AuthLayout({ topRight, title, subtitle, children, wide =
           </div>
         )}
 
-        {/* Mobile-only mini logo on top */}
-        <div className="lg:hidden flex items-center gap-2.5 px-6 pt-7">
-          <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#1a8576" }}>
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
-              <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
-            </svg>
-          </span>
-          <span className="leading-tight">
-            <span className="block text-[15px]" style={{ fontFamily: "var(--font-heading)", color: "#0c4039", fontWeight: 600 }}>
-              SeniorLiving
-            </span>
-            <span className="block text-[10px] tracking-[0.18em] uppercase -mt-0.5" style={{ fontFamily: "var(--font-ui)", color: "#1a8576" }}>
-              Philippines
-            </span>
-          </span>
+        {/* Mobile-only logo on top */}
+        <div className="lg:hidden flex items-center px-6 pt-7">
+          <Link href="/">
+            <Image
+              src="/logo2.png"
+              alt="SeniorLiving PH"
+              width={160}
+              height={64}
+              className="h-[40px] w-auto"
+              priority
+            />
+          </Link>
         </div>
 
         <div className="flex-1 flex items-center justify-center px-6 sm:px-10 py-12">

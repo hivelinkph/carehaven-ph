@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Building2, ClipboardList, MessageSquareQuote, BarChart3, Images, Menu, X, LogOut } from "lucide-react";
 
 export type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports";
@@ -51,20 +52,16 @@ export default function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle,
         }`}
       >
         <div className="flex flex-col h-full pt-20 pb-6 px-4">
-          {/* Logo / Title */}
+          {/* Brand Logo */}
           <div className="px-3 mb-8">
-            <h2
-              className="text-lg font-bold text-[#2D3748]"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Admin Panel
-            </h2>
-            <p
-              className="text-xs text-[#b0aea5]"
-              style={{ fontFamily: "var(--font-ui)" }}
-            >
-              SeniorLiving PH
-            </p>
+            <Image
+              src="/logo2.png"
+              alt="SeniorLiving PH"
+              width={160}
+              height={64}
+              className="h-9 w-auto"
+              priority
+            />
           </div>
 
           {/* Navigation */}

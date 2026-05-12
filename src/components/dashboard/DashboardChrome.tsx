@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -110,21 +111,16 @@ export default function DashboardChrome({
         style={{ background: "var(--d-sidebar)", color: "var(--d-sidebar-text)" }}
       >
         <div className="flex flex-col h-full px-4 py-6">
-          {/* Brand */}
-          <div className="flex items-center gap-2.5 mb-9 px-2">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--d-primary)" }}>
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="currentColor">
-                <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
-              </svg>
-            </div>
-            <div className="leading-tight">
-              <div className="text-white text-[15px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
-                SeniorLiving
-              </div>
-              <div className="text-[10px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.55)" }}>
-                Senior Living PH
-              </div>
-            </div>
+          {/* Brand Logo */}
+          <div className="flex items-center mb-9 px-2">
+            <Image
+              src="/logo_white.png"
+              alt="SeniorLiving PH"
+              width={180}
+              height={72}
+              className="h-10 w-auto"
+              priority
+            />
           </div>
 
           {/* Nav */}
