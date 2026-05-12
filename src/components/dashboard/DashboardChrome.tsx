@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -113,14 +114,16 @@ export default function DashboardChrome({
         <div className="flex flex-col h-full px-4 py-6">
           {/* Brand Logo */}
           <div className="flex items-center mb-9 px-2">
-            <Image
-              src="/logo_white.png"
-              alt="SeniorLiving PH"
-              width={180}
-              height={72}
-              className="h-10 w-auto"
-              priority
-            />
+            <Link href="/">
+              <Image
+                src="/logo_white.png"
+                alt="SeniorLiving PH"
+                width={180}
+                height={72}
+                className="h-[52px] w-auto cursor-pointer"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Nav */}

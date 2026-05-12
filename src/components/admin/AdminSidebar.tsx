@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Building2, ClipboardList, MessageSquareQuote, BarChart3, Images, Menu, X, LogOut } from "lucide-react";
 
 export type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports";
@@ -54,14 +55,16 @@ export default function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle,
         <div className="flex flex-col h-full pt-20 pb-6 px-4">
           {/* Brand Logo */}
           <div className="px-3 mb-8">
-            <Image
-              src="/logo2.png"
-              alt="SeniorLiving PH"
-              width={160}
-              height={64}
-              className="h-9 w-auto"
-              priority
-            />
+            <Link href="/">
+              <Image
+                src="/logo2.png"
+                alt="SeniorLiving PH"
+                width={160}
+                height={64}
+                className="h-[47px] w-auto cursor-pointer"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Navigation */}
