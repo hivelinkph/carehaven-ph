@@ -38,17 +38,18 @@ import {
 import AgentConfigTab from "@/components/admin/AgentConfigTab";
 import KnowledgeBaseTab from "@/components/admin/KnowledgeBaseTab";
 
-type AdminTab = "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports" | "chat-agent" | "voice-agent" | "knowledge-base";
+type AdminTab = "dashboard" | "facilities" | "questionnaire" | "testimonials" | "gallery" | "reports" | "chat-agent" | "voice-agent" | "knowledge-base";
 
 const ADMIN_NAV: NavItem[] = [
-  { key: "facilities", label: "Facilities", icon: Building2 },
-  { key: "questionnaire", label: "Questionnaire", icon: ClipboardList },
-  { key: "testimonials", label: "Testimonials", icon: MessageSquareQuote },
-  { key: "gallery", label: "Gallery", icon: Images },
-  { key: "reports", label: "Reports", icon: BarChart3 },
-  { key: "chat-agent", label: "Chat Agent", icon: MessageCircle },
-  { key: "voice-agent", label: "Voice Agent", icon: Mic },
-  { key: "knowledge-base", label: "Knowledge Base", icon: BookOpen },
+  { key: "dashboard",     label: "Dashboard",    icon: LayoutDashboard },
+  { key: "facilities",    label: "Facilities",   icon: Building2 },
+  { key: "questionnaire", label: "Questionnaire",icon: ClipboardList },
+  { key: "testimonials",  label: "Testimonials", icon: MessageSquareQuote },
+  { key: "gallery",       label: "Gallery",      icon: Images },
+  { key: "reports",       label: "Reports",      icon: BarChart3 },
+  { key: "chat-agent",    label: "Chat Agent",   icon: MessageCircle },
+  { key: "voice-agent",   label: "Voice Agent",  icon: Mic },
+  { key: "knowledge-base",label: "Knowledge Base",icon: BookOpen },
 ];
 
 export default function AdminDashboard() {
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
   const [editingTestimonial, setEditingTestimonial] = useState<Partial<Testimonial> | null>(null);
   const [savingTestimonial, setSavingTestimonial] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [activeTab, setActiveTab] = useState<AdminTab>("facilities");
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<Partial<QuestionnaireConfig> | null>(null);
   const [savingQuestion, setSavingQuestion] = useState(false);
@@ -396,6 +397,8 @@ export default function AdminDashboard() {
     { label: "Gallery items", value: galleryImages.length, sublabel: `${galleryImages.filter(g=>g.is_active).length} published`, icon: Images, tone: "purple" },
   ];
 
+  const isHomeDash = activeTab === "dashboard";
+
   return (
     <DashboardChrome
       profile={profile}
@@ -405,19 +408,55 @@ export default function AdminDashboard() {
       navItems={ADMIN_NAV}
       activeKey={activeTab}
       onNavSelect={(k) => setActiveTab(k as AdminTab)}
-      pageTitle="Admin Control"
+      pageTitle={isHomeDash ? "Admin Control" : ADMIN_NAV.find(n => n.key === activeTab)?.label ?? "Admin"}
       pageEyebrow="Active"
-      stats={adminStats}
-      hero={{
+      stats={isHomeDash ? adminStats : []}
+      hero={isHomeDash ? {
         image: "/assets/images/hero.jpeg",
         eyebrow: "Today's note",
         title: <>Compassion in <em style={{ fontFamily: "var(--font-accent)", fontStyle: "italic" }}>every detail.</em></>,
         body: "Each entry below shapes a family's first impression — keep listings vetted, respected, and at home.",
-      }}
+      } : undefined}
     >
       {/* Page content begins here */}
       <div>
-        <div className="hidden">{/* spacer to keep diff stable */}</div>
+
+          {/* ===== DASHBOARD TAB ===== */}
+          {activeTab === "dashboard" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { key: "facilities",     label: "Facilities",    icon: Building2,         desc: "Manage and approve care home listings.",      count: facilities.length,   accent: "#2DD1AC" },
+                { key: "testimonials",   label: "Testimonials",  icon: MessageSquareQuote, desc: "Review and publish family testimonials.",     count: testimonials.length, accent: "#6a9bcc" },
+                { key: "questionnaire",  label: "Questionnaire", icon: ClipboardList,      desc: "Configure the care-matching questionnaire.",  count: questions.length,    accent: "#d97757" },
+                { key: "gallery",        label: "Gallery",       icon: Images,             desc: "Upload and curate the home page gallery.",    count: galleryImages.length,accent: "#788c5d" },
+                { key: "reports",        label: "Reports",       icon: BarChart3,          desc: "View match impressions and provider stats.",  count: reportTotal,         accent: "#b0aea5" },
+                { key: "knowledge-base", label: "Knowledge Base",icon: BookOpen,           desc: "Manage AI knowledge base documents.",         count: null,                accent: "#2D3748" },
+              ].map(({ key, label, icon: Icon, desc, count, accent }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key as AdminTab)}
+                  className="text-left bg-white rounded-2xl border border-[#ebe4d3] p-5 hover:border-[#2DD1AC]/40 hover:shadow-md transition-all group"
+                  style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${accent}18` }}>
+                      <Icon className="w-5 h-5" style={{ color: accent }} />
+                    </div>
+                    {count !== null && (
+                      <span className="text-[22px] font-bold leading-none" style={{ fontFamily: "var(--font-heading)", color: "var(--d-ink)" }}>
+                        {count}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[14px] font-semibold mb-1" style={{ fontFamily: "var(--font-ui)", color: "var(--d-ink)" }}>{label}</div>
+                  <div className="text-[12.5px] leading-snug" style={{ fontFamily: "var(--font-body)", color: "var(--d-ink-muted)" }}>{desc}</div>
+                  <div className="mt-3 text-[11.5px] font-medium group-hover:underline" style={{ color: accent, fontFamily: "var(--font-ui)" }}>
+                    Go to {label} →
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* ===== FACILITIES TAB ===== */}
           {activeTab === "facilities" && (

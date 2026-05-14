@@ -37,8 +37,8 @@ interface Props {
   greeting?: string;
   pageTitle: string;
   pageEyebrow: string;
-  stats: StatTile[];
-  hero: {
+  stats?: StatTile[];
+  hero?: {
     image: string;
     eyebrow: string;
     title: ReactNode;
@@ -71,7 +71,7 @@ export default function DashboardChrome({
   greeting = "Welcome back",
   pageTitle,
   pageEyebrow,
-  stats,
+  stats = [],
   hero,
   children,
 }: Props) {
@@ -305,28 +305,30 @@ export default function DashboardChrome({
           )}
 
           {/* Hero banner */}
-          <section className="dash-hero mb-7 h-[200px] sm:h-[220px]">
-            <img src={hero.image} alt="" />
-            <div className="dash-hero-content h-full flex flex-col justify-center px-7 sm:px-10 max-w-2xl">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-8 h-8 rounded-full bg-white/15 backdrop-blur flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" style={{ color: "#9ee6d4" }}>
-                    <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
-                  </svg>
-                </span>
-                <span className="text-[11px] tracking-[0.22em] uppercase text-white/80">{hero.eyebrow}</span>
+          {hero && (
+            <section className="dash-hero mb-7 h-[200px] sm:h-[220px]">
+              <img src={hero.image} alt="" />
+              <div className="dash-hero-content h-full flex flex-col justify-center px-7 sm:px-10 max-w-2xl">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-8 h-8 rounded-full bg-white/15 backdrop-blur flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" style={{ color: "#9ee6d4" }}>
+                      <path d="M12 21s-7.5-4.7-7.5-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19.5 10c0 6.3-7.5 11-7.5 11z" />
+                    </svg>
+                  </span>
+                  <span className="text-[11px] tracking-[0.22em] uppercase text-white/80">{hero.eyebrow}</span>
+                </div>
+                <h2
+                  className="text-[28px] sm:text-[34px] leading-tight text-white"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}
+                >
+                  {hero.title}
+                </h2>
+                <p className="mt-2 text-[13.5px] text-white/85 max-w-md leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+                  {hero.body}
+                </p>
               </div>
-              <h2
-                className="text-[28px] sm:text-[34px] leading-tight text-white"
-                style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}
-              >
-                {hero.title}
-              </h2>
-              <p className="mt-2 text-[13.5px] text-white/85 max-w-md leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
-                {hero.body}
-              </p>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Page content */}
           <div className="space-y-6">{children}</div>
