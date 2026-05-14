@@ -56,8 +56,6 @@ export default function CustomerDashboardShell({ profile }: Props) {
   return (
     <DashboardChrome
       profile={profile}
-      panelTitle="Family Hub"
-      panelSubtitle="Care, kept close to home."
       badge="Customer"
       navItems={NAV}
       activeKey={activeKey}

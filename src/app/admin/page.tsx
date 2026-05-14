@@ -403,7 +403,6 @@ export default function AdminDashboard() {
     <DashboardChrome
       profile={profile}
       panelTitle="Admin Console"
-      panelSubtitle="Every detail matters."
       badge="Admin"
       navItems={ADMIN_NAV}
       activeKey={activeTab}
