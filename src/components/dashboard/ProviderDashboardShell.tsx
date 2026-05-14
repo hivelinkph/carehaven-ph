@@ -67,13 +67,10 @@ export default function ProviderDashboardShell({ profile }: Props) {
     <DashboardChrome
       profile={profile}
       panelTitle="Provider Studio"
-      panelSubtitle="Where care meets coordination."
       badge="Provider"
       navItems={NAV}
       activeKey={activeKey}
       onNavSelect={setActiveKey}
-      pageTitle={isHomeDash ? "Provider Studio" : NAV.find(n => n.key === activeKey)?.label ?? "Provider"}
-      pageEyebrow="Live"
       stats={isHomeDash ? stats : []}
       hero={isHomeDash ? {
         image: "/assets/images/hero.jpeg",

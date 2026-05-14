@@ -29,14 +29,14 @@ export interface StatTile {
 interface Props {
   profile: Profile;
   panelTitle: string;
-  panelSubtitle: string;
+  panelSubtitle?: string;
   badge: string;
   navItems: NavItem[];
   activeKey: string;
   onNavSelect: (key: string) => void;
   greeting?: string;
-  pageTitle: string;
-  pageEyebrow: string;
+  pageTitle?: string;
+  pageEyebrow?: string;
   stats?: StatTile[];
   hero?: {
     image: string;
@@ -188,13 +188,15 @@ export default function DashboardChrome({
 
           {/* Quote / footer */}
           <div className="mt-6 px-3.5">
-            <p
-              className="text-[12px] leading-snug italic"
-              style={{ fontFamily: "var(--font-accent)", color: "rgba(255,255,255,0.6)" }}
-            >
-              &ldquo;{panelSubtitle}&rdquo;
-            </p>
-            <p className="mt-1 text-[10px] tracking-[0.22em] uppercase" style={{ color: "rgba(255,255,255,0.32)" }}>
+            {panelSubtitle && (
+              <p
+                className="text-[12px] leading-snug italic"
+                style={{ fontFamily: "var(--font-accent)", color: "rgba(255,255,255,0.6)" }}
+              >
+                &ldquo;{panelSubtitle}&rdquo;
+              </p>
+            )}
+            <p className={`text-[10px] tracking-[0.22em] uppercase ${panelSubtitle ? "mt-1" : ""}`} style={{ color: "rgba(255,255,255,0.32)" }}>
               {panelTitle}
             </p>
           </div>
@@ -228,15 +230,19 @@ export default function DashboardChrome({
               <p className="text-[12px] font-medium" style={{ color: "var(--d-ink-muted)" }}>
                 {greeting}{firstName ? `, ${firstName}` : ""}
               </p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <h1
-                  className="text-[22px] sm:text-[24px] leading-tight"
-                  style={{ fontFamily: "var(--font-heading)", color: "var(--d-ink)", fontWeight: 600 }}
-                >
-                  {pageTitle}
-                </h1>
-                <span className="dash-pill">{pageEyebrow}</span>
-              </div>
+              {(pageTitle || pageEyebrow) && (
+                <div className="flex items-center gap-2 mt-0.5">
+                  {pageTitle && (
+                    <h1
+                      className="text-[22px] sm:text-[24px] leading-tight"
+                      style={{ fontFamily: "var(--font-heading)", color: "var(--d-ink)", fontWeight: 600 }}
+                    >
+                      {pageTitle}
+                    </h1>
+                  )}
+                  {pageEyebrow && <span className="dash-pill">{pageEyebrow}</span>}
+                </div>
+              )}
             </div>
 
 
