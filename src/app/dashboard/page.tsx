@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
-import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import CustomerDashboardShell from "@/components/dashboard/CustomerDashboardShell";
 
 export default function DashboardPage() {
@@ -64,9 +63,5 @@ function DashboardInner() {
 
   if (loading || !profile) return <DashboardSkeleton />;
 
-  return (
-    <CustomerDashboardShell profile={profile}>
-      <UserDashboard profile={profile} />
-    </CustomerDashboardShell>
-  );
+  return <CustomerDashboardShell profile={profile} />;
 }
