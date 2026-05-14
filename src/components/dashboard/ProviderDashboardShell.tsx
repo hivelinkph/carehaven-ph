@@ -66,7 +66,6 @@ export default function ProviderDashboardShell({ profile }: Props) {
   return (
     <DashboardChrome
       profile={profile}
-      panelTitle="Provider Studio"
       badge="Provider"
       navItems={NAV}
       activeKey={activeKey}

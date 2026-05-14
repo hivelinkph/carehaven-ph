@@ -28,7 +28,7 @@ export interface StatTile {
 
 interface Props {
   profile: Profile;
-  panelTitle: string;
+  panelTitle?: string;
   panelSubtitle?: string;
   badge: string;
   navItems: NavItem[];
@@ -187,19 +187,23 @@ export default function DashboardChrome({
           </nav>
 
           {/* Quote / footer */}
-          <div className="mt-6 px-3.5">
-            {panelSubtitle && (
-              <p
-                className="text-[12px] leading-snug italic"
-                style={{ fontFamily: "var(--font-accent)", color: "rgba(255,255,255,0.6)" }}
-              >
-                &ldquo;{panelSubtitle}&rdquo;
-              </p>
-            )}
-            <p className={`text-[10px] tracking-[0.22em] uppercase ${panelSubtitle ? "mt-1" : ""}`} style={{ color: "rgba(255,255,255,0.32)" }}>
-              {panelTitle}
-            </p>
-          </div>
+          {(panelSubtitle || panelTitle) && (
+            <div className="mt-6 px-3.5">
+              {panelSubtitle && (
+                <p
+                  className="text-[12px] leading-snug italic"
+                  style={{ fontFamily: "var(--font-accent)", color: "rgba(255,255,255,0.6)" }}
+                >
+                  &ldquo;{panelSubtitle}&rdquo;
+                </p>
+              )}
+              {panelTitle && (
+                <p className={`text-[10px] tracking-[0.22em] uppercase ${panelSubtitle ? "mt-1" : ""}`} style={{ color: "rgba(255,255,255,0.32)" }}>
+                  {panelTitle}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Sign out */}
           <button
