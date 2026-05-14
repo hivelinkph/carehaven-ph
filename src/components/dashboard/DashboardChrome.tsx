@@ -78,6 +78,13 @@ export default function DashboardChrome({
   const router = useRouter();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  const DASHBOARD_LABEL: Record<string, string> = {
+    Admin: "Admin Dashboard",
+    Provider: "Care Provider Dashboard",
+    Customer: "Customer Dashboard",
+  };
+  const dashboardLabel = DASHBOARD_LABEL[badge] ?? `${badge} Dashboard`;
+
   const firstName = (profile.full_name || "").trim().split(" ")[0] || "";
   const initials = (profile.full_name || "U")
     .split(" ")
@@ -113,7 +120,7 @@ export default function DashboardChrome({
       >
         <div className="flex flex-col h-full px-4 py-6">
           {/* Brand Logo */}
-          <div className="flex items-center mb-9 px-2">
+          <div className="flex items-center px-2">
             <Link href="/">
               <Image
                 src="/logo_white.png"
@@ -124,6 +131,29 @@ export default function DashboardChrome({
                 priority
               />
             </Link>
+          </div>
+
+          {/* Dashboard type label */}
+          <div className="px-2 mb-7 mt-3">
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-xl"
+              style={{ background: "rgba(45, 209, 172, 0.15)", border: "1px solid rgba(45, 209, 172, 0.3)" }}
+            >
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ background: "var(--d-primary, #2DD1AC)", boxShadow: "0 0 6px rgba(45,209,172,0.7)" }}
+              />
+              <span
+                className="text-[13px] font-bold leading-tight tracking-wide"
+                style={{
+                  fontFamily: "var(--font-ui)",
+                  color: "#2DD1AC",
+                  textShadow: "0 0 12px rgba(45,209,172,0.4)",
+                }}
+              >
+                {dashboardLabel}
+              </span>
+            </div>
           </div>
 
           {/* Nav */}
