@@ -8,8 +8,13 @@ const VoiceWidget = lazy(() => import("./VoiceWidget"));
 
 type Mode = "closed" | "chat" | "voice";
 
+// Temporarily hidden — set to true to re-enable the floating chat/voice icons.
+const SHOW_FLOATING_AGENTS = false;
+
 export default function FloatingAgents() {
   const [mode, setMode] = useState<Mode>("closed");
+
+  if (!SHOW_FLOATING_AGENTS) return null;
 
   return (
     <>
